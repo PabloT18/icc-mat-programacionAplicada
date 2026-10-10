@@ -5,7 +5,6 @@
 <p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<p><a id="concepto-1"></a></p>
 <h3>1.1. Fundamentos</h3>
 <p>Los patrones <strong>estructurales</strong> organizan la composición de clases y objetos. Permiten adaptar contratos, construir jerarquías o incorporar capas sin que los clientes dependan de todos los detalles internos.</p>
 <p>La <strong>composición</strong> expresa que un objeto utiliza a otro mediante una referencia. La <strong>herencia</strong> establece una relación de tipos. Muchos patrones estructurales favorecen la composición para combinar comportamientos sin multiplicar subclases. Ninguna de las dos técnicas es por sí sola un patrón.</p>
@@ -54,15 +53,12 @@
 <td><code>ProxyDemo.java</code></td>
 </tr>
 </tbody></table></div>
-<p><a id="concepto-2"></a></p>
 <h3>1.2. Adapter</h3>
 <p><strong>Intención.</strong> Hacer compatible una interfaz existente con la que espera un cliente. El adaptador implementa el contrato destino y delega en el objeto adaptado, traduciendo nombres, formatos o unidades cuando corresponde.</p>
 <p>Es útil al integrar una biblioteca antigua o un proveedor externo sin modificar su implementación. Debe conservar la semántica: convertir un nombre de método no basta si las unidades o los errores tienen significados distintos. El ejemplo traduce una API que informa Fahrenheit a un contrato que entrega Celsius. Se utiliza composición, aunque también existen adaptadores basados en herencia. A diferencia de Decorator, su propósito es compatibilidad entre contratos, no añadir capas de comportamiento detrás de la misma interfaz.</p>
-<p><a id="concepto-3"></a></p>
 <h3>1.3. Bridge</h3>
 <p><strong>Intención.</strong> Separar una abstracción de su implementación para que ambas puedan variar de manera independiente. La abstracción mantiene una referencia a un implementador y delega en él las operaciones de bajo nivel.</p>
 <p>Por ejemplo, pueden variar tanto el tipo de mensaje como el canal de presentación. Sin el puente aparecerían clases para cada combinación. Bridge permite combinar una notificación normal o urgente con un canal simple o decorado. El precio es una capa adicional de delegación. Adapter suele incorporar compatibilidad a interfaces ya existentes; Bridge diseña de antemano dos dimensiones de variación. En el ejemplo, la jerarquía de mensajes y las implementaciones de canal no dependen de las clases concretas de la otra dimensión.</p>
-<p><a id="concepto-4"></a></p>
 <h3>1.4. Composite</h3>
 <p><strong>Intención.</strong> Tratar de manera uniforme objetos individuales y agrupaciones mediante una interfaz común. Las hojas implementan la operación directamente; los compuestos la delegan a sus hijos, formando una estructura de árbol.</p>
 <p>Un archivo puede calcular su tamaño directamente y una carpeta sumar el tamaño de sus componentes. El cliente pide la misma operación sin distinguir sus clases. Es útil en jerarquías parte-todo; no toda colección constituye un Composite. Debe decidirse dónde se permiten agregar hijos y cómo evitar ciclos, porque la recursión supone una estructura válida. El ejemplo reserva <code>agregar</code> a la carpeta y requiere un árbol sin ciclos. No todas las operaciones del compuesto necesitan existir en las hojas.</p>
@@ -81,7 +77,6 @@
 <h3>1.9. Criterios de elección</h3>
 <p>La estructura debe preservar los contratos. Un Adapter que cambia unidades debe convertir valores, no solo nombres. Un Decorator debe seguir siendo utilizable como el componente original. Un Composite necesita una jerarquía válida. Bridge separa dos dimensiones de cambio, mientras Facade reduce lo que el cliente necesita conocer.</p>
 <hr>
-<p><a id="demostracion"></a></p>
 <h2>2. Demostraciones comentadas</h2>
 <p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/estructurales/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
 <p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>

@@ -5,7 +5,6 @@
 <p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<p><a id="concepto-1"></a></p>
 <h3>1.1. Fundamentos</h3>
 <p>Los patrones <strong>de comportamiento</strong> distribuyen algoritmos, decisiones y comunicación entre objetos. Definen quién conoce una regla, quién coordina una interacción y qué partes pueden reemplazarse o evolucionar de forma independiente.</p>
 <p>Este bloque cubre los once patrones de comportamiento del catálogo GoF, incluido Interpreter. No es necesario aplicar todos a una aplicación. Elige según la variación real: algoritmos intercambiables, estados, peticiones, recorridos, eventos o nuevas operaciones sobre una estructura.</p>
@@ -74,15 +73,12 @@
 <td><code>VisitorDemo.java</code></td>
 </tr>
 </tbody></table></div>
-<p><a id="concepto-2"></a></p>
 <h3>1.2. Chain of Responsibility</h3>
 <p><strong>Intención.</strong> Pasar una petición por una cadena de manejadores, permitiendo que cada uno la atienda o la delegue. El emisor conoce el inicio de la cadena, no todos los posibles receptores.</p>
 <p>Es útil para escalamiento de solicitudes o procesamiento configurable. Debe definirse si la cadena termina al atender una petición o si todos los manejadores participan. El orden afecta al resultado, y una petición podría quedar sin atender. En el ejemplo, cada nivel aprueba hasta cierto monto; si ninguno puede hacerlo, se rechaza. Los montos son enteros para aislar la decisión del manejo monetario. No se deben esconder errores bajo una delegación indefinida ni crear ciclos entre manejadores.</p>
-<p><a id="concepto-3"></a></p>
 <h3>1.3. Command</h3>
 <p><strong>Intención.</strong> Representar una petición como un objeto, separando quien la solicita de quien realiza el trabajo. Los participantes son comando, receptor, invocador y cliente que conecta los objetos.</p>
 <p>Un botón puede ejecutar diferentes acciones mediante el mismo contrato. Convertir acciones en objetos permite encolarlas o registrar un historial, pero esas capacidades requieren implementación adicional. Deshacer no surge automáticamente: el comando debe conservar el estado o la operación inversa necesaria. El ejemplo guarda el estado previo de una luz para restaurarlo. Está diseñado para una ejecución seguida de una restauración; un historial general requeriría administrar varias instancias y su orden de ejecución.</p>
-<p><a id="concepto-4"></a></p>
 <h3>1.4. Interpreter</h3>
 <p><strong>Intención.</strong> Representar una gramática sencilla mediante objetos y evaluar expresiones construidas con ella. Los terminales representan valores o variables; los no terminales combinan otras expresiones; el contexto aporta los datos de evaluación.</p>
 <p>Una regla como «activo Y NO bloqueado» puede representarse mediante un árbol de expresiones. Interpreter resulta útil para lenguajes pequeños y estables; una gramática compleja suele requerir herramientas de análisis más apropiadas. El ejemplo construye el árbol directamente en Java y no incluye un parser de texto. Esa diferencia es importante: interpretar un árbol ya construido no equivale a reconocer cualquier cadena escrita por un usuario. Este patrón completa los once patrones de comportamiento del catálogo clásico.</p>
@@ -113,7 +109,6 @@
 <h3>1.13. Criterios de elección</h3>
 <p>Strategy y State pueden tener clases parecidas: la diferencia es que Strategy selecciona una política y State expresa el estado del contexto y sus transiciones. Observer notifica suscriptores, mientras Mediator coordina colaboraciones. Command representa una petición y Memento conserva estado para restaurarlo; pueden combinarse, pero no son equivalentes.</p>
 <hr>
-<p><a id="demostracion"></a></p>
 <h2>2. Demostraciones comentadas</h2>
 <p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/comportamiento/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
 <p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
@@ -514,7 +509,6 @@ Imagen: logo.png
 </code></pre>
 <p>Cada aceptar() selecciona la sobrecarga para su tipo; la implementación de Visitante aporta la operación concreta.</p>
 <hr>
-<p><a id="pc"></a></p>
 <h2>3. PC1.4 · Integración de Adapter y Strategy</h2>
 <p>Continúa sobre el proyecto de PC1.2. CampusMonitor recibirá temperaturas desde una API simulada en Fahrenheit y evaluará alertas con criterios intercambiables. Se aplicarán <strong>Adapter</strong> para integrar el origen y <strong>Strategy</strong> para seleccionar la regla de alerta.</p>
 <h3>3.1. Clases e interfaces que debes incorporar</h3>

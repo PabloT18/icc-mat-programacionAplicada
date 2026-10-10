@@ -5,7 +5,6 @@
 <p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<p><a id="concepto-1"></a></p>
 <h3>1.1. Fundamentos</h3>
 <p>Un <strong>patrón de diseño</strong> describe una solución recurrente a un problema de responsabilidades y colaboración entre objetos. No es una biblioteca ni una plantilla que deba aplicarse a todo programa. Identifica el problema, los participantes, el punto que puede cambiar y el costo de separarlo.</p>
 <p>Los patrones <strong>creacionales</strong> organizan cómo se construyen y suministran los objetos. Separan decisiones de creación del código que utiliza los productos. El objetivo no es ocultar cada <code>new</code>, sino evitar que los clientes repitan decisiones de construcción que necesitan variar.</p>
@@ -44,15 +43,12 @@
 <td><code>SingletonDemo.java</code></td>
 </tr>
 </tbody></table></div>
-<p><a id="concepto-2"></a></p>
 <h3>1.2. Factory Method</h3>
 <p><strong>Intención.</strong> Permitir que una subclase decida qué producto construir, mientras la clase creadora conserva un procedimiento común. Sus participantes son producto, productos concretos, creador y creadores concretos. El punto de variación es una operación de creación que puede redefinirse.</p>
 <p>Una aplicación de exportación puede preparar un documento usando un exportador obtenido mediante ese método. Agregar otra variante exige otro creador, no modificar el procedimiento base. Su costo es aumentar la cantidad de subclases. Un método estático con un <code>switch</code> que devuelve diferentes objetos es una fábrica simple, no basta para demostrar Factory Method. Los genéricos pueden relacionar un creador con su familia de productos, aunque no son un requisito del patrón.</p>
-<p><a id="concepto-3"></a></p>
 <h3>1.3. Abstract Factory</h3>
 <p><strong>Intención.</strong> Construir familias de productos relacionados sin acoplar al cliente a sus clases concretas. La fábrica abstracta declara una operación para cada tipo de producto; cada fábrica concreta crea variantes compatibles de toda la familia.</p>
 <p>En una interfaz visual, una familia puede contener botón y menú de un mismo tema. El cliente recibe una fábrica y obtiene ambos elementos de ella, evitando mezclar variantes. Es útil cuando cambian conjuntos completos de objetos. Agregar una familia suele ser sencillo; agregar un nuevo tipo de producto obliga a extender todas las fábricas. A diferencia de Factory Method, el énfasis está en coordinar varios productos, no únicamente en redefinir una operación de creación.</p>
-<p><a id="concepto-4"></a></p>
 <h3>1.4. Builder</h3>
 <p><strong>Intención.</strong> Separar la construcción por etapas de un objeto de su uso posterior. El constructor progresivo conserva la configuración, permite establecer opciones y crea el producto final cuando su estado es válido. Un director puede definir secuencias reutilizables de construcción, pero no es obligatorio en la variante fluida del ejemplo.</p>
 <p>Resulta útil con muchas opciones, restricciones entre campos o distintas representaciones. No es necesario para cualquier objeto pequeño: puede añadir complejidad donde basta un constructor. El producto no se vuelve inmutable automáticamente; eso depende de sus campos y de las copias defensivas. El ejemplo combina un builder mutable con un producto que copia su lista de secciones.</p>
@@ -65,7 +61,6 @@
 <h3>1.7. Criterios de elección</h3>
 <p>Factory Method especializa una operación de creación mediante herencia; Abstract Factory entrega familias relacionadas; Builder reúne pasos antes de construir; Prototype parte de otro objeto configurado; Singleton controla la instancia accesible. Decide primero qué problema de creación existe. Compartir un objeto puede resolverse suministrándolo por constructor sin volverlo global.</p>
 <hr>
-<p><a id="demostracion"></a></p>
 <h2>2. Demostraciones comentadas</h2>
 <p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/creacionales/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
 <p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
