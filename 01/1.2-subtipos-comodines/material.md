@@ -1,192 +1,268 @@
 # Programación Aplicada
 
-## 1.2. Subtipos, comodines y PECS
+## 1.2. Subtipos y comodines
 
 ![UPS · Carrera de Computación](../../assets/logos/ups-computacion.png)
 
 **Autor:** Ing. Pablo Torres, Mgtr.  
-**Unidad:** 1. Programación genérica  
-**Proyecto de trabajo:** CampusMonitor
+**Unidad:** 1. Programación genérica
 
-[Inicio del curso](../../README.md) · [Presentación editable](presentacion.pptx) · [Ver en el navegador](index.html)
+[Inicio del curso](../../README.md) · [Ver en el navegador](index.html)
 
 ---
 
 ## 1. Conceptos y ejemplos
 
-### Contexto
-
-Las lecturas de temperatura son Double, pero una utilidad de cálculo puede aceptar Number. La herencia entre Integer, Double y Number no se propaga automáticamente a List. El diseño de la firma determina qué se puede leer y escribir de forma segura.
-
-### Antes de empezar
-
-Recupera el avance de [1.1c](../1.1-fundamentos/03-boxing-foreach-varargs/material.md). Conserva sus comandos y evidencias. Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas del proyecto personal.
-
 <a id="concepto-1"></a>
 
-### 1.1. Invariancia de los tipos parametrizados
+### 1.1. Subtipado y sustitución
 
-Aunque Integer extiende Number, List<Integer> no es subtipo de List<Number>. Si esa asignación fuera válida, una referencia List<Number> permitiría insertar un Double en una lista destinada a Integer. La invariancia evita esa contradicción. No se resuelve añadiendo un cast: un cast no comprueba todos los elementos y puede posponer el fallo.
-
-La compatibilidad se expresa con comodines. List<?> representa una lista de un tipo desconocido. Puedes recuperar elementos como Object y consultar tamaño o vaciado, pero no insertar un valor concreto con seguridad. Desconocido no significa que la lista mezcle libremente todos los tipos.
+Un tipo es **subtipo** de otro cuando puede utilizarse donde se espera el tipo más general, respetando su contrato. `Integer` es subtipo de `Number`, de modo que una referencia `Number` puede apuntar a un `Integer`.
 
 ```java
-List<Integer> ocupacion = List.of(10, 12);
-List<? extends Number> lectura = ocupacion;
-Number primero = lectura.get(0);
+Number numero = Integer.valueOf(8);
 ```
+
+La relación entre clases no se traslada automáticamente a sus contenedores. Aunque `Integer` hereda de `Number`, `List<Integer>` no es subtipo de `List<Number>`. Los tipos genéricos de Java son **invariantes** respecto de sus argumentos.
+
+```java
+List<Integer> enteros = new ArrayList<>();
+// List<Number> numeros = enteros; // No compila.
+```
+
+Si esta asignación fuera válida, se podría insertar un `Double` usando `numeros`, y luego recuperar ese mismo elemento como `Integer` desde `enteros`. La prohibición conserva el contrato de la lista original.
+
+### 1.2. Qué representa un comodín
+
+El **comodín `?`** representa un argumento de tipo desconocido. Permite declarar referencias que aceptan diferentes parametrizaciones, restringiendo las operaciones a las que resultan seguras para todas ellas.
+
+`List<?>` significa «lista de algún tipo que no conocemos», no «lista de cualquier objeto». Una variable de ese tipo puede referirse a `List<String>` o a `List<Integer>`, pero no permite insertar indistintamente cadenas y enteros. Al leer, solo se garantiza `Object`.
+
+`List<Object>`, en cambio, tiene un argumento conocido: `Object`. Admite elementos de tipos diferentes, pero no puede recibir por asignación una `List<String>` debido a la invariancia.
 
 <a id="concepto-2"></a>
 
-### 1.2. Productores con extends
+### 1.3. Cota superior: ? extends T
 
-List<? extends Number> representa una lista de algún subtipo de Number. Se puede leer cada elemento como Number. No permite añadir un Integer o un Double porque el subtipo concreto es desconocido. La lista podría ser List<BigDecimal>. Esta restricción se aplica a la referencia con comodín y no convierte el objeto subyacente en inmutable.
+`List<? extends Number>` acepta una lista cuyo argumento sea `Number` o un subtipo suyo. Es útil para un método que **consume información de la lista**, es decir, que lee los elementos que esa lista produce.
 
-Usa extends cuando el parámetro produce valores para el algoritmo. Un sumador solo necesita leer y convertir a double. Este contrato acepta listas Integer y Double. Recuerda que una suma numérica no valida unidades y que double no sirve para todos los dominios, como importes monetarios exactos.
+```java
+List<? extends Number> origen = List.of(2, 4, 6);
+Number primero = origen.get(0);
+// origen.add(3.5); // No compila: el tipo concreto podría ser Integer.
+```
+
+Se puede leer como `Number`, pero no insertar un `Integer` ni un `Double` arbitrario: se desconoce el argumento exacto. La excepción de tipos es `null`, aunque la colección concreta puede rechazarlo.
+
+Esto no convierte la lista en inmutable. Operaciones como `clear()` o `remove()` pueden seguir disponibles si la implementación las admite. Además, otras referencias podrían modificarla. La restricción afecta a las operaciones seguras a través de esa referencia.
 
 <a id="concepto-3"></a>
 
-### 1.3. Consumidores con super
+### 1.4. Cota inferior: ? super T
 
-List<? super Integer> representa una lista de Integer o de alguno de sus supertipos. Es seguro añadir Integer. Al leer, el tipo garantizado es Object, porque una List<Number> podría contener Double y una List<Object> podría contener cadenas.
-
-PECS resume Producer Extends, Consumer Super. Se aplica a parámetros de entrada según su papel en el algoritmo. En copiar, el origen produce T y el destino consume T. Si un parámetro se lee y escribe con el mismo tipo concreto, una List<T> suele ser más adecuada. Evita devolver comodines sin necesidad porque obliga al cliente a gestionar tipos desconocidos.
+`List<? super Integer>` acepta `List<Integer>`, `List<Number>` o `List<Object>`. Permite insertar enteros porque todos esos destinos pueden almacenarlos.
 
 ```java
-static <T> void copiar(List<? extends T> origen, List<? super T> destino) {
-    destino.addAll(origen);
-}
+List<? super Integer> destino = new ArrayList<Number>();
+destino.add(7);
+Object recuperado = destino.get(0);
 ```
+
+Al recuperar un elemento solo se garantiza `Object`: si el destino real es `List<Object>`, podría contener cadenas agregadas previamente. La cota inferior define lo que podemos introducir con seguridad, no el tipo de todos los elementos que ya existen.
+
+### 1.5. PECS y elección de la firma
+
+La regla **PECS** resume dos usos: *Producer Extends, Consumer Super*. La perspectiva es la del algoritmo: el origen produce valores para el método y el destino consume los valores que el método escribe.
+
+| Firma | Lectura garantizada | Inserción segura por tipo | Uso habitual |
+|---|---|---|---|
+| `List<T>` | `T` | `T` | Leer y escribir el mismo tipo conocido |
+| `List<? extends T>` | `T` | Ningún valor no nulo arbitrario | Origen de datos |
+| `List<? super T>` | `Object` | `T` y sus subtipos | Destino de datos |
+| `List<?>` | `Object` | Ningún valor no nulo arbitrario | Inspección independiente del tipo |
+
+La tabla describe seguridad de tipos; una lista inmodificable puede rechazar cualquier escritura en ejecución.
+
+La firma `<T> void copiar(List<? extends T> origen, List<? super T> destino)` conecta ambas posiciones mediante `T`. Usar únicamente dos `List<?>` perdería esa relación: no habría garantía de que lo leído del origen sea aceptable en el destino.
 
 <a id="concepto-4"></a>
 
-### 1.4. Captura y límites del contrato
+### 1.6. Parámetro declarado frente a comodín
 
-El compilador captura el comodín como un tipo desconocido consistente. Un método auxiliar genérico puede aprovechar esa captura para operaciones como intercambiar elementos de una misma lista. La necesidad de ese auxiliar no implica que deba usarse un cast sin comprobar.
+`<T extends Number>` **declara un nombre** que puede reutilizarse en la firma y en el cuerpo. `? extends Number` expresa un tipo desconocido en una posición de uso. Elige un parámetro cuando necesites relacionar entradas o conservar ese tipo como resultado.
 
-La firma tampoco garantiza mutabilidad. List.of crea una lista no modificable, por lo que usarla como destino de copiar lanza UnsupportedOperationException. Documenta las precondiciones: el destino debe aceptar inserciones y los valores deben respetar la política de nulos. Tipo, mutabilidad y reglas del dominio son dimensiones independientes.
+Evita devolver comodines sin una necesidad concreta: el cliente tendría que trabajar con un tipo desconocido. Tampoco uses casts a tipos crudos para «resolver» una incompatibilidad; eso oculta el problema que el compilador está detectando.
 
-### Mapa de conceptos
+En tipos anidados, cada nivel debe analizarse por separado. `List<Caja<Double>>` no se convierte automáticamente en `List<Caja<Number>>`. Un contenedor con valor acotado puede escribirse `Caja<? extends Number>`, y una lista que lo produce requiere su propia cota: `List<? extends Caja<? extends Number>>`. Cada comodín expresa qué argumento se desconoce en ese nivel; no se propaga automáticamente hacia los demás.
 
-![Resumen visual](assets/guia-visual.svg)
+
+### 1.7. Comodines en una función
+
+En `Function<? super T, ? extends R>`, el primer argumento representa lo que la función recibe y el segundo lo que produce. Una función que recibe `Number` puede procesar un `Integer`; una función que devuelve `String` puede producir un resultado utilizado como `CharSequence`.
+
+Estas cotas permiten reutilizar funciones ya existentes. No amplían los tipos que puede contener el objeto original ni convierten una función de `Integer` en una función válida para cualquier `Number`.
+
 
 ---
 
 <a id="demostracion"></a>
 
-## 2. Demostración guiada
+## 2. Demostración: consumir y producir tipos compatibles
 
-### 2.1. Problema y contrato
+La transferencia de listas utiliza `extends` para el origen y `super` para el destino. La transformación usa esas mismas relaciones en los parámetros de `Function`.
 
-Las lecturas de temperatura son Double, pero una utilidad de cálculo puede aceptar Number. La herencia entre Integer, Double y Number no se propaga automáticamente a List. El diseño de la firma determina qué se puede leer y escribir de forma segura.
-
-La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una ampliación propia sobre CampusMonitor.
-
-**Archivo completo:** [ComodinesDemo.java](ejemplos/ComodinesDemo.java).
+**Archivo:** `app/src/main/java/edu/ups/pap/u01/ComodinesDemo.java`.
 
 ```java
 package edu.ups.pap.u01;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+/** Demuestra cotas de lectura, escritura y transformación de valores. */
 public class ComodinesDemo {
-    static double sumar(List<? extends Number> valores) {
-        double total = 0;
-        for (Number n : valores) total += Objects.requireNonNull(n).doubleValue();
-        return total;
-    }
+    /**
+     * El origen produce T y el destino consume T: regla PECS.
+     * Copia referencias, no clona los objetos almacenados.
+     */
     static <T> void copiar(List<? extends T> origen, List<? super T> destino) {
-        destino.addAll(origen);
+        Objects.requireNonNull(origen);
+        Objects.requireNonNull(destino);
+        // La instantánea permite que origen y destino compartan almacenamiento.
+        for (T valor : new ArrayList<T>(origen)) destino.add(valor);
     }
+
+    static final class Contenedor<T> {
+        private final T valor;
+        Contenedor(T valor) { this.valor = Objects.requireNonNull(valor); }
+        T obtener() { return valor; }
+
+        /** La función consume T o un supertipo y produce R o un subtipo. */
+        <R> Contenedor<R> mapear(Function<? super T, ? extends R> funcion) {
+            Objects.requireNonNull(funcion);
+            return new Contenedor<>(funcion.apply(valor));
+        }
+    }
+
     public static void main(String[] args) {
-        List<Integer> ocupacion = List.of(10,12,8);
-        List<Number> acumulado = new ArrayList<>();
-        copiar(ocupacion, acumulado);
-        copiar(List.of(22.5,24.0), acumulado);
-        System.out.println(acumulado);
-        System.out.println("Total numérico: " + sumar(acumulado));
-        List<Object> auditoria = new ArrayList<>();
-        copiar(acumulado, auditoria);
-        System.out.println("Elementos auditados: " + auditoria.size());
+        List<Integer> enteros = List.of(2, 4);
+        List<Number> numeros = new ArrayList<>();
+        copiar(enteros, numeros); // Integer puede escribirse en un destino Number.
+        System.out.println("Números: " + numeros);
+
+        Contenedor<Integer> origen = new Contenedor<>(12);
+        Function<Number, String> formato = n -> "Valor: " + n;
+        // Number acepta Integer; String puede utilizarse como CharSequence.
+        Contenedor<CharSequence> texto = origen.<CharSequence>mapear(formato);
+        System.out.println(texto.obtener());
+        System.out.println("Original: " + origen.obtener());
+        // copiar(List.of(2.5), new ArrayList<Integer>()); // No compila.
     }
 }
 ```
 
-### 2.2. Ejecución
-
-Desde la raíz de este repositorio, con JDK 25:
+Desde la raíz del proyecto Java, con JDK 17 o superior:
 
 ```bash
-java 01/1.2-subtipos-comodines/ejemplos/ComodinesDemo.java
+java app/src/main/java/edu/ups/pap/u01/ComodinesDemo.java
 ```
 
-Con el proyecto Gradle de demostraciones:
-
-```bash
-cd demostraciones
-./gradlew runDemo -Pdemo=1.2
-```
-
-En Windows usa `gradlew.bat`. Ejecuta cada demostración desde una terminal nueva o vuelve a la raíz antes de cambiar de contenido.
-
-### 2.3. Resultado y lectura de la ejecución
+**Salida esperada:**
 
 ```text
-[10, 12, 8, 22.5, 24.0]
-Total numérico: 76.5
-Elementos auditados: 5
+Números: [2, 4]
+Valor: 12
+Original: 12
 ```
 
-1. Identifica los datos iniciales y las precondiciones que la demostración valida.
-2. Sigue las llamadas desde `main` o `loop` y relaciona las operaciones con los conceptos de la sección 1.
-3. Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la invariante y no el orden de impresión.
-4. Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y su causa.
+El tipo explícito `<CharSequence>` hace visible que el retorno declarado puede ser más general que el `String` producido por la función. Sin comodines, `Function<Number, String>` no coincide con `Function<Integer, CharSequence>`.
 
 ---
 
 <a id="pc"></a>
 
-## 3. PC1.2 · Práctica de clase
+## 3. PC1.2 · Transformaciones flexibles y reporte numérico
 
-### 3.1. Ampliación del proyecto
+Continúa sobre `Lectura<T>` y su método `transformar`, implementado en PC1.1b. CampusMonitor utilizará una función común para distintos tipos numéricos y reunirá sus lecturas en un reporte.
 
-Esta actividad se resuelve en tu repositorio `icc-pap-campusmonitor-apellido`. Mantén la funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.
+### 3.1. Ampliación de Lectura y clase de reporte
 
-1. Generaliza el método de copia del catálogo con origen productor y destino consumidor. Usa una lista destino modificable.
-2. Demuestra copias Integer a Number y Number a Object. Mantén separados los promedios por unidad en CampusMonitor.
-3. Incluye dos contraejemplos comentados: asignación List<Integer> a List<Number> e inserción en List<? extends Number>. Explica por qué no compilan.
+**Actualiza la firma del método existente**, conservando su comportamiento y validaciones:
 
-### 3.2. Comprobación y evidencia
-
-Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.
-
-| Caso que debes revisar | Comportamiento requerido |
-|---|---|
-| Origen Integer, destino Number | Copia válida |
-| Destino List.of | Precondición incumplida documentada |
-| Origen vacío | Destino permanece igual |
-
-En `evidencias/PC1.2.md` agrega: cambio realizado, archivos principales, comandos de ejecución, tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.
-
-### 3.3. Commits de la actividad
-
-```bash
-git status
-git add src evidencias
-git commit -m "feat(pc1.2): subtipos-comodines-y-pecs"
-git push
-git log -1 --format=%H
+```java
+public <R> Lectura<R> transformar(
+        Function<? super T, ? extends R> conversor, String nuevaUnidad)
 ```
 
-Ajusta las rutas de `git add` a los archivos que realmente creaste. Incluye también configuración o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.
+Reemplaza la firma anterior; no agregues una sobrecarga con el mismo nombre y parámetros borrados, porque ambas tendrían la misma firma después del borrado de tipos.
 
-### Lo esencial
+Crea la **clase pública de utilidades `ReporteLecturas`** en `edu.ups.pap.servicio`, con este método público estático:
 
-- List es invariante.
-- extends permite leer el tipo acotado.
-- super permite escribir el tipo acotado.
-- PECS depende del uso del parámetro.
+```java
+public static void mostrar(List<? extends Lectura<? extends Number>> lecturas)
+```
+
+Debe imprimir identificador, valor y unidad de cada lectura y la cantidad total. Una lista vacía muestra cantidad cero. Rechaza lista o elementos nulos con `IllegalArgumentException` y mensaje descriptivo. No modifiques la lista ni sumes magnitudes con unidades distintas. El primer comodín permite distintos tipos de elementos compatibles con la lectura numérica; el segundo permite distintos tipos de valores numéricos.
+
+### 3.2. Actividades en App.java
+
+Agrega `private static void runComodines()` y llámalo desde `main`, conservando los métodos anteriores.
+
+1. Define una única `Function<Number, String>` que produzca un texto a partir del número recibido. Utiliza esa misma función para transformar una temperatura `Double` y una ocupación `Integer`; no dupliques la función.
+2. En una de las llamadas, solicita el resultado como `Lectura<CharSequence>` utilizando el argumento de tipo explícito. Muestra ambos resultados con unidad `texto`.
+3. Crea una lista modificable `List<Lectura<? extends Number>>` con las dos lecturas numéricas originales y pásala a `ReporteLecturas.mostrar`.
+4. Llama al reporte con una lista vacía y comprueba su resultado. Comprueba por separado lista nula y lista con un elemento nulo, capturando las excepciones.
+
+El reporte de las lecturas originales debe mostrar:
+
+```text
+S01 | 22.5 °C
+S02 | 18 personas
+Total de lecturas: 2
+```
+
+### 3.3. Estructura resultante
+
+Archivos relevantes acumulados; conserva la configuración y las evidencias anteriores. `ConversionesDemo` corresponde al contenido 1.1c.
+
+```text
+icc-pap-campusmonitor-apellido/
+├── app/src/main/java/edu/ups/pap/
+│   ├── App.java
+│   ├── modelo/
+│   │   └── Lectura.java
+│   ├── servicio/
+│   │   └── ReporteLecturas.java
+│   └── u01/
+│       ├── TiposDemo.java
+│       ├── MetodosDemo.java
+│       ├── ConversionesDemo.java
+│       └── ComodinesDemo.java
+└── evidencias/
+    ├── PC1.1a.md
+    ├── PC1.1b.md
+    └── PC1.2.md
+```
+
+Conserva el paquete real de tu `Lectura` si ya estaba en `u01`; ajusta el import del reporte sin duplicar el modelo.
+
+### 3.4. Evidencias
+
+Sube los cambios al repositorio remoto. En `evidencias/PC1.2.md` incluye únicamente:
+
+#### 1. Implementación realizada
+
+En un párrafo breve, explica por qué una `Function<Number, String>` ahora sirve para ambas lecturas y qué permiten `super` y `extends` en la firma actualizada.
+
+#### 2. Ejecución correcta
+
+Agrega una captura con las dos transformaciones y el reporte de las lecturas originales, y otra con el reporte vacío y los mensajes de los casos nulos. Debajo, explica en una o dos frases por qué el reporte puede reunir tipos numéricos distintos sin sumarlos ni modificar sus valores.
 
 ## Referencias técnicas
 
-- [Genéricos en Java](https://dev.java/learn/generics/)
-- [Reflexión](https://dev.java/learn/reflection/)
-- [API Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/index.html)
+- [Comodines — Dev.java](https://dev.java/learn/language/fp/generics/wildcards/)
+- [Herencia y subtipos — Oracle](https://docs.oracle.com/javase/tutorial/java/generics/inheritance.html)
+- [Guía de uso de comodines — Oracle](https://docs.oracle.com/javase/tutorial/java/generics/wildcardGuidelines.html)
+- [Function — API Java](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html)

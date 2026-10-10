@@ -1,0 +1,327 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.4b · Patrones estructurales · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../01-creacionales/index.html">Anterior</a><a href="../03-comportamiento/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+<h2>1.4b. Patrones estructurales</h2>
+<p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
+<hr>
+<h2>1. Conceptos y ejemplos</h2>
+<p><a id="concepto-1"></a></p>
+<h3>1.1. Fundamentos</h3>
+<p>Los patrones <strong>estructurales</strong> organizan la composición de clases y objetos. Permiten adaptar contratos, construir jerarquías o incorporar capas sin que los clientes dependan de todos los detalles internos.</p>
+<p>La <strong>composición</strong> expresa que un objeto utiliza a otro mediante una referencia. La <strong>herencia</strong> establece una relación de tipos. Muchos patrones estructurales favorecen la composición para combinar comportamientos sin multiplicar subclases. Ninguna de las dos técnicas es por sí sola un patrón.</p>
+<p>Este bloque cubre los siete patrones estructurales del catálogo GoF. Distingue especialmente Adapter, que traduce una interfaz; Decorator, que añade comportamiento; y Proxy, que controla el acceso. Una estructura de clases parecida puede responder a intenciones diferentes.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>N.º</th>
+<th>Patrón</th>
+<th>Demostración</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Adapter</td>
+<td><code>AdapterDemo.java</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bridge</td>
+<td><code>BridgeDemo.java</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Composite</td>
+<td><code>CompositeDemo.java</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Decorator</td>
+<td><code>DecoratorDemo.java</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Facade</td>
+<td><code>FacadeDemo.java</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Flyweight</td>
+<td><code>FlyweightDemo.java</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Proxy</td>
+<td><code>ProxyDemo.java</code></td>
+</tr>
+</tbody></table></div>
+<p><a id="concepto-2"></a></p>
+<h3>1.2. Adapter</h3>
+<p><strong>Intención.</strong> Hacer compatible una interfaz existente con la que espera un cliente. El adaptador implementa el contrato destino y delega en el objeto adaptado, traduciendo nombres, formatos o unidades cuando corresponde.</p>
+<p>Es útil al integrar una biblioteca antigua o un proveedor externo sin modificar su implementación. Debe conservar la semántica: convertir un nombre de método no basta si las unidades o los errores tienen significados distintos. El ejemplo traduce una API que informa Fahrenheit a un contrato que entrega Celsius. Se utiliza composición, aunque también existen adaptadores basados en herencia. A diferencia de Decorator, su propósito es compatibilidad entre contratos, no añadir capas de comportamiento detrás de la misma interfaz.</p>
+<p><a id="concepto-3"></a></p>
+<h3>1.3. Bridge</h3>
+<p><strong>Intención.</strong> Separar una abstracción de su implementación para que ambas puedan variar de manera independiente. La abstracción mantiene una referencia a un implementador y delega en él las operaciones de bajo nivel.</p>
+<p>Por ejemplo, pueden variar tanto el tipo de mensaje como el canal de presentación. Sin el puente aparecerían clases para cada combinación. Bridge permite combinar una notificación normal o urgente con un canal simple o decorado. El precio es una capa adicional de delegación. Adapter suele incorporar compatibilidad a interfaces ya existentes; Bridge diseña de antemano dos dimensiones de variación. En el ejemplo, la jerarquía de mensajes y las implementaciones de canal no dependen de las clases concretas de la otra dimensión.</p>
+<p><a id="concepto-4"></a></p>
+<h3>1.4. Composite</h3>
+<p><strong>Intención.</strong> Tratar de manera uniforme objetos individuales y agrupaciones mediante una interfaz común. Las hojas implementan la operación directamente; los compuestos la delegan a sus hijos, formando una estructura de árbol.</p>
+<p>Un archivo puede calcular su tamaño directamente y una carpeta sumar el tamaño de sus componentes. El cliente pide la misma operación sin distinguir sus clases. Es útil en jerarquías parte-todo; no toda colección constituye un Composite. Debe decidirse dónde se permiten agregar hijos y cómo evitar ciclos, porque la recursión supone una estructura válida. El ejemplo reserva <code>agregar</code> a la carpeta y requiere un árbol sin ciclos. No todas las operaciones del compuesto necesitan existir en las hojas.</p>
+<h3>1.5. Decorator</h3>
+<p><strong>Intención.</strong> Añadir responsabilidades envolviendo un objeto detrás de su misma interfaz. Cada decorador conserva una referencia al componente y amplía o transforma su comportamiento antes o después de delegar.</p>
+<p>Esto permite combinar capacidades sin crear una subclase por combinación. Un formato de texto puede recibir un marco y una etiqueta en capas independientes. El orden influye en el resultado y debe quedar claro para quien arma la cadena. Decorator conserva el contrato; Adapter cambia la interfaz esperada y Proxy controla el acceso. Demasiadas capas pueden dificultar el seguimiento de errores. El ejemplo produce cadenas y no modifica el componente interno, por lo que cada combinación es fácil de observar en consola.</p>
+<h3>1.6. Facade</h3>
+<p><strong>Intención.</strong> Ofrecer una entrada simple a un conjunto de operaciones de un subsistema. La fachada coordina colaboradores y evita que el cliente conozca todos los detalles del flujo.</p>
+<p>Una publicación puede requerir validar texto, convertirlo y enviarlo a una salida. El cliente invoca una sola operación, mientras los componentes conservan sus responsabilidades. La fachada no sustituye necesariamente las interfaces internas ni impide utilizarlas directamente. El riesgo es concentrar toda la lógica en una clase demasiado grande. A diferencia de Adapter, aquí no se traduce únicamente una interfaz incompatible: se simplifica el uso de varios componentes. El ejemplo limita la salida a consola; no representa una publicación real ni una transacción.</p>
+<h3>1.7. Flyweight</h3>
+<p><strong>Intención.</strong> Compartir estado común entre muchos objetos para reducir duplicación. El estado intrínseco compartido debe distinguirse del estado extrínseco, que depende de cada uso y se proporciona desde fuera.</p>
+<p>Varios símbolos de un mapa pueden compartir forma y color, pero mantener posiciones distintas. Una fábrica administra la reutilización de la parte común. El ahorro debe justificarse con volumen y costo real; introducir una caché también consume memoria y requiere una política de vida. Los objetos compartidos suelen ser inmutables para evitar efectos cruzados. El ejemplo reutiliza un estilo por color y pasa las coordenadas a cada dibujo. No demuestra una caché concurrente ni una política de expulsión de entradas.</p>
+<h3>1.8. Proxy</h3>
+<p><strong>Intención.</strong> Sustituir un objeto por un representante que controla el acceso y mantiene el mismo contrato. Puede retrasar una creación costosa, verificar permisos o coordinar un acceso remoto.</p>
+<p>En un proxy virtual, el objeto real se crea cuando se usa por primera vez. El cliente no necesita saber cuándo ocurre esa inicialización. Deben definirse los errores y los efectos del acceso: una operación que parece local podría ser lenta o fallar. Proxy se enfoca en el control de acceso; Decorator añade responsabilidades combinables. El ejemplo registra una carga simulada y reutiliza el contenido en la segunda llamada. No realiza lectura de archivos ni implementa seguridad o concurrencia.</p>
+<h3>1.9. Criterios de elección</h3>
+<p>La estructura debe preservar los contratos. Un Adapter que cambia unidades debe convertir valores, no solo nombres. Un Decorator debe seguir siendo utilizable como el componente original. Un Composite necesita una jerarquía válida. Bridge separa dos dimensiones de cambio, mientras Facade reduce lo que el cliente necesita conocer.</p>
+<hr>
+<p><a id="demostracion"></a></p>
+<h2>2. Demostraciones comentadas</h2>
+<p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/estructurales/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
+<p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/patrones/estructurales/AdapterDemo.java
+</code></pre>
+<p>Los comentarios identifican los roles y las decisiones del patrón. Las lambdas implementan interfaces funcionales y los <code>record</code> agrupan datos mediante accesores generados; no son requisitos de los patrones. Los ejemplos son secuenciales y se limitan a consola.</p>
+<h3>2.1. Adapter · <code>AdapterDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+/** Adapter: traduce una API de Fahrenheit a un contrato en Celsius. */
+public class AdapterDemo {
+    interface Temperatura { double celsius(); } // Contrato esperado por el cliente.
+    static class ApiAntigua {
+        double leerFahrenheit() { return 86.0; } // API existente que no modificamos.
+    }
+    static class Adaptador implements Temperatura {
+        private final ApiAntigua api;
+        Adaptador(ApiAntigua api) { this.api = api; }
+        public double celsius() {
+            return (api.leerFahrenheit() - 32.0) * 5.0 / 9.0;
+        }
+    }
+    public static void main(String[] args) {
+        Temperatura temperatura = new Adaptador(new ApiAntigua());
+        System.out.println(&quot;Celsius: &quot; + temperatura.celsius());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Celsius: 30.0
+</code></pre>
+<p>El cliente utiliza Temperatura; el adaptador conoce la API antigua y realiza la traducción de unidad.</p>
+<h3>2.2. Bridge · <code>BridgeDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+/** Bridge: combina tipos de mensaje con canales independientes. */
+public class BridgeDemo {
+    interface Canal { void mostrar(String texto); } // Implementador.
+    static class CanalSimple implements Canal {
+        public void mostrar(String texto) { System.out.println(texto); }
+    }
+    static class CanalEnmarcado implements Canal {
+        public void mostrar(String texto) { System.out.println(&quot;[&quot; + texto + &quot;]&quot;); }
+    }
+    static abstract class Mensaje {
+        protected final Canal canal;
+        Mensaje(Canal canal) { this.canal = canal; }
+        abstract void enviar(String texto);
+    }
+    static class Normal extends Mensaje {
+        Normal(Canal canal) { super(canal); }
+        void enviar(String texto) { canal.mostrar(texto); }
+    }
+    static class Urgente extends Mensaje {
+        Urgente(Canal canal) { super(canal); }
+        void enviar(String texto) { canal.mostrar(&quot;URGENTE: &quot; + texto); }
+    }
+    public static void main(String[] args) {
+        new Normal(new CanalSimple()).enviar(&quot;Reunión&quot;);
+        new Urgente(new CanalEnmarcado()).enviar(&quot;Reunión&quot;);
+        // Cambiar el canal no exige otra subclase de Mensaje.
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Reunión
+[URGENTE: Reunión]
+</code></pre>
+<p>Normal/Urgente y CanalSimple/CanalEnmarcado son dimensiones independientes que se combinan por composición.</p>
+<h3>2.3. Composite · <code>CompositeDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Composite: suma tamaños utilizando el mismo contrato para hojas y grupos. */
+public class CompositeDemo {
+    interface Nodo { int tamano(); }
+    record Archivo(int bytes) implements Nodo {
+        public int tamano() { return bytes; } // Hoja: resultado directo.
+    }
+    static class Carpeta implements Nodo {
+        private final List&lt;Nodo&gt; hijos = new ArrayList&lt;&gt;();
+        void agregar(Nodo hijo) { hijos.add(hijo); }
+        public int tamano() {
+            int total = 0;
+            for (Nodo hijo : hijos) total += hijo.tamano(); // Delegación recursiva.
+            return total;
+        }
+    }
+    public static void main(String[] args) {
+        Carpeta interna = new Carpeta();
+        interna.agregar(new Archivo(20));
+        Carpeta raiz = new Carpeta();
+        raiz.agregar(new Archivo(10));
+        raiz.agregar(interna);
+        System.out.println(&quot;Tamaño: &quot; + raiz.tamano());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Tamaño: 30
+</code></pre>
+<p>El cliente llama tamano() sobre la raíz; cada compuesto delega sin preguntar si el hijo es archivo o carpeta.</p>
+<h3>2.4. Decorator · <code>DecoratorDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+/** Decorator: combina capas que mantienen la interfaz de texto. */
+public class DecoratorDemo {
+    interface Texto { String obtener(); }
+    record Simple(String contenido) implements Texto {
+        public String obtener() { return contenido; }
+    }
+    record Marco(Texto interior) implements Texto {
+        public String obtener() { return &quot;[&quot; + interior.obtener() + &quot;]&quot;; }
+    }
+    record Etiqueta(Texto interior) implements Texto {
+        public String obtener() { return &quot;Dato: &quot; + interior.obtener(); }
+    }
+    public static void main(String[] args) {
+        Texto base = new Simple(&quot;42&quot;);
+        System.out.println(new Marco(new Etiqueta(base)).obtener());
+        System.out.println(new Etiqueta(new Marco(base)).obtener());
+        // El mismo conjunto de decoradores, en distinto orden, produce otra forma.
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">[Dato: 42]
+Dato: [42]
+</code></pre>
+<p>Las capas comparten el contrato Texto; cambiar su orden cambia el resultado visible.</p>
+<h3>2.5. Facade · <code>FacadeDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+/** Facade: presenta una operación pública que coordina tres colaboradores. */
+public class FacadeDemo {
+    static class Validador {
+        void validar(String texto) {
+            if (texto == null || texto.isBlank()) {
+                throw new IllegalArgumentException(&quot;Texto vacío&quot;);
+            }
+        }
+    }
+    static class Formateador {
+        String convertir(String texto) { return &quot;Informe: &quot; + texto.strip(); }
+    }
+    static class Salida {
+        void escribir(String texto) { System.out.println(texto); }
+    }
+    static class Publicador { // Fachada: coordina; no absorbe los tres trabajos.
+        private final Validador validador = new Validador();
+        private final Formateador formato = new Formateador();
+        private final Salida salida = new Salida();
+        void publicar(String texto) {
+            validador.validar(texto);
+            salida.escribir(formato.convertir(texto));
+        }
+    }
+    public static void main(String[] args) {
+        new Publicador().publicar(&quot;  Ventas  &quot;);
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Informe: Ventas
+</code></pre>
+<p>El cliente conoce publicar(); el subsistema conserva validación, formato y salida como responsabilidades distintas.</p>
+<h3>2.6. Flyweight · <code>FlyweightDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/** Flyweight: comparte estilos, mientras la posición pertenece a cada uso. */
+public class FlyweightDemo {
+    record Estilo(String color) {
+        void dibujar(int x, int y) {
+            System.out.println(color + &quot; en &quot; + x + &quot;,&quot; + y); // Estado extrínseco.
+        }
+    }
+    static class FabricaEstilos {
+        private final Map&lt;String, Estilo&gt; estilos = new HashMap&lt;&gt;();
+        Estilo obtener(String color) {
+            return estilos.computeIfAbsent(color, Estilo::new);
+        }
+    }
+    public static void main(String[] args) {
+        FabricaEstilos fabrica = new FabricaEstilos();
+        Estilo a = fabrica.obtener(&quot;azul&quot;);
+        Estilo b = fabrica.obtener(&quot;azul&quot;);
+        a.dibujar(1, 2);
+        b.dibujar(8, 9);
+        System.out.println(&quot;Estilo compartido: &quot; + (a == b));
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">azul en 1,2
+azul en 8,9
+Estilo compartido: true
+</code></pre>
+<p>El estilo es el objeto compartido; las coordenadas no se almacenan dentro de él.</p>
+<h3>2.7. Proxy · <code>ProxyDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
+
+/** Proxy virtual: crea el documento real únicamente en el primer acceso. */
+public class ProxyDemo {
+    interface Documento { String leer(); }
+    static class DocumentoReal implements Documento {
+        DocumentoReal() { System.out.println(&quot;Cargando documento&quot;); }
+        public String leer() { return &quot;Contenido&quot;; }
+    }
+    static class DocumentoProxy implements Documento {
+        private DocumentoReal real;
+        public String leer() {
+            if (real == null) real = new DocumentoReal(); // Carga diferida.
+            return real.leer();
+        }
+    }
+    public static void main(String[] args) {
+        Documento documento = new DocumentoProxy();
+        System.out.println(&quot;Proxy creado&quot;);
+        System.out.println(documento.leer());
+        System.out.println(documento.leer());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Proxy creado
+Cargando documento
+Contenido
+Contenido
+</code></pre>
+<p>La carga ocurre una sola vez al leer; construir el proxy no crea todavía el objeto real.</p>
+<h2>Referencias técnicas</h2>
+<ul>
+<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994. Catálogo original de 23 patrones.</li>
+<li><a href="https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-software-9780201633610">Ficha y contenido de la obra — Addison-Wesley / InformIT</a></li>
+<li><a href="https://refactoring.guru/es/design-patterns/catalog">Catálogo complementario — Refactoring.Guru</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API Java</a></li>
+</ul>
+<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../01-creacionales/index.html">Anterior</a><a href="../03-comportamiento/index.html">Siguiente</a></nav></main></body></html>

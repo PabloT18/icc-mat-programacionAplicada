@@ -1,0 +1,251 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.4a · Patrones creacionales · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../../1.3-genericos-reflexion/index.html">Anterior</a><a href="../02-estructurales/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+<h2>1.4a. Patrones creacionales</h2>
+<p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
+<hr>
+<h2>1. Conceptos y ejemplos</h2>
+<p><a id="concepto-1"></a></p>
+<h3>1.1. Fundamentos</h3>
+<p>Un <strong>patrón de diseño</strong> describe una solución recurrente a un problema de responsabilidades y colaboración entre objetos. No es una biblioteca ni una plantilla que deba aplicarse a todo programa. Identifica el problema, los participantes, el punto que puede cambiar y el costo de separarlo.</p>
+<p>Los patrones <strong>creacionales</strong> organizan cómo se construyen y suministran los objetos. Separan decisiones de creación del código que utiliza los productos. El objetivo no es ocultar cada <code>new</code>, sino evitar que los clientes repitan decisiones de construcción que necesitan variar.</p>
+<p>Este bloque cubre los cinco patrones creacionales del catálogo clásico GoF. Los ejemplos son originales y se ejecutan en consola. Las clases auxiliares están anidadas para que cada archivo sea autocontenido; en una aplicación pueden separarse por responsabilidad.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>N.º</th>
+<th>Patrón</th>
+<th>Demostración</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Factory Method</td>
+<td><code>FactoryMethodDemo.java</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Abstract Factory</td>
+<td><code>AbstractFactoryDemo.java</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Builder</td>
+<td><code>BuilderDemo.java</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Prototype</td>
+<td><code>PrototypeDemo.java</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Singleton</td>
+<td><code>SingletonDemo.java</code></td>
+</tr>
+</tbody></table></div>
+<p><a id="concepto-2"></a></p>
+<h3>1.2. Factory Method</h3>
+<p><strong>Intención.</strong> Permitir que una subclase decida qué producto construir, mientras la clase creadora conserva un procedimiento común. Sus participantes son producto, productos concretos, creador y creadores concretos. El punto de variación es una operación de creación que puede redefinirse.</p>
+<p>Una aplicación de exportación puede preparar un documento usando un exportador obtenido mediante ese método. Agregar otra variante exige otro creador, no modificar el procedimiento base. Su costo es aumentar la cantidad de subclases. Un método estático con un <code>switch</code> que devuelve diferentes objetos es una fábrica simple, no basta para demostrar Factory Method. Los genéricos pueden relacionar un creador con su familia de productos, aunque no son un requisito del patrón.</p>
+<p><a id="concepto-3"></a></p>
+<h3>1.3. Abstract Factory</h3>
+<p><strong>Intención.</strong> Construir familias de productos relacionados sin acoplar al cliente a sus clases concretas. La fábrica abstracta declara una operación para cada tipo de producto; cada fábrica concreta crea variantes compatibles de toda la familia.</p>
+<p>En una interfaz visual, una familia puede contener botón y menú de un mismo tema. El cliente recibe una fábrica y obtiene ambos elementos de ella, evitando mezclar variantes. Es útil cuando cambian conjuntos completos de objetos. Agregar una familia suele ser sencillo; agregar un nuevo tipo de producto obliga a extender todas las fábricas. A diferencia de Factory Method, el énfasis está en coordinar varios productos, no únicamente en redefinir una operación de creación.</p>
+<p><a id="concepto-4"></a></p>
+<h3>1.4. Builder</h3>
+<p><strong>Intención.</strong> Separar la construcción por etapas de un objeto de su uso posterior. El constructor progresivo conserva la configuración, permite establecer opciones y crea el producto final cuando su estado es válido. Un director puede definir secuencias reutilizables de construcción, pero no es obligatorio en la variante fluida del ejemplo.</p>
+<p>Resulta útil con muchas opciones, restricciones entre campos o distintas representaciones. No es necesario para cualquier objeto pequeño: puede añadir complejidad donde basta un constructor. El producto no se vuelve inmutable automáticamente; eso depende de sus campos y de las copias defensivas. El ejemplo combina un builder mutable con un producto que copia su lista de secciones.</p>
+<h3>1.5. Prototype</h3>
+<p><strong>Intención.</strong> Crear objetos a partir de otros ya configurados, utilizando una operación de copia. El cliente conoce el contrato de clonación o copia y no necesita reconstruir todas las decisiones de configuración del objeto original.</p>
+<p>Debe definirse qué se comparte y qué se duplica. Una copia superficial de una lista comparte los elementos; una copia profunda también duplica el estado mutable que deba independizarse. Java no obliga a usar <code>Cloneable</code>: un método <code>copiar()</code> o un constructor de copia pueden expresar el contrato con mayor claridad. Es útil para plantillas configuradas; puede ser costoso o ambiguo cuando el objeto representa conexiones o recursos que no deben duplicarse. En el ejemplo, las cadenas son inmutables y se copia la lista.</p>
+<h3>1.6. Singleton</h3>
+<p><strong>Intención.</strong> Proporcionar una única instancia de un servicio dentro de un ámbito definido y un punto de acceso a ella. Debe distinguirse unicidad de ausencia de estado mutable y de seguridad frente a concurrencia.</p>
+<p>La variante con <code>enum</code> evita que el cliente cree instancias mediante <code>new</code>. La instancia corresponde a esa clase cargada; no implica una única instancia distribuida entre procesos o servidores. El acceso global puede ocultar dependencias y dificultar las pruebas. Antes de utilizarlo, considera crear un objeto y entregarlo explícitamente a quienes lo necesitan. Compartir una instancia mediante inyección de dependencias no exige convertir la clase en Singleton. El ejemplo usa configuración inmutable para no introducir problemas de sincronización ajenos al patrón.</p>
+<h3>1.7. Criterios de elección</h3>
+<p>Factory Method especializa una operación de creación mediante herencia; Abstract Factory entrega familias relacionadas; Builder reúne pasos antes de construir; Prototype parte de otro objeto configurado; Singleton controla la instancia accesible. Decide primero qué problema de creación existe. Compartir un objeto puede resolverse suministrándolo por constructor sin volverlo global.</p>
+<hr>
+<p><a id="demostracion"></a></p>
+<h2>2. Demostraciones comentadas</h2>
+<p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/creacionales/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
+<p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/patrones/creacionales/FactoryMethodDemo.java
+</code></pre>
+<p>Los comentarios identifican los roles y las decisiones del patrón. Las lambdas implementan interfaces funcionales y los <code>record</code> agrupan datos mediante accesores generados; no son requisitos de los patrones. Los ejemplos son secuenciales y se limitan a consola.</p>
+<h3>2.1. Factory Method · <code>FactoryMethodDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
+
+/** Factory Method: las subclases eligen el producto de un proceso común. */
+public class FactoryMethodDemo {
+    interface Documento { String renderizar(); } // Producto abstracto.
+    static class DocumentoTexto implements Documento {
+        public String renderizar() { return &quot;Informe TXT&quot;; }
+    }
+    static class DocumentoHtml implements Documento {
+        public String renderizar() { return &quot;&lt;h1&gt;Informe&lt;/h1&gt;&quot;; }
+    }
+    static abstract class Exportador {
+        /** Punto de extensión: cada creador suministra su producto. */
+        protected abstract Documento crearDocumento();
+        final void exportar() {
+            Documento documento = crearDocumento();
+            System.out.println(documento.renderizar()); // Proceso estable.
+        }
+    }
+    static class ExportadorTexto extends Exportador {
+        protected Documento crearDocumento() { return new DocumentoTexto(); }
+    }
+    static class ExportadorHtml extends Exportador {
+        protected Documento crearDocumento() { return new DocumentoHtml(); }
+    }
+    public static void main(String[] args) {
+        new ExportadorTexto().exportar();
+        new ExportadorHtml().exportar();
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Informe TXT
+&lt;h1&gt;Informe&lt;/h1&gt;
+</code></pre>
+<p><code>exportar()</code> conserva su implementación; solo cambia <code>crearDocumento()</code> en cada subclase.</p>
+<h3>2.2. Abstract Factory · <code>AbstractFactoryDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
+
+/** Abstract Factory: una fábrica mantiene consistente una familia visual. */
+public class AbstractFactoryDemo {
+    interface Boton { String dibujar(); }
+    interface Menu { String dibujar(); }
+    interface Tema { // Fábrica abstracta con dos clases de producto.
+        Boton crearBoton();
+        Menu crearMenu();
+    }
+    static class TemaClaro implements Tema {
+        public Boton crearBoton() { return () -&gt; &quot;Botón claro&quot;; }
+        public Menu crearMenu() { return () -&gt; &quot;Menú claro&quot;; }
+    }
+    static class TemaOscuro implements Tema {
+        public Boton crearBoton() { return () -&gt; &quot;Botón oscuro&quot;; }
+        public Menu crearMenu() { return () -&gt; &quot;Menú oscuro&quot;; }
+    }
+    /** El cliente utiliza contratos; las lambdas son productos concretos. */
+    static void mostrar(Tema tema) {
+        System.out.println(tema.crearBoton().dibujar() + &quot; / &quot;
+                + tema.crearMenu().dibujar());
+    }
+    public static void main(String[] args) {
+        mostrar(new TemaClaro());
+        mostrar(new TemaOscuro());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Botón claro / Menú claro
+Botón oscuro / Menú oscuro
+</code></pre>
+<p>El cliente recibe una sola fábrica para obtener dos productos compatibles; no selecciona sus clases individualmente.</p>
+<h3>2.3. Builder · <code>BuilderDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Builder fluido: configura por etapas y entrega un informe independiente. */
+public class BuilderDemo {
+    record Informe(String titulo, List&lt;String&gt; secciones) {
+        Informe { secciones = List.copyOf(secciones); } // Copia defensiva.
+    }
+    static class ConstructorInforme {
+        private String titulo;
+        private final List&lt;String&gt; secciones = new ArrayList&lt;&gt;();
+        ConstructorInforme titulo(String valor) {
+            titulo = valor;
+            return this; // Permite encadenar etapas.
+        }
+        ConstructorInforme seccion(String valor) {
+            secciones.add(valor);
+            return this;
+        }
+        /** Valida el estado reunido antes de crear el producto. */
+        Informe construir() {
+            if (titulo == null || titulo.isBlank()) {
+                throw new IllegalArgumentException(&quot;Título obligatorio&quot;);
+            }
+            return new Informe(titulo, secciones);
+        }
+    }
+    public static void main(String[] args) {
+        Informe informe = new ConstructorInforme().titulo(&quot;Resumen&quot;)
+                .seccion(&quot;Datos&quot;).seccion(&quot;Conclusiones&quot;).construir();
+        System.out.println(informe.titulo() + &quot;: &quot; + informe.secciones());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Resumen: [Datos, Conclusiones]
+</code></pre>
+<p>Las etapas configuran el builder; el producto final contiene una copia de las secciones y no depende de cambios posteriores en el builder.</p>
+<h3>2.4. Prototype · <code>PrototypeDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Prototype: duplica una plantilla conservando independencia de su lista. */
+public class PrototypeDemo {
+    interface Copiable&lt;T&gt; { T copiar(); } // El genérico conserva el tipo del clon.
+    static class Plantilla implements Copiable&lt;Plantilla&gt; {
+        private final List&lt;String&gt; campos;
+        Plantilla(List&lt;String&gt; campos) { this.campos = new ArrayList&lt;&gt;(campos); }
+        void agregar(String campo) { campos.add(campo); }
+        public Plantilla copiar() {
+            return new Plantilla(campos); // Nueva lista; cadenas compartidas seguras.
+        }
+        public String toString() { return campos.toString(); }
+    }
+    public static void main(String[] args) {
+        Plantilla original = new Plantilla(List.of(&quot;nombre&quot;));
+        Plantilla copia = original.copiar();
+        copia.agregar(&quot;correo&quot;);
+        System.out.println(&quot;Original: &quot; + original);
+        System.out.println(&quot;Copia: &quot; + copia);
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Original: [nombre]
+Copia: [nombre, correo]
+</code></pre>
+<p>Modificar la lista de la copia no modifica la del original; el contrato no promete copiar profundamente objetos arbitrarios.</p>
+<h3>2.5. Singleton · <code>SingletonDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
+
+/** Singleton mediante enum: acceso a una configuración compartida. */
+public class SingletonDemo {
+    enum Configuracion {
+        INSTANCIA;
+        private final String formato = &quot;texto&quot;; // Estado inmutable del ejemplo.
+        String formato() { return formato; }
+    }
+    public static void main(String[] args) {
+        Configuracion a = Configuracion.INSTANCIA;
+        Configuracion b = Configuracion.INSTANCIA;
+        System.out.println(&quot;Misma instancia: &quot; + (a == b));
+        System.out.println(&quot;Formato: &quot; + a.formato());
+        // La unicidad no haría seguros futuros atributos mutables por sí sola.
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Misma instancia: true
+Formato: texto
+</code></pre>
+<p>Las dos variables apuntan a la misma instancia; no se demuestra exclusión mutua ni coordinación entre procesos.</p>
+<h2>Referencias técnicas</h2>
+<ul>
+<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994. Catálogo original de 23 patrones.</li>
+<li><a href="https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-software-9780201633610">Ficha y contenido de la obra — Addison-Wesley / InformIT</a></li>
+<li><a href="https://refactoring.guru/es/design-patterns/catalog">Catálogo complementario — Refactoring.Guru</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API Java</a></li>
+</ul>
+<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../../1.3-genericos-reflexion/index.html">Anterior</a><a href="../02-estructurales/index.html">Siguiente</a></nav></main></body></html>

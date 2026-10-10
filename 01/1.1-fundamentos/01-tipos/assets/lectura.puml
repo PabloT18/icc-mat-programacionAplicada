@@ -1,5 +1,3 @@
-También puedes representarlo con PlantUML:
-
 class Lectura<T> {
     - idSensor : String
     - valor : T

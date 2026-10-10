@@ -1,255 +1,304 @@
-<!doctype html>
-<html lang="es">
-
-<head>
-    <meta charset="utf-8">
-    <meta
-        name="viewport"
-        content="width=device-width,initial-scale=1"
-    >
-    <title>1.1a · Tipos y parámetros genéricos · Programación Aplicada</title>
-    <link
-        rel="stylesheet"
-        href="../../../assets/css/styles.css"
-    >
-</head>
-
-<body><a
-        class="skip"
-        href="#contenido"
-    >Ir al material</a>
-    <main
-        class="page"
-        id="contenido"
-    >
-        <nav
-            class="article-nav"
-            aria-label="Recursos del contenido"
-        ><a
-                href="../../../index.html"
-                target="_top"
-            >Índice del curso</a><a
-                href="material.md"
-                download
-            >Descargar MD</a><a
-                href="presentacion.pptx"
-                download
-            >Descargar PPTX</a><a href="../02-metodos/index.html">Siguiente</a></nav>
-        <h1>Programación Aplicada</h1>
-        <h2>1.1a. Tipos y parámetros genéricos</h2>
-        <p><img
-                src="../../../assets/logos/ups-computacion.png"
-                alt="UPS · Carrera de Computación"
-            ></p>
-        <p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación
-            genérica<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-        <p><a href="../../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a> ·
-            <a href="index.html">Ver en el navegador</a></p>
-        <hr>
-        <h2>1. Conceptos y ejemplos</h2>
-        <h3>Contexto</h3>
-        <p>CampusMonitor debe almacenar identificadores, nombres y lecturas de sensores. Duplicar una clase contenedora
-            por cada tipo repite la lógica. Usar Object acepta mezclas que solo se descubren al recuperar el dato. Una
-            clase genérica expresa la relación entre el dato que entra y el que sale, y permite comprobarla durante la
-            compilación.</p>
-        <h3>Antes de empezar</h3>
-        <p>Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas
-            del proyecto personal.</p>
-        <p><img
-                src="assets/analogia.png"
-                alt="Analogía visual de Tipos y parámetros genéricos"
-            ></p>
-        <p>La ilustración sirve como analogía. El contrato técnico se define en el texto y el código.</p>
-        <p><a id="concepto-1"></a></p>
-        <h3>1.1. El problema de Object y del casting</h3>
-        <p>Una variable de tipo Object puede referirse a un String, un Integer o un Sensor. Esa flexibilidad pierde
-            información en la interfaz del contenedor: al recuperar Object, quien llama debe conocer el tipo real y
-            convertirlo. Un cast no transforma el objeto y puede lanzar ClassCastException. La programación genérica
-            conserva esa relación en el contrato. El compilador comprueba que una Caja<String> recibe cadenas y devuelve
-                cadenas, sin que el cliente escriba conversiones.</p>
-        <p>La ventaja principal es la seguridad de tipos y la reutilización de algoritmos. Los genéricos no implican que
-            el programa sea más rápido, ni crean una clase distinta en ejecución por cada tipo. El error se detecta
-            cerca de la operación que lo introduce, antes de ejecutar la aplicación.</p>
-        <pre><code class="language-java">Object dato = &quot;Aula 201&quot;;
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.1a · Tipos y parámetros genéricos · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../02-metodos/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+<h2>1.1a. Tipos y parámetros genéricos</h2>
+<p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica
+<a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
+<hr>
+<h2>1. Conceptos y ejemplos</h2>
+<h3>1.1. Qué es la programación genérica</h3>
+<p>La <strong>programación genérica</strong> permite definir estructuras y operaciones mediante parámetros de tipo. Una implementación puede trabajar con distintos tipos de datos, conservando las relaciones que el compilador necesita comprobar. No se trata de aceptar cualquier valor sin restricciones: se trata de declarar qué relaciones de tipos deben respetarse.</p>
+<p>En Java, una clase genérica declara sus parámetros después del nombre:</p>
+<pre><code class="language-java">class Caja&lt;*T*&gt; {
+    private final T valor;
+    Caja(T valor) { this.valor = valor; }
+T obtener() { return valor; }
+}
+</code></pre>
+<p><code>T</code> relaciona el atributo, el constructor y el resultado de <code>obtener()</code>. Cuando se utiliza <code>Caja&lt;String&gt;</code>, esos puntos trabajan con <code>String</code>; con <code>Caja&lt;Integer&gt;</code>, trabajan con <code>Integer</code>. La estructura y el algoritmo se escriben una sola vez.
+Las interfaces también pueden ser genéricas. Por ejemplo, <code>List&lt;E&gt;</code> define una colección ordenada cuyos elementos tienen un tipo declarado. <code>List&lt;String&gt;</code> es una lista de cadenas; <code>ArrayList&lt;String&gt;</code> es una implementación concreta de ese contrato.</p>
+<h3>1.2. Seguridad de tipos y diferencia frente a Object</h3>
+<p>La <strong>seguridad de tipos</strong> consiste en impedir operaciones incompatibles con los tipos declarados. Los genéricos trasladan al compilador comprobaciones que, usando <code>Object</code>, podrían quedar pendientes hasta la ejecución.</p>
+<pre><code class="language-java">Object dato = &quot;Biblioteca&quot;;
 String nombre = (String) dato;
-// Integer numero = (Integer) dato; // Compila, pero falla al ejecutar.
+// Integer numero = (Integer) dato; // Compila, pero lanza ClassCastException.
+Caja&lt;*String*&gt; caja = new Caja&lt;&gt;(&quot;Biblioteca&quot;);
+String contenido = caja.obtener(); // No requiere casting.
+// Integer numero = caja.obtener(); // Error de compilación.
 </code></pre>
-        <p><a id="concepto-2"></a></p>
-        <h3>1.2. Parámetro de tipo y argumento de tipo</h3>
-        <p>En Caja<T>, T es un parámetro de tipo, una variable que participa en la declaración de la clase. En Caja
-                <String>, String es el argumento concreto proporcionado por el cliente. No es un parámetro de valor como
-                    una cantidad o un identificador. Los nombres T, E, K y V son convenciones: tipo, elemento, clave y
-                    valor. Cuando existen varios roles, nombres como ID ayudan a expresar la intención.</p>
-        <p>El operador diamante &lt;&gt; permite inferir argumentos a partir del contexto. La inferencia no convierte
-            Java en un lenguaje dinámico: el tipo queda establecido en compilación. Una Caja<Integer> y una Caja<String>
-                    tienen contratos distintos, aunque comparten la misma clase en ejecución. No uses Caja sin
-                    argumentos, porque el tipo crudo elimina parte de las comprobaciones.</p>
-        <pre><code class="language-java">Caja&lt;String&gt; ubicacion = new Caja&lt;&gt;(&quot;Laboratorio&quot;);
-Caja&lt;Integer&gt; capacidad = new Caja&lt;&gt;(30);
-String texto = ubicacion.obtener();
+<p>Un <strong>cast de referencia</strong> comprueba si un objeto puede tratarse como otro tipo; no transforma una cadena en un número. Una conversión de contenido, como <code>Integer.parseInt(&quot;42&quot;)</code>, realiza otra operación: interpreta texto para producir un valor numérico.
+Los genéricos evitan clases duplicadas, documentan relaciones y reducen conversiones inseguras. No garantizan por sí solos mayor velocidad, ausencia de errores lógicos ni validez de los datos.</p>
+<h3>1.3. Parámetro de tipo, argumento e inferencia</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Significado</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Parámetro de tipo</td>
+<td>Nombre declarado para representar un tipo</td>
+<td><code>T</code> en <code>Caja&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td>Argumento de tipo</td>
+<td>Tipo utilizado al parametrizar la declaración</td>
+<td><code>String</code> en <code>Caja&lt;String&gt;</code></td>
+</tr>
+<tr>
+<td>Tipo parametrizado</td>
+<td>Tipo genérico con sus argumentos</td>
+<td><code>Caja&lt;Integer&gt;</code></td>
+</tr>
+<tr>
+<td>Parámetro de valor</td>
+<td>Variable que recibe un dato en una llamada</td>
+<td><code>valor</code> en <code>Caja(T valor)</code></td>
+</tr>
+<tr>
+<td>Operador diamante</td>
+<td>Permite inferir argumentos del constructor</td>
+<td><code>new Caja&lt;&gt;(&quot;Texto&quot;)</code></td>
+</tr>
+<tr>
+<td><code>T</code>, <code>E</code>, <code>K</code> y <code>V</code> suelen representar tipo, elemento, clave y valor. Son convenciones, no palabras reservadas. Una declaración puede tener varios parámetros: <code>Map&lt;K, V&gt;</code> relaciona el tipo de una clave con el tipo de su valor.</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>La <strong>inferencia de tipos</strong> deduce argumentos a partir de las expresiones y del contexto. No hace que Java tenga tipado dinámico: el tipo se sigue comprobando en compilación. Elegir <code>Object</code> explícitamente, como en <code>Caja&lt;Object&gt;</code>, permite distintos tipos de valores porque ese es el contrato solicitado.</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table></div>
+<h3>1.4. Restricciones y borrado de tipos</h3>
+<p>Los argumentos genéricos son tipos de referencia. Se usa <code>Caja&lt;Integer&gt;</code>, no <code>Caja&lt;int&gt;</code>. Las clases envolventes y sus conversiones se desarrollan en 1.1c.
+Java implementa los genéricos mediante <strong>borrado de tipos</strong>: al compilar, sustituye parámetros por sus cotas o por <code>Object</code> e introduce las conversiones necesarias. No crea una clase de ejecución diferente por cada argumento. Parte de la información genérica puede permanecer como metadatos de declaraciones; no equivale a conservar el argumento de cada objeto como una clase distinta.
+Esto explica restricciones como <code>new T()</code>, <code>new T[10]</code> o un campo <code>static T</code> dependiente del parámetro de la clase. Un miembro estático pertenece a la clase, no a una parametrización concreta. Los métodos estáticos sí pueden declarar sus propios parámetros de tipo, como se estudiará en 1.1b.
+Evita los <strong>tipos crudos</strong>, como <code>Caja</code> sin argumento. Se mantienen por compatibilidad y omiten comprobaciones que sí existen con <code>Caja&lt;T&gt;</code>. <code>Caja&lt;?&gt;</code>, que se estudiará en 1.2, expresa un tipo desconocido manteniendo comprobaciones.</p>
+<h3>1.5. Tipo correcto, valor válido e inmutabilidad</h3>
+<p><code>Caja&lt;Double&gt;</code> exige un <code>Double</code>, pero no establece un rango permitido. Del mismo modo, un genérico no prohíbe <code>null</code> automáticamente: la clase debe definir y validar ese contrato.
+Un atributo <code>final</code> solo puede asignarse una vez durante la construcción. Si contiene una referencia a una lista modificable, la referencia no cambia, pero la lista todavía puede modificarse. Por ello, <strong>referencia final</strong> e <strong>inmutabilidad del objeto</strong> son propiedades diferentes.</p>
+<p>Para un contenedor sencillo conviene decidir si admite nulos, si permite reemplazar su valor y cómo comunica entradas inválidas. Esa decisión forma parte de su interfaz pública, junto con los tipos.</p>
+<h2>2. Demostración: un contenedor con contrato explícito</h2>
+<p>La misma clase almacena un título y una cantidad. El constructor rechaza valores nulos y el cliente recupera cada dato con su tipo concreto. Guarda este ejemplo independiente como <code>TiposDemo.java</code>.</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/TiposDemo.java
 </code></pre>
-        <p><a id="concepto-3"></a></p>
-        <h3>1.3. Tipos de referencia y restricciones</h3>
-        <p>Los argumentos genéricos son tipos de referencia. Usa Integer donde el dato original sea int, y Double para
-            double. Java realiza boxing y unboxing cuando corresponde, tema que se desarrolla en 1.1c. Un parámetro T no
-            permite ejecutar new T(), acceder a miembros estáticos de un supuesto tipo concreto ni comprobar instanceof
-            Caja<String>. Tampoco puedes declarar un campo static T en una clase genérica: el campo estático pertenece a
-                la clase compartida.</p>
-        <p>El genérico describe qué operaciones son válidas. Sin una cota, solo están disponibles las operaciones
-            garantizadas por Object. Si un algoritmo necesita comparar, sumar o extraer un identificador, debe expresar
-            un contrato adicional. Las cotas y los comparadores aparecerán en los siguientes contenidos.</p>
-        <p><a id="concepto-4"></a></p>
-        <h3>1.4. Contrato del contenedor e inmutabilidad</h3>
-        <p>La demostración usa un campo final y rechaza null al construir la caja. final impide reasignar la referencia,
-            pero no vuelve inmutable al objeto almacenado. Si T es una lista modificable, el contenido de esa lista
-            todavía puede cambiar. Decide si el contenedor acepta valores nulos y documenta esa decisión.</p>
-        <p>Las validaciones del dominio siguen siendo necesarias. Caja<Double> garantiza un Double, pero no que la
-                temperatura sea válida. La seguridad de tipos y la validación de valores resuelven problemas diferentes.
-                En CampusMonitor, el modelo Lectura deberá controlar rangos, unidad y origen además del tipo de su
-                valor.</p>
-        <h3>Mapa de conceptos</h3>
-        <p><img
-                src="assets/guia-visual.svg"
-                alt="Resumen visual"
-            ></p>
-        <hr>
-        <p><a id="demostracion"></a></p>
-        <h2>2. Demostración guiada</h2>
-        <h3>2.1. Problema y contrato</h3>
-        <p>CampusMonitor debe almacenar identificadores, nombres y lecturas de sensores. Duplicar una clase contenedora
-            por cada tipo repite la lógica. Usar Object acepta mezclas que solo se descubren al recuperar el dato. Una
-            clase genérica expresa la relación entre el dato que entra y el que sale, y permite comprobarla durante la
-            compilación.</p>
-        <p>La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una
-            ampliación propia sobre CampusMonitor.</p>
-        <p><strong>Archivo completo:</strong> <a href="ejemplos/TiposDemo.java">TiposDemo.java</a>.</p>
-        <pre><code class="language-java">package edu.ups.pap.u01;
-import java.util.Objects;
-
+<pre><code class="language-java">import java.util.Objects;
+/**
+ * Demuestra el uso de una clase genérica, la recuperación de valores
+ * sin casting y la validación de valores nulos.
+ */
 public class TiposDemo {
-    static final class Caja&lt;T&gt; {
+    /**
+     * Contenedor que almacena un valor de un tipo definido por el cliente.
+     *
+     * static: permite crear una Caja sin crear una instancia de TiposDemo.
+     * final: impide crear subclases de Caja.
+     *
+     * @param &lt;T&gt; tipo del valor almacenado
+     */
+    static final class Caja&lt;*T*&gt; {
+        // final impide reemplazar la referencia después de inicializarla.
+        // No garantiza que el objeto almacenado sea inmutable.
         private final T valor;
-        Caja(T valor) { this.valor = Objects.requireNonNull(valor); }
-        T obtener() { return valor; }
+        /**
+         * Construye una caja con un valor obligatorio.
+         *
+         * @param valor dato que se almacenará
+         * @throws NullPointerException si el valor es null
+         */
+        Caja(T valor) {
+            // Devuelve el valor si no es null.
+            // Si es null, lanza una excepción con el mensaje indicado.
+            this.valor = Objects.requireNonNull(
+                    valor, &quot;El valor es obligatorio&quot;
+            );
+        }
+        /**
+         * Recupera el valor conservando el tipo declarado para la caja.
+         *
+         * @return valor almacenado de tipo T
+         */
+T obtener() {
+            return valor;
+        }
     }
-    record Sensor(String id, String ubicacion) {}
     public static void main(String[] args) {
-        Caja&lt;String&gt; lugar = new Caja&lt;&gt;(&quot;Laboratorio 1&quot;);
-        Caja&lt;Integer&gt; limite = new Caja&lt;&gt;(30);
-        Caja&lt;Sensor&gt; dispositivo = new Caja&lt;&gt;(new Sensor(&quot;S01&quot;, lugar.obtener()));
-        System.out.println(dispositivo.obtener().id() + &quot; / &quot; + lugar.obtener());
-        System.out.println(&quot;Capacidad: &quot; + limite.obtener());
-        System.out.println(lugar.getClass() == limite.getClass());
-        try { new Caja&lt;String&gt;(null); }
-        catch (NullPointerException e) { System.out.println(&quot;Valor nulo rechazado&quot;); }
+        // String es el argumento de tipo que sustituye a T.
+        // El operador &lt;&gt; permite inferirlo en el constructor.
+Caja&lt;*String*&gt; titulo = new Caja&lt;&gt;(&quot;Algoritmos&quot;);
+        // Los genéricos requieren tipos de referencia.
+        // El literal int 12 se convierte automáticamente a Integer.
+Caja&lt;*Integer*&gt; ejemplares = new Caja&lt;&gt;(12);
+        // El compilador conoce el tipo devuelto en cada caso.
+        // No se necesitan conversiones explícitas.
+String texto = titulo.obtener();
+Integer cantidad = ejemplares.obtener();
+        System.out.println(texto + &quot; | &quot; + cantidad);
+        // getClass() devuelve la clase del objeto durante la ejecución.
+        // Ambas cajas comparten la clase Caja debido al borrado de tipos.
+        // Se comparan las clases, no los valores almacenados.
+        System.out.println(titulo.getClass() == ejemplares.getClass());
+        try {
+            // null es compatible con String en compilación,
+            // pero el constructor lo rechaza durante la ejecución.
+            new Caja&lt;*String*&gt;(null);
+        } catch (NullPointerException e) {
+            // La excepción se captura para mostrar su mensaje.
+            System.out.println(e.getMessage());
+        }
+        // Error de compilación si se descomenta:
+        // obtener() devuelve String y no puede asignarse a Integer.
+        // Integer incorrecto = titulo.obtener();
     }
 }
 </code></pre>
-        <h3>2.2. Ejecución</h3>
-        <p>Desde la raíz de este repositorio, con JDK 25:</p>
-        <pre><code class="language-bash">java 01/1.1-fundamentos/01-tipos/ejemplos/TiposDemo.java
+<p>Con JDK 17 o superior, desde la carpeta del ejemplo:</p>
+<pre><code class="language-bash">java TiposDemo.java
 </code></pre>
-        <p>Con el proyecto Gradle de demostraciones:</p>
-        <pre><code class="language-bash">cd demostraciones
-./gradlew runDemo -Pdemo=1.1a
-</code></pre>
-        <p>En Windows usa <code>gradlew.bat</code>. Ejecuta cada demostración desde una terminal nueva o vuelve a la
-            raíz antes de cambiar de contenido.</p>
-        <h3>2.3. Resultado y lectura de la ejecución</h3>
-        <pre><code class="language-text">S01 / Laboratorio 1
-Capacidad: 30
+<p>Salida esperada:</p>
+<pre><code class="language-text">Algoritmos | 12
 true
-Valor nulo rechazado
+El valor es obligatorio
 </code></pre>
-        <ol>
-            <li>Identifica los datos iniciales y las precondiciones que la demostración valida.</li>
-            <li>Sigue las llamadas desde <code>main</code> o <code>loop</code> y relaciona las operaciones con los
-                conceptos de la sección 1.</li>
-            <li>Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la
-                invariante y no el orden de impresión.</li>
-            <li>Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y
-                su causa.</li>
-        </ol>
-        <hr>
-        <p><a id="pc"></a></p>
-        <h2>3. PC1.1a · Práctica de clase</h2>
-        <h3>3.1. Ampliación del proyecto</h3>
-        <p>Esta actividad se resuelve en tu repositorio <code>icc-pap-campusmonitor-apellido</code>. Mantén la
-            funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.</p>
-        <ol>
-            <li>Crea el proyecto personal CampusMonitor siguiendo la guía general. Agrega Lectura<T> con idSensor, valor
-                    y unidad, sin utilizar Object como tipo del valor.</li>
-            <li>Construye una lectura Double de temperatura y otra Integer de ocupación. Rechaza id o unidad vacíos y
-                valores nulos.</li>
-            <li>Agrega un comando lecturas que muestre ambas y documenta una asignación incompatible como comentario,
-                con el error de compilación esperado.</li>
-        </ol>
-        <h3>3.2. Comprobación y evidencia</h3>
-        <p>Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal
-            y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.</p>
-        <div class="table-scroll">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Caso que debes revisar</th>
-                        <th>Comportamiento requerido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>S01, 22.5, °C</td>
-                        <td>Lectura válida y recuperada como Double</td>
-                    </tr>
-                    <tr>
-                        <td>S02, 18, personas</td>
-                        <td>Lectura válida y recuperada como Integer</td>
-                    </tr>
-                    <tr>
-                        <td>id vacío o valor null</td>
-                        <td>Error descriptivo de validación</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p>En <code>evidencias/PC1.1a.md</code> agrega: cambio realizado, archivos principales, comandos de ejecución,
-            tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.</p>
-        <h3>3.3. Commits de la actividad</h3>
-        <pre><code class="language-bash">git status
-git add src evidencias
-git commit -m &quot;feat(pc1.1a): tipos-y-parametros-genericos&quot;
-git push
-git log -1 --format=%H
+<p>El <code>true</code> compara las clases de ejecución, no los valores ni sus contratos de compilación. La excepción responde a una regla del constructor, mientras que la asignación comentada sería rechazada por el compilador.</p>
+<h2>3. PC1.1a · Modelo de lecturas de CampusMonitor</h2>
+<p><strong>CampusMonitor</strong> será una aplicación Java de consola que registra y procesa mediciones de sensores de un campus. 
+Durante la asignatura se utilizará <strong>CampusMonitor</strong> como proyecto base.</p>
+<p>No se creará un proyecto diferente para cada tema. El mismo proyecto se irá ampliando progresivamente durante las prácticas de clase.</p>
+<p>En las siguientes unidades se reutilizarán las clases, modelos y funcionalidades implementadas anteriormente. Por esta razón:</p>
+<ul>
+<li>conserva el código desarrollado en cada práctica;</li>
+<li>no elimines funcionalidades anteriores;</li>
+<li>organiza las nuevas clases dentro de los paquetes indicados;</li>
+<li>realiza un commit al finalizar cada práctica.</li>
+</ul>
+<p>El objetivo es que CampusMonitor evolucione durante el curso mientras se aplican los diferentes conceptos de programación.</p>
+<h3>Creación del proeycto</h3>
+<p>Esta sección se realiza <strong>una sola vez</strong>, al iniciar el proyecto personal.
+Cada estudiante debe trabajar en su propio repositorio:</p>
+<pre><code class="language-text">icc-pap-campusmonitor-apellido
 </code></pre>
-        <p>Ajusta las rutas de <code>git add</code> a los archivos que realmente creaste. Incluye también configuración
-            o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.
-        </p>
-        <h3>Lo esencial</h3>
-        <ul>
-            <li>Los genéricos evitan conversiones inseguras al recuperar datos.</li>
-            <li>El parámetro declara el contrato; el argumento concreta el tipo.</li>
-            <li>Los argumentos genéricos deben ser tipos de referencia.</li>
-            <li>final protege la referencia; el dominio todavía exige validación.</li>
-        </ul>
-        <h2>Referencias técnicas</h2>
-        <ul>
-            <li><a href="https://dev.java/learn/generics/">Genéricos en Java</a></li>
-            <li><a href="https://dev.java/learn/reflection/">Reflexión</a></li>
-            <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/index.html">API Java 25</a></li>
-        </ul>
-        <nav
-            class="article-nav"
-            aria-label="Recursos del contenido"
-        ><a
-                href="../../../index.html"
-                target="_top"
-            >Índice del curso</a><a
-                href="material.md"
-                download
-            >Descargar MD</a><a
-                href="presentacion.pptx"
-                download
-            >Descargar PPTX</a><a href="../02-metodos/index.html">Siguiente</a></nav>
-    </main>
-</body>
-
-</html>
+<p>Desde la carpeta donde quieras crear el proyecto ejecuta:</p>
+<pre><code class="language-bash">gradle init \
+  --type java-application \
+  --dsl kotlin \
+  --project-name icc-pap-campusMonitor \
+  --package edu.ups.pap
+</code></pre>
+<p>Gradle solicitará algunas opciones adicionales.
+Selecciona:</p>
+<pre><code class="language-text">Enter target Java version (min: 7, default: 21): 25
+Select application structure:
+  1: Single application project
+  2: Application and library project
+Enter selection (default: Single application project) [1..2] 1
+Select test framework:
+  1: JUnit 4
+  2: TestNG
+  3: Spock
+  4: JUnit Jupiter
+Enter selection (default: JUnit Jupiter) [1..4] 1
+Generate build using new APIs and behavior
+(some features may change in the next minor release)?
+(default: no) [yes, no] yes
+</code></pre>
+<p>Al finalizar debe aparecer:</p>
+<pre><code class="language-text">BUILD SUCCESSFUL
+</code></pre>
+<h3>Contrato y alcance</h3>
+<p>Implementa una <strong>clase pública genérica <code>Lectura&lt;T&gt;</code></strong> en <code>edu.ups.pap.modelo</code>. Representa una medición: qué sensor produjo el dato, cuál es su valor y en qué unidad se expresa. <code>T</code> corresponde exclusivamente al tipo del valor.</p>
+<p><img src="assets/uml01.png" alt="Diagrama UML"></p>
+<p>Modifica la clase principal <code>App</code> para demostrar el funcionamiento de <code>Lectura&lt;T&gt;</code>, mediante un metodo generico runLectura()</p>
+<ol>
+<li><strong>Crea dos objetos:</strong><div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Tipo</th>
+<th>Identificador</th>
+<th>Valor</th>
+<th>Unidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>temperatura</code></td>
+<td><code>Lectura&lt;Double&gt;</code></td>
+<td><code>S01</code></td>
+<td><code>22.5</code></td>
+<td><code>°C</code></td>
+</tr>
+<tr>
+<td><code>ocupacion</code></td>
+<td><code>Lectura&lt;Integer&gt;</code></td>
+<td><code>S02</code></td>
+<td><code>18</code></td>
+<td><code>personas</code></td>
+</tr>
+</tbody></table></div>
+</li>
+<li><strong>Recupera sus valores utilizando <code>getValor()</code>:</strong><ul>
+<li>Guarda el valor de <code>temperatura</code> en una variable <code>Double</code>.</li>
+<li>Guarda el valor de <code>ocupacion</code> en una variable <code>Integer</code>.</li>
+<li>No utilices casts.</li>
+</ul>
+</li>
+<li><strong>Muestra en consola</strong> el identificador, valor y unidad de cada lectura. Una salida válida sería:<pre><code class="language-text">Lecturas de CampusMonitor
+S01 | 22.5 °C
+S02 | 18 personas
+Valores recuperados sin casting:
+Temperatura: 22.5
+Ocupación: 18
+</code></pre>
+</li>
+<li><strong>Comprueba las validaciones del constructor.</strong> Intenta crear lecturas con:<ul>
+<li>Identificador vacío.</li>
+<li>Unidad vacía.</li>
+<li>Valor <code>null</code>.</li>
+</ul>
+</li>
+</ol>
+<h3>Reultados</h3>
+<p>Árbol de los archivos relevantes; conserva los demás archivos de configuración existentes. Las demostraciones son independientes y no forman parte obligatoria de esta estructura.</p>
+<pre><code class="language-text">icc-pap-campusmonitor-apellido/
+├── app/
+│   ├── build.gradle.kts
+│   └── src/main/java/edu/ups/pap/
+│       ├── App.java
+│       └── modelo/
+│           └── Lectura.java
+|       └── u01/
+|           └──TiposDemo.java
+├── evidencias/
+│   └── PC1.1a.md
+├── gradle/wrapper/
+│   ├── gradle-wrapper.jar
+│   └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
+</code></pre>
+<h3>Evidencias</h3>
+<p>Sube todos los cambios al repositorio remoto, donde en un el siguiente archivo <code>evidencias/PC1.1a.md</code>, deberan constar las sigueintes evidencias.</p>
+<h4>1. Implementación realizada</h4>
+<p>Describe brevemente:</p>
+<ul>
+<li>Qué representa la clase <code>Lectura&lt;T&gt;</code>.</li>
+<li>Qué representa <code>T</code> y por qué permite utilizar la misma clase para temperatura y ocupación.</li>
+<li>Qué agregaste en <code>App.java</code>.</li>
+</ul>
+<h4>2. Ejecución correcta</h4>
+<p>Agrega <strong>una captura de la consola</strong> donde se vean:</p>
+<ul>
+<li>Las dos lecturas con identificador, valor y unidad.</li>
+<li>Los valores recuperados mediante <code>getValor()</code>.
+Debajo de la captura, explica por qué puedes guardar los resultados directamente en variables <code>Double</code> e <code>Integer</code>, sin casting.</li>
+</ul>
+<h2>Referencias</h2>
+<ul>
+<li><a href="https://dev.java/learn/language/fp/generics/intro/">Introducción a los genéricos — Dev.java</a></li>
+<li><a href="https://dev.java/learn/generics/type-erasure/">Borrado de tipos — Dev.java</a></li>
+</ul>
+<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../02-metodos/index.html">Siguiente</a></nav></main></body></html>

@@ -1,151 +1,167 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.1c · Boxing, foreach, var y varargs · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../02-metodos/index.html">Anterior</a><a href="../../1.2-subtipos-comodines/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
-<h2>1.1c. Boxing, foreach, var y varargs</h2>
+<h2>1.1c. Boxing, unboxing, for-each y varargs</h2>
 <p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a> · <a href="index.html">Ver en el navegador</a></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<h3>Contexto</h3>
-<p>El catálogo ya usa tipos genéricos. Ahora necesitamos cargar varias lecturas, recorrerlas y calcular un promedio. Esta operación conecta los tipos primitivos con sus envoltorios y obliga a distinguir inferencia local, argumentos de consola y cantidad variable de argumentos.</p>
-<h3>Antes de empezar</h3>
-<p>Recupera el avance de <a href="../02-metodos/index.html">1.1b</a>. Conserva sus comandos y evidencias. Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas del proyecto personal.</p>
 <p><a id="concepto-1"></a></p>
-<h3>1.1. Boxing y unboxing</h3>
-<p>Boxing convierte un valor primitivo en una instancia de su clase envoltorio, por ejemplo int a Integer. Unboxing recupera el primitivo. El compilador inserta conversiones en asignaciones, argumentos y operaciones aritméticas. List<Integer> almacena referencias a envoltorios. Unboxing de null produce NullPointerException.</p>
-<p>Con envoltorios, == puede comparar identidad de referencias. Algunas instancias se reutilizan mediante cachés y otras no, por lo que un resultado observado con un número pequeño no establece una regla general. Para comparar valores usa equals u Objects.equals si admites null. En cálculos intensivos, arreglos primitivos o streams especializados pueden evitar boxing innecesario.</p>
-<pre><code class="language-java">Integer cantidad = 18; // boxing
-int total = cantidad + 2; // unboxing
-boolean mismoValor = java.util.Objects.equals(cantidad, 18);
-</code></pre>
-<p><a id="concepto-2"></a></p>
-<h3>1.2. foreach y modificación de colecciones</h3>
-<p>El foreach facilita recorrer arreglos y objetos Iterable. La variable del bucle recibe cada valor o referencia. Reasignar esa variable no reemplaza la posición original del arreglo o de la lista. Si el elemento es mutable, llamar a sus métodos sí puede modificar el objeto compartido.</p>
-<p>No elimines elementos de un ArrayList mediante lista.remove dentro de su foreach. Sus iteradores pueden detectar modificaciones estructurales y lanzar ConcurrentModificationException, incluso sin varios hilos. Usa removeIf para eliminación por condición, o Iterator.remove cuando proceda. Si necesitas el índice o reemplazar posiciones, un for con índice comunica mejor la operación.</p>
-<pre><code class="language-java">for (Double valor : valores) {
-    System.out.println(valor);
-}
-valores.removeIf(v -&gt; v == null);
-</code></pre>
-<p><a id="concepto-3"></a></p>
-<h3>1.3. var, args y varargs</h3>
-<p>var permite inferir el tipo de una variable local inicializada. No significa Object, no admite inicialización con null sin tipo y no se utiliza para campos o parámetros ordinarios. Si escribes var lista = new ArrayList<String>(), el tipo estático de lista es ArrayList<String>.</p>
-<p>String[] args es el arreglo de argumentos recibido por main. Su nombre es convencional. En cambio, T... valores declara varargs: el método admite cero o más argumentos y los recibe como un arreglo. Solo puede existir un parámetro varargs y debe ser el último. Pasar explícitamente un arreglo nulo sigue siendo posible y necesita una política de validación.</p>
-<pre><code class="language-java">static int contar(String... ids) { return ids.length; }
-var n = contar(&quot;S01&quot;, &quot;S02&quot;);
-// main(String[] args) recibe textos desde la consola.
-</code></pre>
-<p><a id="concepto-4"></a></p>
-<h3>1.4. Varargs genéricos y heap pollution</h3>
-<p>Los arreglos comprueban su tipo de componente en ejecución, mientras los genéricos emplean borrado. Mezclarlos puede introducir contaminación del heap: una variable parametrizada contiene un objeto incompatible debido a operaciones no seguras. @SafeVarargs documenta que la implementación no realiza esas operaciones, pero la anotación no corrige código inseguro.</p>
-<p>Úsala solo en métodos o constructores permitidos y realmente seguros. En el ejemplo, el método static recorre los argumentos, valida cada elemento y copia las referencias a una lista nueva. No escribe tipos ajenos en el arreglo ni lo expone al llamador. Para una API que recibe lotes grandes o nulos frecuentes, aceptar una List<T> puede ser más explícito.</p>
-<h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual"></p>
-<hr>
-<p><a id="demostracion"></a></p>
-<h2>2. Demostración guiada</h2>
-<h3>2.1. Problema y contrato</h3>
-<p>El catálogo ya usa tipos genéricos. Ahora necesitamos cargar varias lecturas, recorrerlas y calcular un promedio. Esta operación conecta los tipos primitivos con sus envoltorios y obliga a distinguir inferencia local, argumentos de consola y cantidad variable de argumentos.</p>
-<p>La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una ampliación propia sobre CampusMonitor.</p>
-<p><strong>Archivo completo:</strong> <a href="ejemplos/BoxingDemo.java">BoxingDemo.java</a>.</p>
-<pre><code class="language-java">package edu.ups.pap.u01;
-import java.util.*;
-public class BoxingDemo {
-    @SafeVarargs
-    static &lt;T&gt; List&lt;T&gt; lote(T... valores) {
-        Objects.requireNonNull(valores, &quot;Arreglo nulo&quot;);
-        List&lt;T&gt; copia = new ArrayList&lt;&gt;();
-        for (T valor : valores) copia.add(Objects.requireNonNull(valor, &quot;Elemento nulo&quot;));
-        return List.copyOf(copia);
-    }
-    static OptionalDouble promedio(List&lt;Double&gt; valores) {
-        if (valores.isEmpty()) return OptionalDouble.empty();
-        double suma = 0;
-        for (Double valor : valores) suma += Objects.requireNonNull(valor);
-        return OptionalDouble.of(suma / valores.size());
-    }
-    public static void main(String[] args) {
-        var temperaturas = lote(22.0, 24.0, 26.0);
-        System.out.println(promedio(temperaturas).orElseThrow());
-        System.out.println(&quot;Argumentos de consola: &quot; + args.length);
-        System.out.println(promedio(List.of()));
-        try { lote(22.0, null); }
-        catch (NullPointerException e) { System.out.println(e.getMessage()); }
-    }
-}
-</code></pre>
-<h3>2.2. Ejecución</h3>
-<p>Desde la raíz de este repositorio, con JDK 25:</p>
-<pre><code class="language-bash">java 01/1.1-fundamentos/03-boxing-foreach-varargs/ejemplos/BoxingDemo.java
-</code></pre>
-<p>Con el proyecto Gradle de demostraciones:</p>
-<pre><code class="language-bash">cd demostraciones
-./gradlew runDemo -Pdemo=1.1c
-</code></pre>
-<p>En Windows usa <code>gradlew.bat</code>. Ejecuta cada demostración desde una terminal nueva o vuelve a la raíz antes de cambiar de contenido.</p>
-<h3>2.3. Resultado y lectura de la ejecución</h3>
-<pre><code class="language-text">24.0
-Argumentos de consola: 0
-OptionalDouble.empty
-Elemento nulo
-</code></pre>
-<ol>
-<li>Identifica los datos iniciales y las precondiciones que la demostración valida.</li>
-<li>Sigue las llamadas desde <code>main</code> o <code>loop</code> y relaciona las operaciones con los conceptos de la sección 1.</li>
-<li>Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la invariante y no el orden de impresión.</li>
-<li>Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y su causa.</li>
-</ol>
-<hr>
-<p><a id="pc"></a></p>
-<h2>3. PC1.1c · Práctica de clase</h2>
-<h3>3.1. Ampliación del proyecto</h3>
-<p>Esta actividad se resuelve en tu repositorio <code>icc-pap-campusmonitor-apellido</code>. Mantén la funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.</p>
-<ol>
-<li>Agrega un comando promedio que convierta los argumentos de consola a Double, valide valores finitos y calcule el promedio de un lote.</li>
-<li>Implementa una fábrica varargs de Lectura<Double> que no exponga el arreglo recibido. Rechaza elementos nulos con un mensaje concreto.</li>
-<li>Compara en la evidencia un foreach que reasigna su variable con una operación que reemplaza la posición de una lista. Explica los resultados.</li>
-</ol>
-<h3>3.2. Comprobación y evidencia</h3>
-<p>Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.</p>
+<h3>1.1. Primitivos y clases envolventes</h3>
+<p>Un <strong>tipo primitivo</strong> representa directamente un valor, como un entero o un booleano. Una <strong>clase envolvente</strong> permite representar ese valor mediante un objeto. Esta distinción importa porque los argumentos de los genéricos deben ser tipos de referencia: una colección de enteros se declara <code>List&lt;Integer&gt;</code>, no <code>List&lt;int&gt;</code>.</p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Caso que debes revisar</th>
-<th>Comportamiento requerido</th>
+<th>Primitivo</th>
+<th>Clase envolvente</th>
+<th>Primitivo</th>
+<th>Clase envolvente</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>promedio 20 22 24</td>
-<td>22.0</td>
+<td><code>byte</code></td>
+<td><code>Byte</code></td>
+<td><code>long</code></td>
+<td><code>Long</code></td>
 </tr>
 <tr>
-<td>promedio sin valores</td>
-<td>Mensaje de lote vacío, sin división por cero</td>
+<td><code>short</code></td>
+<td><code>Short</code></td>
+<td><code>float</code></td>
+<td><code>Float</code></td>
 </tr>
 <tr>
-<td>promedio NaN o texto</td>
-<td>Entrada rechazada</td>
+<td><code>int</code></td>
+<td><code>Integer</code></td>
+<td><code>double</code></td>
+<td><code>Double</code></td>
+</tr>
+<tr>
+<td><code>char</code></td>
+<td><code>Character</code></td>
+<td><code>boolean</code></td>
+<td><code>Boolean</code></td>
 </tr>
 </tbody></table></div>
-<p>En <code>evidencias/PC1.1c.md</code> agrega: cambio realizado, archivos principales, comandos de ejecución, tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.</p>
-<h3>3.3. Commits de la actividad</h3>
-<pre><code class="language-bash">git status
-git add src evidencias
-git commit -m &quot;feat(pc1.1c): boxing-foreach-var-y-varargs&quot;
-git push
-git log -1 --format=%H
+<p>Los envolventes son inmutables: una operación que cambia una variable <code>Integer</code> no modifica el objeto anterior. Además, una referencia envolvente puede ser <code>null</code>, mientras que una variable primitiva no puede.</p>
+<h3>1.2. Boxing y unboxing</h3>
+<p><strong>Boxing</strong> es la conversión de un primitivo a su envolvente; <strong>unboxing</strong>, la conversión inversa. Cuando el compilador incorpora estas conversiones automáticamente, se habla de autoboxing y auto-unboxing.</p>
+<pre><code class="language-java">Integer cantidad = 12;       // Autoboxing.
+int recuperada = cantidad;  // Unboxing.
+
+Integer explicita = Integer.valueOf(12);
+int primitivo = explicita.intValue();
 </code></pre>
-<p>Ajusta las rutas de <code>git add</code> a los archivos que realmente creaste. Incluye también configuración o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.</p>
-<h3>Lo esencial</h3>
-<ul>
-<li>Unboxing de null falla; equals compara valores.</li>
-<li>foreach recorre elementos sin exponer el índice.</li>
-<li>var infiere un tipo local; args y varargs cumplen roles distintos.</li>
-<li>Un arreglo varargs genérico exige evitar heap pollution.</li>
-</ul>
+<p>Una operación como <code>cantidad + 1</code> utiliza el valor primitivo. Si el resultado se asigna nuevamente a <code>Integer</code>, interviene también boxing. En recorridos intensivos, estas conversiones y el almacenamiento de referencias pueden tener un costo; usa primitivos cuando no necesites un contrato basado en objetos.</p>
+<p><a id="concepto-2"></a></p>
+<h3>1.3. Nulos, igualdad y conversión de texto</h3>
+<p>El unboxing de <code>null</code> lanza <code>NullPointerException</code>. No representa un cero ni un dato ausente que Java pueda completar automáticamente.</p>
+<pre><code class="language-java">Integer pendiente = null;
+// int valor = pendiente; // NullPointerException durante la ejecución.
+</code></pre>
+<p>Entre dos referencias envolventes, <code>==</code> compara identidad. Algunos valores pueden compartir objetos por caché; por ello, no debes usar ese resultado como comparación numérica. Utiliza <code>equals</code> para envolventes del mismo tipo, o convierte conscientemente a primitivos cuando corresponda.</p>
+<p><code>Integer.valueOf(5).equals(Long.valueOf(5))</code> es <code>false</code>: <code>equals</code> también exige compatibilidad de tipo. Si uno de los operandos de <code>==</code> es primitivo, puede producirse unboxing del otro, con el riesgo de nulos mencionado.</p>
+<p>El <strong>parsing</strong> interpreta una representación textual. <code>Integer.parseInt(&quot;12&quot;)</code> devuelve <code>int</code> y puede lanzar <code>NumberFormatException</code>; no es boxing. <code>Integer.valueOf(&quot;12&quot;)</code> interpreta texto y devuelve <code>Integer</code>.</p>
+<h3>1.4. Variables y alcance en un recorrido</h3>
+<p>Una variable local tiene un tipo y un ámbito. En <code>for (Integer valor : datos)</code>, <code>valor</code> existe dentro del cuerpo del bucle y recibe cada elemento sucesivamente. Reasignarla no reemplaza una posición de la colección.</p>
+<pre><code class="language-java">Integer[] datos = {1, 2};
+for (Integer valor : datos) {
+    valor = 0;
+}
+// datos sigue conteniendo 1 y 2.
+</code></pre>
+<p>Si el elemento fuera un objeto modificable, sí podrías cambiar su estado mediante sus métodos. Reasignar la variable y modificar el objeto al que apunta son operaciones distintas.</p>
+<p><a id="concepto-3"></a></p>
+<h3>1.5. for-each: recorrido por elementos</h3>
+<p>El <strong>for mejorado</strong>, o <code>for-each</code>, recorre arreglos y objetos que implementan <code>Iterable</code>. Expresa que interesa cada elemento, sin manejar explícitamente una posición.</p>
+<pre><code class="language-java">for (String nombre : List.of(&quot;Ana&quot;, &quot;Luis&quot;)) {
+    System.out.println(nombre);
+}
+</code></pre>
+<p>Conviene usar un <code>for</code> con índice cuando se necesita reemplazar posiciones o relacionar elementos por su ubicación. Para eliminar durante la iteración, utiliza una operación apropiada de la colección o un iterador que admita eliminación. Modificar estructuralmente un <code>ArrayList</code> mientras se recorre con <code>for-each</code> puede producir <code>ConcurrentModificationException</code>.</p>
+<p>El orden del recorrido depende del contenedor: una lista conserva su secuencia; no debe suponerse un orden general para cualquier colección. El bucle no introduce concurrencia ni paralelismo.</p>
+<p><a id="concepto-4"></a></p>
+<h3>1.6. Varargs: cantidad variable de argumentos</h3>
+<p><strong>Varargs</strong> permite recibir cero o más argumentos mediante un parámetro declarado con <code>...</code>. Dentro del método se trata como un arreglo. Debe existir como máximo un parámetro varargs y ocupar la última posición.</p>
+<pre><code class="language-java">static int contar(String... nombres) {
+    return nombres.length;
+}
+// contar();                 devuelve 0
+// contar(&quot;Ana&quot;, &quot;Luis&quot;);    devuelve 2
+</code></pre>
+<p>El cliente también puede pasar un arreglo existente. En ese caso, modificar el arreglo recibido afecta al mismo arreglo del cliente. Varargs no implica copia defensiva.</p>
+<p><code>int...</code> permite números primitivos sin boxing para formar el arreglo; <code>Integer...</code> admite referencias, incluidos elementos nulos. <code>args</code> es un nombre convencional, no una palabra reservada. En <code>main(String[] args)</code>, representa los argumentos de la línea de comandos; la sintaxis habitual de <code>main</code> ya recibe un arreglo.</p>
+<h3>1.7. Varargs genéricos y advertencias</h3>
+<p>Una declaración <code>&lt;T&gt; void procesar(T... valores)</code> combina arreglos con un tipo cuyo argumento se borra. Puede generar una advertencia por posible <strong>contaminación del heap</strong>: una referencia parametrizada termina apuntando a un contenido incompatible con su contrato, normalmente por operaciones inseguras con arreglos o tipos crudos.</p>
+<p><code>@SafeVarargs</code> declara que la implementación no realiza operaciones inseguras con ese arreglo; no verifica ni repara el código automáticamente. Solo se permite en constructores y métodos estáticos, finales o privados. Para recibir colecciones genéricas, una firma con <code>List&lt;T&gt;</code> suele evitar esta dificultad y expresar mejor el contrato.</p>
+<hr>
+<p><a id="demostracion"></a></p>
+<h2>2. Demostración: reunir y recorrer valores</h2>
+<p>El ejemplo reúne enteros mediante varargs, los almacena en una lista y los suma con un <code>for-each</code>. También comprueba que reasignar la variable del bucle no reemplaza los elementos de la lista.</p>
+<p><strong>Archivo:</strong> <code>app/src/main/java/edu/ups/pap/u01/ConversionesDemo.java</code>.</p>
+<pre><code class="language-java">package edu.ups.pap.u01;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Relaciona autoboxing, unboxing, recorrido for-each y varargs. */
+public class ConversionesDemo {
+    /**
+     * Recibe cero o más Integer y devuelve una lista nueva.
+     * @throws IllegalArgumentException si el arreglo o un elemento son nulos
+     */
+    static List&lt;Integer&gt; reunir(Integer... valores) {
+        if (valores == null) throw new IllegalArgumentException(&quot;Arreglo nulo&quot;);
+        List&lt;Integer&gt; resultado = new ArrayList&lt;&gt;();
+        for (Integer valor : valores) { // Recorre el arreglo generado por varargs.
+            if (valor == null) throw new IllegalArgumentException(&quot;Elemento nulo&quot;);
+            resultado.add(valor);
+        }
+        return resultado;
+    }
+
+    /** Suma mediante unboxing; recibe una lista validada por reunir(). */
+    static long sumar(List&lt;Integer&gt; valores) {
+        long total = 0;
+        for (int valor : valores) { // Cada Integer se convierte a int.
+            total += valor;
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; valores = reunir(10, 20, 30); // int -&gt; Integer: autoboxing.
+        System.out.println(&quot;Valores: &quot; + valores);
+        System.out.println(&quot;Suma: &quot; + sumar(valores));
+        System.out.println(&quot;Sin argumentos: &quot; + reunir().size());
+
+        for (Integer valor : valores) {
+            valor = 0; // Reasigna la variable local, no una posición de la lista.
+        }
+        System.out.println(&quot;Después del recorrido: &quot; + valores);
+        try {
+            reunir(10, null); // Se rechaza antes de intentar el unboxing.
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+</code></pre>
+<p>Desde la raíz del proyecto Java, con JDK 17 o superior:</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/ConversionesDemo.java
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Valores: [10, 20, 30]
+Suma: 60
+Sin argumentos: 0
+Después del recorrido: [10, 20, 30]
+Elemento nulo
+</code></pre>
+<p><code>reunir(10, 20, 30)</code> realiza boxing para recibir <code>Integer</code>; el recorrido de suma realiza unboxing para trabajar con <code>int</code>. La llamada sin argumentos crea un arreglo vacío, y un elemento nulo se rechaza antes de la suma. <code>valor = 0</code> solo modifica la variable local del recorrido.</p>
 <h2>Referencias técnicas</h2>
 <ul>
-<li><a href="https://dev.java/learn/generics/">Genéricos en Java</a></li>
-<li><a href="https://dev.java/learn/reflection/">Reflexión</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/index.html">API Java 25</a></li>
+<li><a href="https://dev.java/learn/language/constructs/numbers-strings/autoboxing/">Autoboxing y unboxing — Dev.java</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/for.html">Bucle for — Oracle</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html">Varargs — Oracle</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/SafeVarargs.html">SafeVarargs — API Java</a></li>
 </ul>
 <nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../02-metodos/index.html">Anterior</a><a href="../../1.2-subtipos-comodines/index.html">Siguiente</a></nav></main></body></html>

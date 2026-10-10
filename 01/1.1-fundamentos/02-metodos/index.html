@@ -1,145 +1,171 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.1b · Métodos genéricos y cotas · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../01-tipos/index.html">Anterior</a><a href="../03-boxing-foreach-varargs/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
 <h2>1.1b. Métodos genéricos y cotas</h2>
 <p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a> · <a href="index.html">Ver en el navegador</a></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<h3>Contexto</h3>
-<p>Una vez representadas las lecturas, CampusMonitor necesita seleccionar la mayor lectura y filtrar catálogos. Copiar un método para cada modelo introduce versiones que se desincronizan. Un método genérico permite parametrizar la operación sin exigir que toda la clase sea genérica.</p>
-<h3>Antes de empezar</h3>
-<p>Recupera el avance de <a href="../01-tipos/index.html">1.1a</a>. Conserva sus comandos y evidencias. Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas del proyecto personal.</p>
 <p><a id="concepto-1"></a></p>
-<h3>1.1. Declaración y alcance del parámetro</h3>
-<p>Un método genérico declara <T> antes del tipo de retorno. El alcance de T es ese método, incluidos sus parámetros y retorno. Puede existir en una clase no genérica y también puede ser static. Esto permite reunir algoritmos reutilizables en una clase de utilidades. Un método de una clase Caja<T> que simplemente devuelve T utiliza el parámetro de la clase y no es, por esa sola razón, un método genérico independiente.</p>
-<p>El compilador infiere T a partir de los argumentos y del contexto. También puede indicarse explícitamente con Utilidades.<String>identidad(&quot;a&quot;). Evita parámetros genéricos que no relacionan nada: aceptar T y devolver siempre String puede ser menos claro que aceptar el contrato realmente necesario.</p>
-<pre><code class="language-java">static &lt;T&gt; T identidad(T valor) {
+<h3>1.1. Qué es un método genérico</h3>
+<p>Un <strong>método genérico</strong> declara sus propios parámetros de tipo para relacionar los datos que recibe y los que devuelve. La declaración aparece antes del tipo de retorno. El método puede pertenecer a una clase genérica o a una clase que no lo sea.</p>
+<pre><code class="language-java">static &lt;R&gt; R identidad(R valor) {
     return valor;
 }
-String id = identidad(&quot;S01&quot;);
 </code></pre>
+<p><code>&lt;R&gt;</code> declara el parámetro; <code>R</code> antes del nombre indica el retorno, y <code>R valor</code> especifica el argumento recibido. Una llamada puede trabajar con <code>String</code> y otra con <code>Integer</code>, conservando la relación entre entrada y salida sin casting.</p>
+<p>No todo método que utiliza un tipo genérico declara uno propio. En <code>class Caja&lt;T&gt;</code>, <code>T obtener()</code> utiliza el <code>T</code> de la clase. En cambio, <code>&lt;R&gt; Caja&lt;R&gt; mapear(...)</code> introduce un parámetro nuevo para esa operación. Esa distinción permite transformar datos sin cambiar el tipo del objeto original.</p>
+<h3>1.2. Alcance, inferencia y métodos static</h3>
+<p>El parámetro del método tiene alcance en su declaración y cuerpo. Conviene usar nombres diferentes cuando ya existe otro parámetro en la clase: <code>T</code> para el dato almacenado y <code>R</code> para el resultado de una transformación.</p>
+<p>El compilador normalmente <strong>infiere</strong> el argumento de tipo a partir de los argumentos y del contexto. También se puede indicar explícitamente: <code>Utilidades.&lt;String&gt;identidad(&quot;texto&quot;)</code>, si <code>Utilidades</code> declara ese método estático. La inferencia es una comprobación de compilación, no tipado dinámico.</p>
+<p>Un método estático no tiene acceso al parámetro de tipo de una instancia. Puede declarar el suyo, como <code>static &lt;N&gt; N identidad(N valor)</code>. Un método de instancia sí puede combinar el parámetro de la clase con uno propio. El método <code>mapear</code> de la demostración utiliza esta segunda posibilidad.</p>
 <p><a id="concepto-2"></a></p>
-<h3>1.2. Cotas para exigir operaciones</h3>
-<p>Una cota restringe los tipos admisibles y habilita operaciones. <T extends Number> permite llamar doubleValue(), pero no convierte T en un tipo aritmético con operador +. Para comparar, Comparable describe el orden natural, mientras Comparator permite elegir un orden externo. El ejemplo usa Comparator&lt;? super T&gt; para aceptar comparadores que también sepan comparar supertipos, relación que se explica con detalle en 1.2.</p>
-<p>La forma &lt;T extends Comparable&lt;? super T&gt;&gt; es útil para un máximo con orden natural. Las cotas múltiples se separan con &amp;: si hay una clase, aparece primero y solo puede haber una. Expresa únicamente los requisitos del algoritmo, porque cada cota adicional reduce la reutilización.</p>
-<pre><code class="language-java">static &lt;T extends Number&gt; double convertir(T valor) {
-    return valor.doubleValue();
+<h3>1.3. Cotas y operaciones disponibles</h3>
+<p>Una <strong>cota</strong> limita los tipos admisibles y garantiza ciertas operaciones. Sin una cota explícita, un parámetro solo ofrece las operaciones de <code>Object</code>.</p>
+<pre><code class="language-java">static &lt;N extends Number&gt; double convertir(N numero) {
+    return numero.doubleValue();
 }
 </code></pre>
+<p><code>N extends Number</code> admite <code>Integer</code>, <code>Double</code> y otros subtipos. Permite invocar <code>doubleValue()</code>, pero no escribir <code>numero + numero</code>: <code>N</code> no se convierte en un primitivo. Además, convertir cualquier número a <code>double</code> puede perder precisión.</p>
+<p>En una cota, <code>extends</code> se usa tanto para clases como para interfaces. <code>Comparable&lt;N&gt;</code> exige un orden natural; <code>Comparator&lt;N&gt;</code> es un objeto que aporta un criterio externo. Una cota múltiple usa <code>&amp;</code>, como <code>&lt;E extends Number &amp; Comparable&lt;E&gt;&gt;</code>: si contiene una clase debe ir primero y solo puede haber una. Agrega únicamente las restricciones que el algoritmo utiliza.</p>
 <p><a id="concepto-3"></a></p>
-<h3>1.3. Vacío, nulos y decisiones del algoritmo</h3>
-<p>Un método máximo debe definir qué ocurre con una colección vacía. Devolver null traslada una comprobación implícita al cliente. Optional<T> comunica la ausencia de resultado. La demostración rechaza elementos nulos para que el comparador no tenga que interpretarlos. Otra política válida sería Comparator.nullsLast, pero debe ser explícita y consistente.</p>
-<p>La selección recorre n elementos y conserva solo el mejor candidato: tiempo O(n) y memoria auxiliar O(1). No necesita ordenar toda la lista. Si dos elementos empatan, este algoritmo conserva el primero. La política de desempate forma parte del comportamiento observable y debe aparecer en las pruebas.</p>
+<h3>1.4. Transformaciones mediante Function</h3>
+<p><code>Function&lt;A, B&gt;</code> es una interfaz de Java que representa una operación: recibe un valor <code>A</code> y produce un resultado <code>B</code>. Su método principal es <code>B apply(A valor)</code>. Una función puede cambiar el tipo, cambiar el valor conservando el tipo, o construir otro objeto.</p>
+<pre><code class="language-java">Function&lt;String, Integer&gt; longitud = texto -&gt; texto.length();
+Integer cantidad = longitud.apply(&quot;Java&quot;); // 4
+</code></pre>
+<p>La expresión <code>texto -&gt; texto.length()</code> es una <strong>lambda</strong>: implementa la operación de la interfaz funcional. La parte izquierda es el parámetro; la derecha calcula el resultado. Aquí se utiliza para pasar una transformación como argumento, sin desarrollar todavía una cadena de operaciones con Streams.</p>
+<p>En una clase <code>Contenedor&lt;T&gt;</code>, un método <code>&lt;R&gt; Contenedor&lt;R&gt; mapear(Function&lt;T, R&gt; operacion)</code> conserva <code>T</code> como entrada y utiliza <code>R</code> como salida. El resultado no cambia el parámetro de tipo del contenedor original; se crea un contenedor diferente.</p>
 <p><a id="concepto-4"></a></p>
-<h3>1.4. Método reutilizable y regla del dominio</h3>
-<p>La utilidad no conoce sensores, estudiantes ni productos. Recibe datos y una estrategia de comparación. El cliente define que una lectura es mayor por su valor o por su identificador, sin cambiar el recorrido. Esa separación reduce dependencias y prepara el uso de Strategy en 1.4.</p>
-<p>En un sistema real no se debe comparar indiscriminadamente una temperatura con una ocupación solo porque ambas son Number. CampusMonitor debe agrupar lecturas por magnitud y unidad antes de calcular máximos. Reutilizar código no elimina la semántica del problema.</p>
-<h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual"></p>
+<h3>1.5. Contrato de una operación genérica</h3>
+<p>La firma expresa compatibilidad de tipos; el contrato debe definir los valores admitidos. Es necesario decidir qué ocurre si la función es nula, devuelve nulo o lanza una excepción. También debe indicarse si la operación modifica el objeto original o devuelve uno nuevo.</p>
+<p>En una transformación inmutable, el original conserva sus atributos y el resultado contiene los nuevos datos. No significa que toda función recibida sea pura: una lambda puede acceder a estado externo o producir efectos. El método no debe prometer propiedades que no puede garantizar de sus colaboradores.</p>
+<p>Generalizar el tipo no valida el significado del dato. Una conversión de unidad necesita una fórmula correcta y una unidad de destino coherente, además de tipos compatibles.</p>
 <hr>
 <p><a id="demostracion"></a></p>
-<h2>2. Demostración guiada</h2>
-<h3>2.1. Problema y contrato</h3>
-<p>Una vez representadas las lecturas, CampusMonitor necesita seleccionar la mayor lectura y filtrar catálogos. Copiar un método para cada modelo introduce versiones que se desincronizan. Un método genérico permite parametrizar la operación sin exigir que toda la clase sea genérica.</p>
-<p>La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una ampliación propia sobre CampusMonitor.</p>
-<p><strong>Archivo completo:</strong> <a href="ejemplos/MetodosDemo.java">MetodosDemo.java</a>.</p>
+<h2>2. Demostración: transformar sin modificar el original</h2>
+<p>El ejemplo convierte un texto en su longitud y después en una etiqueta. La clase declara <code>T</code>, mientras que <code>mapear</code> declara su propio <code>R</code>. Cada llamada puede producir un tipo diferente.</p>
+<p><strong>Archivo:</strong> <code>app/src/main/java/edu/ups/pap/u01/MetodosDemo.java</code>.</p>
 <pre><code class="language-java">package edu.ups.pap.u01;
-import java.util.*;
+
+import java.util.Objects;
+import java.util.function.Function;
+
+/** Distingue el tipo T del contenedor del tipo R declarado por un método. */
 public class MetodosDemo {
-    record Medicion(String sensor, double valor) {}
-    static &lt;T&gt; Optional&lt;T&gt; maximo(List&lt;T&gt; datos, Comparator&lt;? super T&gt; orden) {
-        Objects.requireNonNull(datos);
-        Objects.requireNonNull(orden);
-        T mejor = null;
-        for (T actual : datos) {
-            Objects.requireNonNull(actual, &quot;No se admiten elementos nulos&quot;);
-            if (mejor == null || orden.compare(actual, mejor) &gt; 0) mejor = actual;
+    static final class Contenedor&lt;T&gt; {
+        private final T valor;
+
+        Contenedor(T valor) {
+            this.valor = Objects.requireNonNull(valor, &quot;El valor es obligatorio&quot;);
         }
-        return Optional.ofNullable(mejor);
+
+        T obtener() { return valor; }
+
+        /**
+         * Aplica una operación y crea otro contenedor sin modificar el original.
+         * @param &lt;R&gt; tipo del resultado de esta llamada
+         * @param operacion función que recibe T y devuelve R
+         * @return contenedor del nuevo valor
+         * @throws NullPointerException si la función o su resultado son nulos
+         */
+        &lt;R&gt; Contenedor&lt;R&gt; mapear(Function&lt;T, R&gt; operacion) {
+            Objects.requireNonNull(operacion, &quot;La operación es obligatoria&quot;);
+            R resultado = operacion.apply(valor);
+            return new Contenedor&lt;&gt;(resultado); // El constructor valida el resultado.
+        }
     }
+
+    /** La cota permite usar doubleValue(), una operación definida por Number. */
+    static &lt;N extends Number&gt; double duplicar(N valor) {
+        Objects.requireNonNull(valor, &quot;El número es obligatorio&quot;);
+        return valor.doubleValue() * 2;
+    }
+
     public static void main(String[] args) {
-        var datos = List.of(new Medicion(&quot;S01&quot;,22.5), new Medicion(&quot;S02&quot;,27.2),
-                            new Medicion(&quot;S03&quot;,24.0));
-        var orden = Comparator.comparingDouble(Medicion::valor);
-        System.out.println(maximo(datos, orden).orElseThrow());
-        System.out.println(maximo(List.&lt;Medicion&gt;of(), orden));
-        System.out.println(maximo(List.of(&quot;Aula&quot;, &quot;Laboratorio&quot;),
-                                  Comparator.comparingInt(String::length)).orElseThrow());
+        Contenedor&lt;String&gt; original = new Contenedor&lt;&gt;(&quot;Algoritmos&quot;);
+
+        // La lambda recibe String; length() produce int, convertido a Integer.
+        Contenedor&lt;Integer&gt; longitud = original.mapear(texto -&gt; texto.length());
+        // Otra llamada elige otro resultado R: aquí, String.
+        Contenedor&lt;String&gt; etiqueta = longitud.mapear(n -&gt; &quot;Letras: &quot; + n);
+
+        System.out.println(&quot;Original: &quot; + original.obtener());
+        System.out.println(&quot;Longitud: &quot; + longitud.obtener());
+        System.out.println(etiqueta.obtener());
+        System.out.println(&quot;Doble: &quot; + duplicar(longitud.obtener()));
+
+        try {
+            original.mapear(null);
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+        }
+        // Contenedor&lt;Double&gt; error = original.mapear(texto -&gt; texto.length());
+        // No compila: la función produce Integer, no Double.
     }
 }
 </code></pre>
-<h3>2.2. Ejecución</h3>
-<p>Desde la raíz de este repositorio, con JDK 25:</p>
-<pre><code class="language-bash">java 01/1.1-fundamentos/02-metodos/ejemplos/MetodosDemo.java
+<p>Desde la raíz del proyecto Java, con JDK 17 o superior:</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/MetodosDemo.java
 </code></pre>
-<p>Con el proyecto Gradle de demostraciones:</p>
-<pre><code class="language-bash">cd demostraciones
-./gradlew runDemo -Pdemo=1.1b
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Original: Algoritmos
+Longitud: 10
+Letras: 10
+Doble: 20.0
+La operación es obligatoria
 </code></pre>
-<p>En Windows usa <code>gradlew.bat</code>. Ejecuta cada demostración desde una terminal nueva o vuelve a la raíz antes de cambiar de contenido.</p>
-<h3>2.3. Resultado y lectura de la ejecución</h3>
-<pre><code class="language-text">Medicion[sensor=S02, valor=27.2]
-Optional.empty
-Laboratorio
-</code></pre>
-<ol>
-<li>Identifica los datos iniciales y las precondiciones que la demostración valida.</li>
-<li>Sigue las llamadas desde <code>main</code> o <code>loop</code> y relaciona las operaciones con los conceptos de la sección 1.</li>
-<li>Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la invariante y no el orden de impresión.</li>
-<li>Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y su causa.</li>
-</ol>
+<p>La primera transformación produce <code>Contenedor&lt;Integer&gt;</code>; la segunda, <code>Contenedor&lt;String&gt;</code>. <code>obtener()</code> utiliza el parámetro de su clase y <code>mapear()</code> es el método que declara un parámetro nuevo. El original sigue conteniendo <code>Algoritmos</code>.</p>
 <hr>
 <p><a id="pc"></a></p>
-<h2>3. PC1.1b · Práctica de clase</h2>
-<h3>3.1. Ampliación del proyecto</h3>
-<p>Esta actividad se resuelve en tu repositorio <code>icc-pap-campusmonitor-apellido</code>. Mantén la funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.</p>
-<ol>
-<li>Reutiliza las lecturas Double de la PC anterior. Implementa seleccionar(List<T>, Predicate&lt;? super T&gt;) que devuelva una lista nueva y no modifique la entrada.</li>
-<li>Filtra temperaturas mayores a 25 °C y calcula el máximo con un comparador. Una lista vacía debe producir ausencia de resultado.</li>
-<li>Demuestra la reutilización de seleccionar con una lista de sensores por ubicación. No copies el recorrido para el segundo tipo.</li>
-</ol>
-<h3>3.2. Comprobación y evidencia</h3>
-<p>Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Caso que debes revisar</th>
-<th>Comportamiento requerido</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>22.5, 27.2, 24.0 con umbral 25</td>
-<td>Solo 27.2</td>
-</tr>
-<tr>
-<td>Lista vacía</td>
-<td>Lista filtrada vacía y máximo ausente</td>
-</tr>
-<tr>
-<td>Dos máximos iguales</td>
-<td>Desempate documentado</td>
-</tr>
-</tbody></table></div>
-<p>En <code>evidencias/PC1.1b.md</code> agrega: cambio realizado, archivos principales, comandos de ejecución, tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.</p>
-<h3>3.3. Commits de la actividad</h3>
-<pre><code class="language-bash">git status
-git add src evidencias
-git commit -m &quot;feat(pc1.1b): metodos-genericos-y-cotas&quot;
-git push
-git log -1 --format=%H
+<h2>3. PC1.1b · Transformación de lecturas</h2>
+<p>Continúa en el proyecto de <a href="../01-tipos/index.html">PC1.1a</a>. Ya existe <code>Lectura&lt;T&gt;</code>, con identificador, valor y unidad. Ahora podrá producir una lectura transformada conservando la medición original.</p>
+<h3>3.1. Ampliación de la clase Lectura</h3>
+<p>En la misma clase pública <code>Lectura&lt;T&gt;</code>, incorpora un <strong>método público de instancia que declare su propio parámetro <code>R</code></strong>:</p>
+<pre><code class="language-java">public &lt;R&gt; Lectura&lt;R&gt; transformar(Function&lt;T, R&gt; conversor, String nuevaUnidad)
 </code></pre>
-<p>Ajusta las rutas de <code>git add</code> a los archivos que realmente creaste. Incluye también configuración o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.</p>
-<h3>Lo esencial</h3>
-<ul>
-<li><T> se declara antes del retorno.</li>
-<li>Las cotas expresan las operaciones necesarias.</li>
-<li>Optional representa un resultado ausente.</li>
-<li>Comparator separa el criterio del recorrido.</li>
-</ul>
+<p>Importa <code>java.util.function.Function</code>. El método debe aplicar <code>conversor</code> al valor actual y devolver una nueva <code>Lectura&lt;R&gt;</code> con el mismo identificador y la unidad recibida. No debe modificar los atributos del objeto original ni sustituir sus getters o constructor.</p>
+<p>Rechaza un conversor nulo o un resultado nulo con <code>IllegalArgumentException</code> y mensaje descriptivo. La nueva lectura debe cumplir las validaciones de identificador y unidad de PC1.1a. No ocultes las excepciones que pueda lanzar el conversor.</p>
+<p>La operación pertenece al modelo porque transforma una lectura individual y devuelve otra. Los recorridos de colecciones se incorporarán en una clase distinta cuando se necesiten.</p>
+<h3>3.2. Actividades en App.java</h3>
+<p>Crea <code>private static void runTransformaciones()</code> e invócalo desde <code>main</code>, conservando <code>runLectura()</code> y el código de la PC anterior. Este método de apoyo no declara parámetros de tipo: el método genérico que debes implementar es <code>Lectura.transformar</code>.</p>
+<ol>
+<li>Reutiliza una temperatura <code>S01, 22.5, °C</code> y una ocupación <code>S02, 18, personas</code>.</li>
+<li>Convierte la temperatura a Fahrenheit mediante <code>F = C × 9.0 / 5.0 + 32</code>; obtén una <code>Lectura&lt;Double&gt;</code> con unidad <code>°F</code>.</li>
+<li>Transforma el valor de ocupación en el texto <code>18 personas</code>; obtén una <code>Lectura&lt;String&gt;</code> con unidad <code>texto</code>. Recupera ese resultado en una variable <code>String</code>, sin cast.</li>
+<li>Muestra los originales y los resultados. Verifica que los identificadores se conservan y que los originales no cambiaron.</li>
+<li>Comprueba por separado conversor nulo, resultado nulo y unidad de destino vacía. Captura las excepciones para observar todos los mensajes en la consola.</li>
+</ol>
+<p>La parte relevante de una salida correcta es:</p>
+<pre><code class="language-text">Original: S01 | 22.5 °C
+Transformada: S01 | 72.5 °F
+Original: S02 | 18 personas
+Transformada: S02 | 18 personas | unidad: texto
+</code></pre>
+<h3>3.3. Estructura resultante</h3>
+<p>Se muestran los archivos relevantes del proyecto; conserva la configuración Gradle existente. <code>u01</code> contiene las demostraciones y <code>modelo</code> contiene el modelo acumulativo.</p>
+<pre><code class="language-text">icc-pap-campusmonitor-apellido/
+├── app/src/main/java/edu/ups/pap/
+│   ├── App.java
+│   ├── modelo/
+│   │   └── Lectura.java
+│   └── u01/
+│       ├── TiposDemo.java
+│       └── MetodosDemo.java
+└── evidencias/
+    ├── PC1.1a.md
+    └── PC1.1b.md
+</code></pre>
+<p>Si tu <code>Lectura</code> ya está en <code>edu.ups.pap.u01</code>, conserva ese paquete y ajusta los imports de esta práctica; no crees una segunda clase con el mismo propósito.</p>
+<h3>3.4. Evidencias</h3>
+<p>Sube los cambios al repositorio remoto. En <code>evidencias/PC1.1b.md</code> incluye únicamente:</p>
+<h4>1. Implementación realizada</h4>
+<p>En un párrafo breve, explica qué representa <code>R</code> y por qué <code>transformar</code> es genérico aunque <code>runTransformaciones</code> no lo sea. Indica qué agregaste en <code>Lectura</code> y <code>App</code>.</p>
+<h4>2. Ejecución correcta</h4>
+<p>Agrega una captura que muestre ambas transformaciones y sus valores originales, y otra con los mensajes de los tres casos inválidos. Debajo, explica en una o dos frases cómo comprobaste que el original se conserva y que el resultado puede tener otro tipo.</p>
 <h2>Referencias técnicas</h2>
 <ul>
-<li><a href="https://dev.java/learn/generics/">Genéricos en Java</a></li>
-<li><a href="https://dev.java/learn/reflection/">Reflexión</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/index.html">API Java 25</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/generics/methods.html">Métodos genéricos — Oracle</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/generics/bounded.html">Cotas — Oracle</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function — API Java</a></li>
 </ul>
 <nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../01-tipos/index.html">Anterior</a><a href="../03-boxing-foreach-varargs/index.html">Siguiente</a></nav></main></body></html>

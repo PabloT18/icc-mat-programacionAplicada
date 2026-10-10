@@ -1,0 +1,646 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.4c · Patrones de comportamiento · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../02-estructurales/index.html">Anterior</a><a href="../../../02/2.1-lenguajes-regulares/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+<h2>1.4c. Patrones de comportamiento</h2>
+<p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
+<hr>
+<h2>1. Conceptos y ejemplos</h2>
+<p><a id="concepto-1"></a></p>
+<h3>1.1. Fundamentos</h3>
+<p>Los patrones <strong>de comportamiento</strong> distribuyen algoritmos, decisiones y comunicación entre objetos. Definen quién conoce una regla, quién coordina una interacción y qué partes pueden reemplazarse o evolucionar de forma independiente.</p>
+<p>Este bloque cubre los once patrones de comportamiento del catálogo GoF, incluido Interpreter. No es necesario aplicar todos a una aplicación. Elige según la variación real: algoritmos intercambiables, estados, peticiones, recorridos, eventos o nuevas operaciones sobre una estructura.</p>
+<p>Una interfaz genérica puede relacionar el tipo de dato entre colaboradores, como <code>Regla&lt;T&gt;</code>, <code>Observador&lt;E&gt;</code> o <code>Iterator&lt;E&gt;</code>. El patrón organiza las responsabilidades; el genérico comprueba la compatibilidad de datos. Una lambda implementa una interfaz funcional, pero su sola presencia no demuestra que exista un patrón.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>N.º</th>
+<th>Patrón</th>
+<th>Demostración</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Chain of Responsibility</td>
+<td><code>ChainOfResponsibilityDemo.java</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Command</td>
+<td><code>CommandDemo.java</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Interpreter</td>
+<td><code>InterpreterDemo.java</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Iterator</td>
+<td><code>IteratorDemo.java</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Mediator</td>
+<td><code>MediatorDemo.java</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Memento</td>
+<td><code>MementoDemo.java</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Observer</td>
+<td><code>ObserverDemo.java</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>State</td>
+<td><code>StateDemo.java</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Strategy</td>
+<td><code>StrategyDemo.java</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Template Method</td>
+<td><code>TemplateMethodDemo.java</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Visitor</td>
+<td><code>VisitorDemo.java</code></td>
+</tr>
+</tbody></table></div>
+<p><a id="concepto-2"></a></p>
+<h3>1.2. Chain of Responsibility</h3>
+<p><strong>Intención.</strong> Pasar una petición por una cadena de manejadores, permitiendo que cada uno la atienda o la delegue. El emisor conoce el inicio de la cadena, no todos los posibles receptores.</p>
+<p>Es útil para escalamiento de solicitudes o procesamiento configurable. Debe definirse si la cadena termina al atender una petición o si todos los manejadores participan. El orden afecta al resultado, y una petición podría quedar sin atender. En el ejemplo, cada nivel aprueba hasta cierto monto; si ninguno puede hacerlo, se rechaza. Los montos son enteros para aislar la decisión del manejo monetario. No se deben esconder errores bajo una delegación indefinida ni crear ciclos entre manejadores.</p>
+<p><a id="concepto-3"></a></p>
+<h3>1.3. Command</h3>
+<p><strong>Intención.</strong> Representar una petición como un objeto, separando quien la solicita de quien realiza el trabajo. Los participantes son comando, receptor, invocador y cliente que conecta los objetos.</p>
+<p>Un botón puede ejecutar diferentes acciones mediante el mismo contrato. Convertir acciones en objetos permite encolarlas o registrar un historial, pero esas capacidades requieren implementación adicional. Deshacer no surge automáticamente: el comando debe conservar el estado o la operación inversa necesaria. El ejemplo guarda el estado previo de una luz para restaurarlo. Está diseñado para una ejecución seguida de una restauración; un historial general requeriría administrar varias instancias y su orden de ejecución.</p>
+<p><a id="concepto-4"></a></p>
+<h3>1.4. Interpreter</h3>
+<p><strong>Intención.</strong> Representar una gramática sencilla mediante objetos y evaluar expresiones construidas con ella. Los terminales representan valores o variables; los no terminales combinan otras expresiones; el contexto aporta los datos de evaluación.</p>
+<p>Una regla como «activo Y NO bloqueado» puede representarse mediante un árbol de expresiones. Interpreter resulta útil para lenguajes pequeños y estables; una gramática compleja suele requerir herramientas de análisis más apropiadas. El ejemplo construye el árbol directamente en Java y no incluye un parser de texto. Esa diferencia es importante: interpretar un árbol ya construido no equivale a reconocer cualquier cadena escrita por un usuario. Este patrón completa los once patrones de comportamiento del catálogo clásico.</p>
+<h3>1.5. Iterator</h3>
+<p><strong>Intención.</strong> Recorrer una estructura sin exponer su representación interna. Un iterador mantiene la posición de recorrido y proporciona operaciones para comprobar si quedan elementos y obtener el siguiente.</p>
+<p><code>Iterator&lt;E&gt;</code> conserva mediante genéricos el tipo de cada elemento. <code>Iterable&lt;E&gt;</code> permite solicitar iteradores y habilita el <code>for-each</code>. Son contratos relacionados, pero distintos: el contenedor produce un iterador y el iterador representa un recorrido concreto. El ejemplo usa una copia estable de una lista y produce un iterador nuevo para cada recorrido. Debe lanzar <code>NoSuchElementException</code> cuando ya no quedan valores. No incorpora eliminación ni detección de modificaciones concurrentes porque la colección interna no se modifica.</p>
+<h3>1.6. Mediator</h3>
+<p><strong>Intención.</strong> Centralizar reglas de colaboración entre varios objetos para que no necesiten mantener referencias directas entre todos ellos. Los colegas se comunican con el mediador, y este coordina quién recibe cada interacción.</p>
+<p>Una sala de conversación puede distribuir mensajes entre participantes registrados sin que cada participante conozca a los demás. El beneficio es reducir conexiones directas; el riesgo es convertir al mediador en una clase que concentra demasiadas reglas. El ejemplo muestra una sala en memoria que entrega mensajes de forma síncrona y excluye al emisor. No representa un servicio de mensajería real. A diferencia de Observer, la intención principal es coordinar colaboración, no únicamente informar que ocurrió un evento.</p>
+<h3>1.7. Memento</h3>
+<p><strong>Intención.</strong> Capturar y restaurar el estado de un objeto sin exponer sus detalles internos a quien guarda el historial. El originador crea la instantánea, el memento la conserva y el cuidador administra cuándo almacenarla o restaurarla.</p>
+<p>Puede utilizarse para deshacer cambios en un editor. La instantánea debe contener lo necesario y respetar el aislamiento del estado mutable; guardar solo referencias no garantiza una restauración independiente. El costo crece con la cantidad y tamaño de las instantáneas. En el ejemplo el estado es una cadena inmutable y el cuidador solo conserva el memento. Se muestra una restauración; una pila de historial sería una ampliación del mismo mecanismo.</p>
+<h3>1.8. Observer</h3>
+<p><strong>Intención.</strong> Permitir que varios interesados se suscriban a los eventos de un emisor. El emisor notifica mediante una interfaz y no depende de las clases concretas de sus observadores.</p>
+<p>Es útil para actualizar vistas, registrar sucesos o reaccionar a cambios. El contrato debe definir suscripción, cancelación, orden y política frente a errores. Notificar observadores no significa ejecutar en paralelo: en el ejemplo las llamadas son síncronas y una excepción detendría la publicación actual. Se recorre una copia de suscriptores para que una modificación del registro no altere ese recorrido. El parámetro genérico <code>E</code> relaciona el tipo de evento del emisor con el que recibe cada observador.</p>
+<h3>1.9. State</h3>
+<p><strong>Intención.</strong> Cambiar el comportamiento de un objeto según su estado interno, delegando operaciones a objetos que representan cada estado. El contexto conserva el estado actual y las transiciones determinan qué comportamiento se utiliza después.</p>
+<p>Un pedido puede aceptar pago antes del envío, pero rechazar un envío prematuro. Concentrar esas reglas en estados evita repetir condiciones en cada operación del contexto. Debe quedar claro quién controla las transiciones y cuáles son válidas. State se parece estructuralmente a Strategy, pero representa etapas del ciclo de vida, no alternativas elegidas libremente para un cálculo. El ejemplo implementa solo pago y envío; no pretende cubrir un sistema completo de pedidos.</p>
+<h3>1.10. Strategy</h3>
+<p><strong>Intención.</strong> Encapsular alternativas de un algoritmo detrás de una interfaz común. El contexto recibe una estrategia y delega la decisión variable; el cliente selecciona la implementación adecuada.</p>
+<p>Por ejemplo, un clasificador puede aceptar por longitud mínima o por un prefijo. El recorrido o el procedimiento que usa la regla permanece estable. El patrón es útil si existen criterios intercambiables; puede ser excesivo cuando solo hay una operación simple que no cambia. Una interfaz funcional puede implementarse mediante lambdas, pero clases con nombre facilitan configuración y validación. En el ejemplo, <code>Regla&lt;T&gt;</code> conserva el tipo procesado y <code>Clasificador&lt;T&gt;</code> no inspecciona las clases de las estrategias.</p>
+<h3>1.11. Template Method</h3>
+<p><strong>Intención.</strong> Definir el orden estable de un algoritmo en una clase base y permitir que las subclases completen o especialicen ciertos pasos. El método plantilla controla la secuencia; las operaciones primitivas o los hooks aportan las variaciones.</p>
+<p>Es útil para procesos que comparten etapas y difieren en detalles. La reutilización se basa en herencia, por lo que las subclases quedan vinculadas al diseño de la clase base. Strategy suele ser más apropiado cuando se necesita sustituir una colaboración por composición. El ejemplo limpia una entrada, la convierte y muestra el resultado siempre en ese orden. El método plantilla es <code>final</code> para evitar que una subclase omita esas etapas.</p>
+<h3>1.12. Visitor</h3>
+<p><strong>Intención.</strong> Agregar operaciones sobre una estructura de objetos separando esas operaciones de las clases de los elementos. Cada elemento acepta un visitante y llama a la operación correspondiente a su propio tipo.</p>
+<p>La selección combina el tipo del elemento y la implementación del visitante, mecanismo conocido como doble despacho. Es útil cuando las clases de elementos cambian poco y se añaden operaciones con frecuencia. Agregar un nuevo tipo de elemento obliga a actualizar los visitantes, por lo que no conviene en jerarquías muy variables. El ejemplo aplica un exportador a párrafos e imágenes sin colocar la lógica de exportación en cada elemento. No utiliza <code>instanceof</code> para elegir la operación.</p>
+<h3>1.13. Criterios de elección</h3>
+<p>Strategy y State pueden tener clases parecidas: la diferencia es que Strategy selecciona una política y State expresa el estado del contexto y sus transiciones. Observer notifica suscriptores, mientras Mediator coordina colaboraciones. Command representa una petición y Memento conserva estado para restaurarlo; pueden combinarse, pero no son equivalentes.</p>
+<hr>
+<p><a id="demostracion"></a></p>
+<h2>2. Demostraciones comentadas</h2>
+<p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/comportamiento/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
+<p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/patrones/comportamiento/ChainOfResponsibilityDemo.java
+</code></pre>
+<p>Los comentarios identifican los roles y las decisiones del patrón. Las lambdas implementan interfaces funcionales y los <code>record</code> agrupan datos mediante accesores generados; no son requisitos de los patrones. Los ejemplos son secuenciales y se limitan a consola.</p>
+<h3>2.1. Chain of Responsibility · <code>ChainOfResponsibilityDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+/** Cadena de aprobación: cada nivel atiende o delega la solicitud. */
+public class ChainOfResponsibilityDemo {
+    static class Aprobador {
+        private final String nombre;
+        private final int limite;
+        private final Aprobador siguiente;
+        Aprobador(String nombre, int limite, Aprobador siguiente) {
+            this.nombre = nombre;
+            this.limite = limite;
+            this.siguiente = siguiente;
+        }
+        String aprobar(int monto) {
+            if (monto &lt; 0) throw new IllegalArgumentException(&quot;Monto negativo&quot;);
+            if (monto &lt;= limite) return nombre;
+            return siguiente == null ? &quot;Rechazado&quot; : siguiente.aprobar(monto);
+        }
+    }
+    public static void main(String[] args) {
+        Aprobador direccion = new Aprobador(&quot;Dirección&quot;, 1000, null);
+        Aprobador equipo = new Aprobador(&quot;Equipo&quot;, 100, direccion);
+        System.out.println(&quot;80: &quot; + equipo.aprobar(80));
+        System.out.println(&quot;500: &quot; + equipo.aprobar(500));
+        System.out.println(&quot;1500: &quot; + equipo.aprobar(1500));
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">80: Equipo
+500: Dirección
+1500: Rechazado
+</code></pre>
+<p>El cliente invoca el primer nivel; cada manejador decide si resuelve o continúa.</p>
+<h3>2.2. Command · <code>CommandDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+/** Command: un botón ejecuta una petición sin conocer los detalles de la luz. */
+public class CommandDemo {
+    static class Luz { boolean encendida; } // Receptor.
+    interface Comando { void ejecutar(); void deshacer(); }
+    static class Encender implements Comando {
+        private final Luz luz;
+        private boolean anterior;
+        Encender(Luz luz) { this.luz = luz; }
+        public void ejecutar() {
+            anterior = luz.encendida; // Captura lo necesario para restaurar.
+            luz.encendida = true;
+        }
+        public void deshacer() { luz.encendida = anterior; }
+    }
+    record Boton(Comando comando) { // Invocador.
+        void pulsar() { comando.ejecutar(); }
+    }
+    public static void main(String[] args) {
+        Luz luz = new Luz();
+        Comando accion = new Encender(luz);
+        new Boton(accion).pulsar();
+        System.out.println(&quot;Encendida: &quot; + luz.encendida);
+        accion.deshacer();
+        System.out.println(&quot;Restaurada: &quot; + luz.encendida);
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Encendida: true
+Restaurada: false
+</code></pre>
+<p>El invocador conoce Comando; el comando conoce al receptor y conserva el estado necesario para deshacer.</p>
+<h3>2.3. Interpreter · <code>InterpreterDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.Map;
+
+/** Interpreter: evalúa una gramática booleana construida como árbol. */
+public class InterpreterDemo {
+    interface Expresion { boolean evaluar(Map&lt;String, Boolean&gt; contexto); }
+    record Variable(String nombre) implements Expresion { // Terminal.
+        public boolean evaluar(Map&lt;String, Boolean&gt; contexto) {
+            Boolean valor = contexto.get(nombre);
+            if (valor == null) throw new IllegalArgumentException(&quot;Variable ausente&quot;);
+            return valor;
+        }
+    }
+    record Y(Expresion izquierda, Expresion derecha) implements Expresion {
+        public boolean evaluar(Map&lt;String, Boolean&gt; contexto) {
+            return izquierda.evaluar(contexto) &amp;&amp; derecha.evaluar(contexto);
+        }
+    }
+    record No(Expresion expresion) implements Expresion {
+        public boolean evaluar(Map&lt;String, Boolean&gt; contexto) {
+            return !expresion.evaluar(contexto);
+        }
+    }
+    public static void main(String[] args) {
+        Expresion regla = new Y(new Variable(&quot;activo&quot;), new No(new Variable(&quot;bloqueado&quot;)));
+        System.out.println(regla.evaluar(Map.of(&quot;activo&quot;, true, &quot;bloqueado&quot;, false)));
+        System.out.println(regla.evaluar(Map.of(&quot;activo&quot;, true, &quot;bloqueado&quot;, true)));
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">true
+false
+</code></pre>
+<p>Los objetos Y y No forman el árbol; el mapa aporta valores y no contiene el algoritmo de interpretación.</p>
+<h3>2.4. Iterator · <code>IteratorDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/** Iterator genérico: cada recorrido conserva su propio índice. */
+public class IteratorDemo {
+    static class Catalogo&lt;T&gt; implements Iterable&lt;T&gt; {
+        private final List&lt;T&gt; elementos;
+        Catalogo(List&lt;T&gt; elementos) { this.elementos = List.copyOf(elementos); }
+        public Iterator&lt;T&gt; iterator() {
+            return new Iterator&lt;T&gt;() {
+                private int indice;
+                public boolean hasNext() { return indice &lt; elementos.size(); }
+                public T next() {
+                    if (!hasNext()) throw new NoSuchElementException();
+                    return elementos.get(indice++);
+                }
+            };
+        }
+    }
+    public static void main(String[] args) {
+        Catalogo&lt;String&gt; catalogo = new Catalogo&lt;&gt;(List.of(&quot;A&quot;, &quot;B&quot;));
+        for (String elemento : catalogo) System.out.println(elemento);
+        System.out.println(&quot;Otro recorrido: &quot; + catalogo.iterator().next());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">A
+B
+Otro recorrido: A
+</code></pre>
+<p>La nueva llamada a iterator() empieza desde el inicio; el estado del recorrido pertenece a cada iterador.</p>
+<h3>2.5. Mediator · <code>MediatorDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Mediator: la sala coordina la entrega entre participantes. */
+public class MediatorDemo {
+    static class Sala {
+        private final List&lt;Usuario&gt; usuarios = new ArrayList&lt;&gt;();
+        void registrar(Usuario usuario) { usuarios.add(usuario); }
+        void distribuir(Usuario emisor, String texto) {
+            for (Usuario usuario : usuarios) {
+                if (usuario != emisor) usuario.recibir(texto);
+            }
+        }
+    }
+    static class Usuario {
+        private final String nombre;
+        private final Sala sala;
+        Usuario(String nombre, Sala sala) {
+            this.nombre = nombre;
+            this.sala = sala;
+            sala.registrar(this);
+        }
+        void enviar(String texto) { sala.distribuir(this, texto); }
+        void recibir(String texto) { System.out.println(nombre + &quot; recibe: &quot; + texto); }
+    }
+    public static void main(String[] args) {
+        Sala sala = new Sala();
+        Usuario ana = new Usuario(&quot;Ana&quot;, sala);
+        new Usuario(&quot;Luis&quot;, sala);
+        new Usuario(&quot;Eva&quot;, sala);
+        ana.enviar(&quot;Hola&quot;);
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Luis recibe: Hola
+Eva recibe: Hola
+</code></pre>
+<p>Ana no conserva referencias a Luis o Eva; todos colaboran a través de la sala.</p>
+<h3>2.6. Memento · <code>MementoDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+/** Memento: restaura texto sin revelar el contenido de la instantánea al cuidador. */
+public class MementoDemo {
+    static class Editor {
+        private String texto = &quot;&quot;;
+        static final class Recuerdo {
+            private final String texto;
+            private Recuerdo(String texto) { this.texto = texto; }
+        }
+        void escribir(String valor) { texto = valor; }
+        String leer() { return texto; }
+        Recuerdo guardar() { return new Recuerdo(texto); }
+        void restaurar(Recuerdo recuerdo) { texto = recuerdo.texto; }
+    }
+    public static void main(String[] args) {
+        Editor editor = new Editor();
+        editor.escribir(&quot;Borrador&quot;);
+        Editor.Recuerdo anterior = editor.guardar(); // Cuidador: conserva, no interpreta.
+        editor.escribir(&quot;Versión modificada&quot;);
+        System.out.println(editor.leer());
+        editor.restaurar(anterior);
+        System.out.println(editor.leer());
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Versión modificada
+Borrador
+</code></pre>
+<p>El editor crea e interpreta su recuerdo; el cliente lo utiliza únicamente como una instantánea opaca.</p>
+<h3>2.7. Observer · <code>ObserverDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Observer: publicación tipada con suscripción y cancelación explícitas. */
+public class ObserverDemo {
+    interface Observador&lt;E&gt; { void recibir(E evento); }
+    static class Emisor&lt;E&gt; {
+        private final List&lt;Observador&lt;E&gt;&gt; observadores = new ArrayList&lt;&gt;();
+        void suscribir(Observador&lt;E&gt; observador) { observadores.add(observador); }
+        void quitar(Observador&lt;E&gt; observador) { observadores.remove(observador); }
+        void publicar(E evento) {
+            for (Observador&lt;E&gt; o : List.copyOf(observadores)) o.recibir(evento);
+        }
+    }
+    public static void main(String[] args) {
+        Emisor&lt;String&gt; emisor = new Emisor&lt;&gt;();
+        Observador&lt;String&gt; consola = e -&gt; System.out.println(&quot;Consola: &quot; + e);
+        Observador&lt;String&gt; registro = e -&gt; System.out.println(&quot;Registro: &quot; + e);
+        emisor.suscribir(consola);
+        emisor.suscribir(registro);
+        emisor.publicar(&quot;Inicio&quot;);
+        emisor.quitar(registro);
+        emisor.publicar(&quot;Fin&quot;);
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Consola: Inicio
+Registro: Inicio
+Consola: Fin
+</code></pre>
+<p>La segunda publicación ya no llega al observador retirado; las notificaciones suceden en el mismo hilo.</p>
+<h3>2.8. State · <code>StateDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+/** State: cada estado define las operaciones válidas de un pedido. */
+public class StateDemo {
+    interface Estado {
+        void pagar(Pedido pedido);
+        void enviar(Pedido pedido);
+    }
+    static class Nuevo implements Estado {
+        public void pagar(Pedido p) { p.estado = new Pagado(); System.out.println(&quot;Pagado&quot;); }
+        public void enviar(Pedido p) { throw new IllegalStateException(&quot;Falta pagar&quot;); }
+    }
+    static class Pagado implements Estado {
+        public void pagar(Pedido p) { throw new IllegalStateException(&quot;Ya pagado&quot;); }
+        public void enviar(Pedido p) { p.estado = new Enviado(); System.out.println(&quot;Enviado&quot;); }
+    }
+    static class Enviado implements Estado {
+        public void pagar(Pedido p) { throw new IllegalStateException(&quot;Pedido enviado&quot;); }
+        public void enviar(Pedido p) { throw new IllegalStateException(&quot;Ya enviado&quot;); }
+    }
+    static class Pedido {
+        private Estado estado = new Nuevo();
+        void pagar() { estado.pagar(this); }
+        void enviar() { estado.enviar(this); }
+    }
+    public static void main(String[] args) {
+        Pedido pedido = new Pedido();
+        try { pedido.enviar(); }
+        catch (IllegalStateException e) { System.out.println(e.getMessage()); }
+        pedido.pagar();
+        pedido.enviar();
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Falta pagar
+Pagado
+Enviado
+</code></pre>
+<p>Pedido delega; Nuevo, Pagado y Enviado deciden tanto el comportamiento como la transición permitida.</p>
+<h3>2.9. Strategy · <code>StrategyDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.Objects;
+
+/** Strategy genérico: el contexto delega en una regla intercambiable. */
+public class StrategyDemo {
+    interface Regla&lt;T&gt; { boolean cumple(T valor); }
+    record LongitudMinima(int minimo) implements Regla&lt;String&gt; {
+        public boolean cumple(String texto) { return texto.length() &gt;= minimo; }
+    }
+    record EmpiezaCon(String prefijo) implements Regla&lt;String&gt; {
+        public boolean cumple(String texto) { return texto.startsWith(prefijo); }
+    }
+    static class Clasificador&lt;T&gt; {
+        private final Regla&lt;T&gt; regla;
+        Clasificador(Regla&lt;T&gt; regla) { this.regla = Objects.requireNonNull(regla); }
+        boolean aceptar(T valor) { return regla.cumple(Objects.requireNonNull(valor)); }
+    }
+    public static void main(String[] args) {
+        Clasificador&lt;String&gt; longitud = new Clasificador&lt;&gt;(new LongitudMinima(5));
+        Clasificador&lt;String&gt; prefijo = new Clasificador&lt;&gt;(new EmpiezaCon(&quot;J&quot;));
+        System.out.println(&quot;Longitud: &quot; + longitud.aceptar(&quot;Java&quot;));
+        System.out.println(&quot;Prefijo: &quot; + prefijo.aceptar(&quot;Java&quot;));
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Longitud: false
+Prefijo: true
+</code></pre>
+<p>Ambos clasificadores procesan String; cambia la regla recibida, sin modificar aceptar().</p>
+<h3>2.10. Template Method · <code>TemplateMethodDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.Locale;
+
+/** Template Method: conserva la secuencia y especializa un paso. */
+public class TemplateMethodDemo {
+    static abstract class Proceso {
+        final void ejecutar(String entrada) {
+            String limpia = entrada.strip();
+            String resultado = convertir(limpia); // Paso variable.
+            System.out.println(resultado);
+        }
+        protected abstract String convertir(String entrada);
+    }
+    static class Mayusculas extends Proceso {
+        protected String convertir(String entrada) {
+            return entrada.toUpperCase(Locale.ROOT);
+        }
+    }
+    static class EntreCorchetes extends Proceso {
+        protected String convertir(String entrada) { return &quot;[&quot; + entrada + &quot;]&quot;; }
+    }
+    public static void main(String[] args) {
+        new Mayusculas().ejecutar(&quot;  Hola  &quot;);
+        new EntreCorchetes().ejecutar(&quot;  Hola  &quot;);
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">HOLA
+[Hola]
+</code></pre>
+<p>Las subclases cambian convertir(); ejecutar() mantiene limpieza, conversión y salida en el mismo orden.</p>
+<h3>2.11. Visitor · <code>VisitorDemo.java</code></h3>
+<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
+
+import java.util.List;
+
+/** Visitor: agrega una operación de exportación a distintos elementos. */
+public class VisitorDemo {
+    interface Visitante {
+        String visitar(Parrafo parrafo);
+        String visitar(Imagen imagen);
+    }
+    interface Elemento { String aceptar(Visitante visitante); }
+    record Parrafo(String texto) implements Elemento {
+        public String aceptar(Visitante v) { return v.visitar(this); }
+    }
+    record Imagen(String nombre) implements Elemento {
+        public String aceptar(Visitante v) { return v.visitar(this); }
+    }
+    static class Exportador implements Visitante {
+        public String visitar(Parrafo p) { return &quot;Texto: &quot; + p.texto(); }
+        public String visitar(Imagen i) { return &quot;Imagen: &quot; + i.nombre(); }
+    }
+    public static void main(String[] args) {
+        List&lt;Elemento&gt; elementos = List.of(new Parrafo(&quot;Hola&quot;), new Imagen(&quot;logo.png&quot;));
+        Visitante exportador = new Exportador();
+        for (Elemento e : elementos) System.out.println(e.aceptar(exportador));
+    }
+}
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Texto: Hola
+Imagen: logo.png
+</code></pre>
+<p>Cada aceptar() selecciona la sobrecarga para su tipo; la implementación de Visitante aporta la operación concreta.</p>
+<hr>
+<p><a id="pc"></a></p>
+<h2>3. PC1.4 · Integración de Adapter y Strategy</h2>
+<p>Continúa sobre el proyecto de PC1.2. CampusMonitor recibirá temperaturas desde una API simulada en Fahrenheit y evaluará alertas con criterios intercambiables. Se aplicarán <strong>Adapter</strong> para integrar el origen y <strong>Strategy</strong> para seleccionar la regla de alerta.</p>
+<h3>3.1. Clases e interfaces que debes incorporar</h3>
+<p>Conserva <code>Lectura&lt;T&gt;</code>, su método <code>transformar</code> y <code>ReporteLecturas</code>. Implementa los siguientes elementos públicos, cada uno en su archivo:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Paquete y elemento</th>
+<th>Tipo y contrato</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>integracion.FuenteLectura&lt;T&gt;</code></td>
+<td>Interfaz con <code>Lectura&lt;T&gt; leer()</code>; contrato de acceso a una lectura</td>
+</tr>
+<tr>
+<td><code>integracion.TermometroExterno</code></td>
+<td>Clase simulada con constructor <code>TermometroExterno(String codigo, double valorF)</code>, y métodos <code>String codigo()</code> y <code>double tomarMuestraF()</code> que devuelven esos datos</td>
+</tr>
+<tr>
+<td><code>integracion.AdaptadorTermometro</code></td>
+<td>Clase que implementa <code>FuenteLectura&lt;Double&gt;</code>; recibe <code>TermometroExterno</code> por constructor y entrega una lectura en <code>°C</code></td>
+</tr>
+<tr>
+<td><code>alertas.ReglaAlerta&lt;T&gt;</code></td>
+<td>Interfaz con <code>boolean evaluar(T valor)</code>; <code>true</code> representa una alerta</td>
+</tr>
+<tr>
+<td><code>alertas.SobreUmbral</code></td>
+<td>Clase que implementa <code>ReglaAlerta&lt;Double&gt;</code>; recibe <code>double umbral</code> y alerta cuando el valor es estrictamente mayor</td>
+</tr>
+<tr>
+<td><code>alertas.FueraDeRango</code></td>
+<td>Clase que implementa <code>ReglaAlerta&lt;Double&gt;</code>; recibe <code>double minimo, double maximo</code> y alerta fuera del intervalo inclusivo</td>
+</tr>
+<tr>
+<td><code>servicio.Monitor&lt;T&gt;</code></td>
+<td>Clase genérica con constructor <code>Monitor(FuenteLectura&lt;T&gt; fuente, ReglaAlerta&lt;T&gt; regla)</code> y método <code>String revisar()</code></td>
+</tr>
+</tbody></table></div>
+<p>Todos los paquetes tienen el prefijo <code>edu.ups.pap</code>. <code>Monitor.revisar()</code> debe leer una vez, evaluar el valor y devolver identificador, valor, unidad y estado <code>NORMAL</code> o <code>ALERTA</code>. El monitor utiliza las interfaces; no debe distinguir estrategias u orígenes mediante <code>instanceof</code> ni casts.</p>
+<p>En el adaptador, representa primero la muestra externa como <code>Lectura&lt;Double&gt;</code> en <code>°F</code> y reutiliza <strong><code>Lectura.transformar</code></strong> para convertirla con <code>C = (F − 32) × 5.0 / 9.0</code>. Así se conserva el identificador y se aprovecha el avance de PC1.1b y PC1.2.</p>
+<p>Rechaza dependencias nulas, temperaturas o límites no finitos y rangos con mínimo mayor que máximo mediante <code>IllegalArgumentException</code> descriptiva. Conserva las validaciones del modelo para identificadores y unidades. La fuente simulada permite probar la integración sin hardware.</p>
+<h3>3.2. Actividades en App.java</h3>
+<p>Crea <code>private static void runPatrones()</code> e invócalo desde <code>main</code>, conservando los métodos y funcionalidades anteriores.</p>
+<ol>
+<li>Crea tres termómetros simulados: <code>S01</code> con <code>68.0 °F</code>, <code>S02</code> con <code>77.0 °F</code> y <code>S03</code> con <code>86.0 °F</code>. Conecta cada uno mediante su adaptador.</li>
+<li>Evalúa las lecturas con <code>SobreUmbral(28.0)</code> y muestra el resultado.</li>
+<li>Evalúa las mismas fuentes con <code>FueraDeRango(18.0, 24.0)</code>. Cambia el objeto de estrategia suministrado al monitor, sin modificar su implementación.</li>
+<li>Comprueba un rango invertido y una fuente nula, capturando las excepciones para mostrar ambos mensajes.</li>
+</ol>
+<p>La consola debe permitir contrastar estos resultados:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Sensor</th>
+<th>Lectura adaptada</th>
+<th>Umbral mayor que 28</th>
+<th>Fuera del rango 18–24</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S01</td>
+<td><code>20.0 °C</code></td>
+<td>NORMAL</td>
+<td>NORMAL</td>
+</tr>
+<tr>
+<td>S02</td>
+<td><code>25.0 °C</code></td>
+<td>NORMAL</td>
+<td>ALERTA</td>
+</tr>
+<tr>
+<td>S03</td>
+<td><code>30.0 °C</code></td>
+<td>ALERTA</td>
+<td>ALERTA</td>
+</tr>
+</tbody></table></div>
+<p>También comprueba los límites: <code>28.0</code> no activa <code>SobreUmbral(28.0)</code>; <code>18.0</code> y <code>24.0</code> no activan <code>FueraDeRango(18.0, 24.0)</code>.</p>
+<h3>3.3. Estructura resultante</h3>
+<p>Archivos relevantes acumulados. Las carpetas de demos contienen los archivos presentados en los tres bloques de patrones; no sustituyen las clases del proyecto.</p>
+<pre><code class="language-text">icc-pap-campusmonitor-apellido/
+├── app/src/main/java/edu/ups/pap/
+│   ├── App.java
+│   ├── modelo/
+│   │   └── Lectura.java
+│   ├── integracion/
+│   │   ├── FuenteLectura.java
+│   │   ├── TermometroExterno.java
+│   │   └── AdaptadorTermometro.java
+│   ├── alertas/
+│   │   ├── ReglaAlerta.java
+│   │   ├── SobreUmbral.java
+│   │   └── FueraDeRango.java
+│   ├── servicio/
+│   │   ├── ReporteLecturas.java
+│   │   └── Monitor.java
+│   └── u01/
+│       ├── TiposDemo.java
+│       ├── MetodosDemo.java
+│       ├── ConversionesDemo.java
+│       ├── ComodinesDemo.java
+│       └── patrones/
+│           ├── creacionales/
+│           ├── estructurales/
+│           └── comportamiento/
+└── evidencias/
+    ├── PC1.1a.md
+    ├── PC1.1b.md
+    ├── PC1.2.md
+    └── PC1.4.md
+</code></pre>
+<p>Si tu modelo permanece en <code>u01</code>, utiliza ese paquete en los imports de las clases nuevas; no dupliques <code>Lectura</code>.</p>
+<h3>3.4. Evidencias</h3>
+<p>Sube los cambios al repositorio remoto. En <code>evidencias/PC1.4.md</code> incluye únicamente:</p>
+<h4>1. Implementación realizada</h4>
+<p>En un párrafo breve, identifica el adaptador, las estrategias y el contexto. Explica cómo reutilizaste <code>Lectura.transformar</code> para convertir la muestra externa.</p>
+<h4>2. Ejecución correcta</h4>
+<p>Agrega una captura con los tres sensores evaluados mediante ambas estrategias y las comprobaciones de los límites, y otra con los mensajes del rango invertido y la fuente nula. Debajo, explica en una o dos frases por qué cambió el resultado de S02 al sustituir la estrategia sin modificar el monitor.</p>
+<h2>Referencias técnicas</h2>
+<ul>
+<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994. Catálogo original de 23 patrones.</li>
+<li><a href="https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-software-9780201633610">Ficha y contenido de la obra — Addison-Wesley / InformIT</a></li>
+<li><a href="https://refactoring.guru/es/design-patterns/catalog">Catálogo complementario — Refactoring.Guru</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API Java</a></li>
+</ul>
+<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../02-estructurales/index.html">Anterior</a><a href="../../../02/2.1-lenguajes-regulares/index.html">Siguiente</a></nav></main></body></html>

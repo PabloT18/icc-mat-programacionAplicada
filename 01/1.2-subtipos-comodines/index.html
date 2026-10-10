@@ -1,143 +1,207 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.2 · Subtipos, comodines y PECS · Programación Aplicada</title><link rel="stylesheet" href="../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../1.1-fundamentos/03-boxing-foreach-varargs/index.html">Anterior</a><a href="../1.3-genericos-reflexion/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
-<h2>1.2. Subtipos, comodines y PECS</h2>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>1.2 · Subtipos, comodines y PECS · Programación Aplicada</title><link rel="stylesheet" href="../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../1.1-fundamentos/03-boxing-foreach-varargs/index.html">Anterior</a><a href="../1.4-patrones-genericos/01-creacionales/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+<h2>1.2. Subtipos y comodines</h2>
 <p><img src="../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a> · <a href="index.html">Ver en el navegador</a></p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><a href="../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<h3>Contexto</h3>
-<p>Las lecturas de temperatura son Double, pero una utilidad de cálculo puede aceptar Number. La herencia entre Integer, Double y Number no se propaga automáticamente a List. El diseño de la firma determina qué se puede leer y escribir de forma segura.</p>
-<h3>Antes de empezar</h3>
-<p>Recupera el avance de <a href="../1.1-fundamentos/03-boxing-foreach-varargs/index.html">1.1c</a>. Conserva sus comandos y evidencias. Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas del proyecto personal.</p>
 <p><a id="concepto-1"></a></p>
-<h3>1.1. Invariancia de los tipos parametrizados</h3>
-<p>Aunque Integer extiende Number, List<Integer> no es subtipo de List<Number>. Si esa asignación fuera válida, una referencia List<Number> permitiría insertar un Double en una lista destinada a Integer. La invariancia evita esa contradicción. No se resuelve añadiendo un cast: un cast no comprueba todos los elementos y puede posponer el fallo.</p>
-<p>La compatibilidad se expresa con comodines. List&lt;?&gt; representa una lista de un tipo desconocido. Puedes recuperar elementos como Object y consultar tamaño o vaciado, pero no insertar un valor concreto con seguridad. Desconocido no significa que la lista mezcle libremente todos los tipos.</p>
-<pre><code class="language-java">List&lt;Integer&gt; ocupacion = List.of(10, 12);
-List&lt;? extends Number&gt; lectura = ocupacion;
-Number primero = lectura.get(0);
+<h3>1.1. Subtipado y sustitución</h3>
+<p>Un tipo es <strong>subtipo</strong> de otro cuando puede utilizarse donde se espera el tipo más general, respetando su contrato. <code>Integer</code> es subtipo de <code>Number</code>, de modo que una referencia <code>Number</code> puede apuntar a un <code>Integer</code>.</p>
+<pre><code class="language-java">Number numero = Integer.valueOf(8);
 </code></pre>
+<p>La relación entre clases no se traslada automáticamente a sus contenedores. Aunque <code>Integer</code> hereda de <code>Number</code>, <code>List&lt;Integer&gt;</code> no es subtipo de <code>List&lt;Number&gt;</code>. Los tipos genéricos de Java son <strong>invariantes</strong> respecto de sus argumentos.</p>
+<pre><code class="language-java">List&lt;Integer&gt; enteros = new ArrayList&lt;&gt;();
+// List&lt;Number&gt; numeros = enteros; // No compila.
+</code></pre>
+<p>Si esta asignación fuera válida, se podría insertar un <code>Double</code> usando <code>numeros</code>, y luego recuperar ese mismo elemento como <code>Integer</code> desde <code>enteros</code>. La prohibición conserva el contrato de la lista original.</p>
+<h3>1.2. Qué representa un comodín</h3>
+<p>El <strong>comodín <code>?</code></strong> representa un argumento de tipo desconocido. Permite declarar referencias que aceptan diferentes parametrizaciones, restringiendo las operaciones a las que resultan seguras para todas ellas.</p>
+<p><code>List&lt;?&gt;</code> significa «lista de algún tipo que no conocemos», no «lista de cualquier objeto». Una variable de ese tipo puede referirse a <code>List&lt;String&gt;</code> o a <code>List&lt;Integer&gt;</code>, pero no permite insertar indistintamente cadenas y enteros. Al leer, solo se garantiza <code>Object</code>.</p>
+<p><code>List&lt;Object&gt;</code>, en cambio, tiene un argumento conocido: <code>Object</code>. Admite elementos de tipos diferentes, pero no puede recibir por asignación una <code>List&lt;String&gt;</code> debido a la invariancia.</p>
 <p><a id="concepto-2"></a></p>
-<h3>1.2. Productores con extends</h3>
-<p>List&lt;? extends Number&gt; representa una lista de algún subtipo de Number. Se puede leer cada elemento como Number. No permite añadir un Integer o un Double porque el subtipo concreto es desconocido. La lista podría ser List<BigDecimal>. Esta restricción se aplica a la referencia con comodín y no convierte el objeto subyacente en inmutable.</p>
-<p>Usa extends cuando el parámetro produce valores para el algoritmo. Un sumador solo necesita leer y convertir a double. Este contrato acepta listas Integer y Double. Recuerda que una suma numérica no valida unidades y que double no sirve para todos los dominios, como importes monetarios exactos.</p>
+<h3>1.3. Cota superior: ? extends T</h3>
+<p><code>List&lt;? extends Number&gt;</code> acepta una lista cuyo argumento sea <code>Number</code> o un subtipo suyo. Es útil para un método que <strong>consume información de la lista</strong>, es decir, que lee los elementos que esa lista produce.</p>
+<pre><code class="language-java">List&lt;? extends Number&gt; origen = List.of(2, 4, 6);
+Number primero = origen.get(0);
+// origen.add(3.5); // No compila: el tipo concreto podría ser Integer.
+</code></pre>
+<p>Se puede leer como <code>Number</code>, pero no insertar un <code>Integer</code> ni un <code>Double</code> arbitrario: se desconoce el argumento exacto. La excepción de tipos es <code>null</code>, aunque la colección concreta puede rechazarlo.</p>
+<p>Esto no convierte la lista en inmutable. Operaciones como <code>clear()</code> o <code>remove()</code> pueden seguir disponibles si la implementación las admite. Además, otras referencias podrían modificarla. La restricción afecta a las operaciones seguras a través de esa referencia.</p>
 <p><a id="concepto-3"></a></p>
-<h3>1.3. Consumidores con super</h3>
-<p>List&lt;? super Integer&gt; representa una lista de Integer o de alguno de sus supertipos. Es seguro añadir Integer. Al leer, el tipo garantizado es Object, porque una List<Number> podría contener Double y una List<Object> podría contener cadenas.</p>
-<p>PECS resume Producer Extends, Consumer Super. Se aplica a parámetros de entrada según su papel en el algoritmo. En copiar, el origen produce T y el destino consume T. Si un parámetro se lee y escribe con el mismo tipo concreto, una List<T> suele ser más adecuada. Evita devolver comodines sin necesidad porque obliga al cliente a gestionar tipos desconocidos.</p>
-<pre><code class="language-java">static &lt;T&gt; void copiar(List&lt;? extends T&gt; origen, List&lt;? super T&gt; destino) {
-    destino.addAll(origen);
-}
+<h3>1.4. Cota inferior: ? super T</h3>
+<p><code>List&lt;? super Integer&gt;</code> acepta <code>List&lt;Integer&gt;</code>, <code>List&lt;Number&gt;</code> o <code>List&lt;Object&gt;</code>. Permite insertar enteros porque todos esos destinos pueden almacenarlos.</p>
+<pre><code class="language-java">List&lt;? super Integer&gt; destino = new ArrayList&lt;Number&gt;();
+destino.add(7);
+Object recuperado = destino.get(0);
 </code></pre>
-<p><a id="concepto-4"></a></p>
-<h3>1.4. Captura y límites del contrato</h3>
-<p>El compilador captura el comodín como un tipo desconocido consistente. Un método auxiliar genérico puede aprovechar esa captura para operaciones como intercambiar elementos de una misma lista. La necesidad de ese auxiliar no implica que deba usarse un cast sin comprobar.</p>
-<p>La firma tampoco garantiza mutabilidad. List.of crea una lista no modificable, por lo que usarla como destino de copiar lanza UnsupportedOperationException. Documenta las precondiciones: el destino debe aceptar inserciones y los valores deben respetar la política de nulos. Tipo, mutabilidad y reglas del dominio son dimensiones independientes.</p>
-<h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual"></p>
-<hr>
-<p><a id="demostracion"></a></p>
-<h2>2. Demostración guiada</h2>
-<h3>2.1. Problema y contrato</h3>
-<p>Las lecturas de temperatura son Double, pero una utilidad de cálculo puede aceptar Number. La herencia entre Integer, Double y Number no se propaga automáticamente a List. El diseño de la firma determina qué se puede leer y escribir de forma segura.</p>
-<p>La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una ampliación propia sobre CampusMonitor.</p>
-<p><strong>Archivo completo:</strong> <a href="ejemplos/ComodinesDemo.java">ComodinesDemo.java</a>.</p>
-<pre><code class="language-java">package edu.ups.pap.u01;
-import java.util.*;
-public class ComodinesDemo {
-    static double sumar(List&lt;? extends Number&gt; valores) {
-        double total = 0;
-        for (Number n : valores) total += Objects.requireNonNull(n).doubleValue();
-        return total;
-    }
-    static &lt;T&gt; void copiar(List&lt;? extends T&gt; origen, List&lt;? super T&gt; destino) {
-        destino.addAll(origen);
-    }
-    public static void main(String[] args) {
-        List&lt;Integer&gt; ocupacion = List.of(10,12,8);
-        List&lt;Number&gt; acumulado = new ArrayList&lt;&gt;();
-        copiar(ocupacion, acumulado);
-        copiar(List.of(22.5,24.0), acumulado);
-        System.out.println(acumulado);
-        System.out.println(&quot;Total numérico: &quot; + sumar(acumulado));
-        List&lt;Object&gt; auditoria = new ArrayList&lt;&gt;();
-        copiar(acumulado, auditoria);
-        System.out.println(&quot;Elementos auditados: &quot; + auditoria.size());
-    }
-}
-</code></pre>
-<h3>2.2. Ejecución</h3>
-<p>Desde la raíz de este repositorio, con JDK 25:</p>
-<pre><code class="language-bash">java 01/1.2-subtipos-comodines/ejemplos/ComodinesDemo.java
-</code></pre>
-<p>Con el proyecto Gradle de demostraciones:</p>
-<pre><code class="language-bash">cd demostraciones
-./gradlew runDemo -Pdemo=1.2
-</code></pre>
-<p>En Windows usa <code>gradlew.bat</code>. Ejecuta cada demostración desde una terminal nueva o vuelve a la raíz antes de cambiar de contenido.</p>
-<h3>2.3. Resultado y lectura de la ejecución</h3>
-<pre><code class="language-text">[10, 12, 8, 22.5, 24.0]
-Total numérico: 76.5
-Elementos auditados: 5
-</code></pre>
-<ol>
-<li>Identifica los datos iniciales y las precondiciones que la demostración valida.</li>
-<li>Sigue las llamadas desde <code>main</code> o <code>loop</code> y relaciona las operaciones con los conceptos de la sección 1.</li>
-<li>Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la invariante y no el orden de impresión.</li>
-<li>Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y su causa.</li>
-</ol>
-<hr>
-<p><a id="pc"></a></p>
-<h2>3. PC1.2 · Práctica de clase</h2>
-<h3>3.1. Ampliación del proyecto</h3>
-<p>Esta actividad se resuelve en tu repositorio <code>icc-pap-campusmonitor-apellido</code>. Mantén la funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.</p>
-<ol>
-<li>Generaliza el método de copia del catálogo con origen productor y destino consumidor. Usa una lista destino modificable.</li>
-<li>Demuestra copias Integer a Number y Number a Object. Mantén separados los promedios por unidad en CampusMonitor.</li>
-<li>Incluye dos contraejemplos comentados: asignación List<Integer> a List<Number> e inserción en List&lt;? extends Number&gt;. Explica por qué no compilan.</li>
-</ol>
-<h3>3.2. Comprobación y evidencia</h3>
-<p>Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.</p>
+<p>Al recuperar un elemento solo se garantiza <code>Object</code>: si el destino real es <code>List&lt;Object&gt;</code>, podría contener cadenas agregadas previamente. La cota inferior define lo que podemos introducir con seguridad, no el tipo de todos los elementos que ya existen.</p>
+<h3>1.5. PECS y elección de la firma</h3>
+<p>La regla <strong>PECS</strong> resume dos usos: <em>Producer Extends, Consumer Super</em>. La perspectiva es la del algoritmo: el origen produce valores para el método y el destino consume los valores que el método escribe.</p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Caso que debes revisar</th>
-<th>Comportamiento requerido</th>
+<th>Firma</th>
+<th>Lectura garantizada</th>
+<th>Inserción segura por tipo</th>
+<th>Uso habitual</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Origen Integer, destino Number</td>
-<td>Copia válida</td>
+<td><code>List&lt;T&gt;</code></td>
+<td><code>T</code></td>
+<td><code>T</code></td>
+<td>Leer y escribir el mismo tipo conocido</td>
 </tr>
 <tr>
-<td>Destino List.of</td>
-<td>Precondición incumplida documentada</td>
+<td><code>List&lt;? extends T&gt;</code></td>
+<td><code>T</code></td>
+<td>Ningún valor no nulo arbitrario</td>
+<td>Origen de datos</td>
 </tr>
 <tr>
-<td>Origen vacío</td>
-<td>Destino permanece igual</td>
+<td><code>List&lt;? super T&gt;</code></td>
+<td><code>Object</code></td>
+<td><code>T</code> y sus subtipos</td>
+<td>Destino de datos</td>
+</tr>
+<tr>
+<td><code>List&lt;?&gt;</code></td>
+<td><code>Object</code></td>
+<td>Ningún valor no nulo arbitrario</td>
+<td>Inspección independiente del tipo</td>
 </tr>
 </tbody></table></div>
-<p>En <code>evidencias/PC1.2.md</code> agrega: cambio realizado, archivos principales, comandos de ejecución, tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.</p>
-<h3>3.3. Commits de la actividad</h3>
-<pre><code class="language-bash">git status
-git add src evidencias
-git commit -m &quot;feat(pc1.2): subtipos-comodines-y-pecs&quot;
-git push
-git log -1 --format=%H
+<p>La tabla describe seguridad de tipos; una lista inmodificable puede rechazar cualquier escritura en ejecución.</p>
+<p>La firma <code>&lt;T&gt; void copiar(List&lt;? extends T&gt; origen, List&lt;? super T&gt; destino)</code> conecta ambas posiciones mediante <code>T</code>. Usar únicamente dos <code>List&lt;?&gt;</code> perdería esa relación: no habría garantía de que lo leído del origen sea aceptable en el destino.</p>
+<p><a id="concepto-4"></a></p>
+<h3>1.6. Parámetro declarado frente a comodín</h3>
+<p><code>&lt;T extends Number&gt;</code> <strong>declara un nombre</strong> que puede reutilizarse en la firma y en el cuerpo. <code>? extends Number</code> expresa un tipo desconocido en una posición de uso. Elige un parámetro cuando necesites relacionar entradas o conservar ese tipo como resultado.</p>
+<p>Evita devolver comodines sin una necesidad concreta: el cliente tendría que trabajar con un tipo desconocido. Tampoco uses casts a tipos crudos para «resolver» una incompatibilidad; eso oculta el problema que el compilador está detectando.</p>
+<p>En tipos anidados, cada nivel debe analizarse por separado. <code>List&lt;Caja&lt;Double&gt;&gt;</code> no se convierte automáticamente en <code>List&lt;Caja&lt;Number&gt;&gt;</code>. Un contenedor con valor acotado puede escribirse <code>Caja&lt;? extends Number&gt;</code>, y una lista que lo produce requiere su propia cota: <code>List&lt;? extends Caja&lt;? extends Number&gt;&gt;</code>. Cada comodín expresa qué argumento se desconoce en ese nivel; no se propaga automáticamente hacia los demás.</p>
+<h3>1.7. Comodines en una función</h3>
+<p>En <code>Function&lt;? super T, ? extends R&gt;</code>, el primer argumento representa lo que la función recibe y el segundo lo que produce. Una función que recibe <code>Number</code> puede procesar un <code>Integer</code>; una función que devuelve <code>String</code> puede producir un resultado utilizado como <code>CharSequence</code>.</p>
+<p>Estas cotas permiten reutilizar funciones ya existentes. No amplían los tipos que puede contener el objeto original ni convierten una función de <code>Integer</code> en una función válida para cualquier <code>Number</code>.</p>
+<hr>
+<p><a id="demostracion"></a></p>
+<h2>2. Demostración: consumir y producir tipos compatibles</h2>
+<p>La transferencia de listas utiliza <code>extends</code> para el origen y <code>super</code> para el destino. La transformación usa esas mismas relaciones en los parámetros de <code>Function</code>.</p>
+<p><strong>Archivo:</strong> <code>app/src/main/java/edu/ups/pap/u01/ComodinesDemo.java</code>.</p>
+<pre><code class="language-java">package edu.ups.pap.u01;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+/** Demuestra cotas de lectura, escritura y transformación de valores. */
+public class ComodinesDemo {
+    /**
+     * El origen produce T y el destino consume T: regla PECS.
+     * Copia referencias, no clona los objetos almacenados.
+     */
+    static &lt;T&gt; void copiar(List&lt;? extends T&gt; origen, List&lt;? super T&gt; destino) {
+        Objects.requireNonNull(origen);
+        Objects.requireNonNull(destino);
+        // La instantánea permite que origen y destino compartan almacenamiento.
+        for (T valor : new ArrayList&lt;T&gt;(origen)) destino.add(valor);
+    }
+
+    static final class Contenedor&lt;T&gt; {
+        private final T valor;
+        Contenedor(T valor) { this.valor = Objects.requireNonNull(valor); }
+        T obtener() { return valor; }
+
+        /** La función consume T o un supertipo y produce R o un subtipo. */
+        &lt;R&gt; Contenedor&lt;R&gt; mapear(Function&lt;? super T, ? extends R&gt; funcion) {
+            Objects.requireNonNull(funcion);
+            return new Contenedor&lt;&gt;(funcion.apply(valor));
+        }
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; enteros = List.of(2, 4);
+        List&lt;Number&gt; numeros = new ArrayList&lt;&gt;();
+        copiar(enteros, numeros); // Integer puede escribirse en un destino Number.
+        System.out.println(&quot;Números: &quot; + numeros);
+
+        Contenedor&lt;Integer&gt; origen = new Contenedor&lt;&gt;(12);
+        Function&lt;Number, String&gt; formato = n -&gt; &quot;Valor: &quot; + n;
+        // Number acepta Integer; String puede utilizarse como CharSequence.
+        Contenedor&lt;CharSequence&gt; texto = origen.&lt;CharSequence&gt;mapear(formato);
+        System.out.println(texto.obtener());
+        System.out.println(&quot;Original: &quot; + origen.obtener());
+        // copiar(List.of(2.5), new ArrayList&lt;Integer&gt;()); // No compila.
+    }
+}
 </code></pre>
-<p>Ajusta las rutas de <code>git add</code> a los archivos que realmente creaste. Incluye también configuración o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.</p>
-<h3>Lo esencial</h3>
-<ul>
-<li>List es invariante.</li>
-<li>extends permite leer el tipo acotado.</li>
-<li>super permite escribir el tipo acotado.</li>
-<li>PECS depende del uso del parámetro.</li>
-</ul>
+<p>Desde la raíz del proyecto Java, con JDK 17 o superior:</p>
+<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/ComodinesDemo.java
+</code></pre>
+<p><strong>Salida esperada:</strong></p>
+<pre><code class="language-text">Números: [2, 4]
+Valor: 12
+Original: 12
+</code></pre>
+<p>El tipo explícito <code>&lt;CharSequence&gt;</code> hace visible que el retorno declarado puede ser más general que el <code>String</code> producido por la función. Sin comodines, <code>Function&lt;Number, String&gt;</code> no coincide con <code>Function&lt;Integer, CharSequence&gt;</code>.</p>
+<hr>
+<p><a id="pc"></a></p>
+<h2>3. PC1.2 · Transformaciones flexibles y reporte numérico</h2>
+<p>Continúa sobre <code>Lectura&lt;T&gt;</code> y su método <code>transformar</code>, implementado en PC1.1b. CampusMonitor utilizará una función común para distintos tipos numéricos y reunirá sus lecturas en un reporte.</p>
+<h3>3.1. Ampliación de Lectura y clase de reporte</h3>
+<p><strong>Actualiza la firma del método existente</strong>, conservando su comportamiento y validaciones:</p>
+<pre><code class="language-java">public &lt;R&gt; Lectura&lt;R&gt; transformar(
+        Function&lt;? super T, ? extends R&gt; conversor, String nuevaUnidad)
+</code></pre>
+<p>Reemplaza la firma anterior; no agregues una sobrecarga con el mismo nombre y parámetros borrados, porque ambas tendrían la misma firma después del borrado de tipos.</p>
+<p>Crea la <strong>clase pública de utilidades <code>ReporteLecturas</code></strong> en <code>edu.ups.pap.servicio</code>, con este método público estático:</p>
+<pre><code class="language-java">public static void mostrar(List&lt;? extends Lectura&lt;? extends Number&gt;&gt; lecturas)
+</code></pre>
+<p>Debe imprimir identificador, valor y unidad de cada lectura y la cantidad total. Una lista vacía muestra cantidad cero. Rechaza lista o elementos nulos con <code>IllegalArgumentException</code> y mensaje descriptivo. No modifiques la lista ni sumes magnitudes con unidades distintas. El primer comodín permite distintos tipos de elementos compatibles con la lectura numérica; el segundo permite distintos tipos de valores numéricos.</p>
+<h3>3.2. Actividades en App.java</h3>
+<p>Agrega <code>private static void runComodines()</code> y llámalo desde <code>main</code>, conservando los métodos anteriores.</p>
+<ol>
+<li>Define una única <code>Function&lt;Number, String&gt;</code> que produzca un texto a partir del número recibido. Utiliza esa misma función para transformar una temperatura <code>Double</code> y una ocupación <code>Integer</code>; no dupliques la función.</li>
+<li>En una de las llamadas, solicita el resultado como <code>Lectura&lt;CharSequence&gt;</code> utilizando el argumento de tipo explícito. Muestra ambos resultados con unidad <code>texto</code>.</li>
+<li>Crea una lista modificable <code>List&lt;Lectura&lt;? extends Number&gt;&gt;</code> con las dos lecturas numéricas originales y pásala a <code>ReporteLecturas.mostrar</code>.</li>
+<li>Llama al reporte con una lista vacía y comprueba su resultado. Comprueba por separado lista nula y lista con un elemento nulo, capturando las excepciones.</li>
+</ol>
+<p>El reporte de las lecturas originales debe mostrar:</p>
+<pre><code class="language-text">S01 | 22.5 °C
+S02 | 18 personas
+Total de lecturas: 2
+</code></pre>
+<h3>3.3. Estructura resultante</h3>
+<p>Archivos relevantes acumulados; conserva la configuración y las evidencias anteriores. <code>ConversionesDemo</code> corresponde al contenido 1.1c.</p>
+<pre><code class="language-text">icc-pap-campusmonitor-apellido/
+├── app/src/main/java/edu/ups/pap/
+│   ├── App.java
+│   ├── modelo/
+│   │   └── Lectura.java
+│   ├── servicio/
+│   │   └── ReporteLecturas.java
+│   └── u01/
+│       ├── TiposDemo.java
+│       ├── MetodosDemo.java
+│       ├── ConversionesDemo.java
+│       └── ComodinesDemo.java
+└── evidencias/
+    ├── PC1.1a.md
+    ├── PC1.1b.md
+    └── PC1.2.md
+</code></pre>
+<p>Conserva el paquete real de tu <code>Lectura</code> si ya estaba en <code>u01</code>; ajusta el import del reporte sin duplicar el modelo.</p>
+<h3>3.4. Evidencias</h3>
+<p>Sube los cambios al repositorio remoto. En <code>evidencias/PC1.2.md</code> incluye únicamente:</p>
+<h4>1. Implementación realizada</h4>
+<p>En un párrafo breve, explica por qué una <code>Function&lt;Number, String&gt;</code> ahora sirve para ambas lecturas y qué permiten <code>super</code> y <code>extends</code> en la firma actualizada.</p>
+<h4>2. Ejecución correcta</h4>
+<p>Agrega una captura con las dos transformaciones y el reporte de las lecturas originales, y otra con el reporte vacío y los mensajes de los casos nulos. Debajo, explica en una o dos frases por qué el reporte puede reunir tipos numéricos distintos sin sumarlos ni modificar sus valores.</p>
 <h2>Referencias técnicas</h2>
 <ul>
-<li><a href="https://dev.java/learn/generics/">Genéricos en Java</a></li>
-<li><a href="https://dev.java/learn/reflection/">Reflexión</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/index.html">API Java 25</a></li>
+<li><a href="https://dev.java/learn/language/fp/generics/wildcards/">Comodines — Dev.java</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/generics/inheritance.html">Herencia y subtipos — Oracle</a></li>
+<li><a href="https://docs.oracle.com/javase/tutorial/java/generics/wildcardGuidelines.html">Guía de uso de comodines — Oracle</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function — API Java</a></li>
 </ul>
-<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../1.1-fundamentos/03-boxing-foreach-varargs/index.html">Anterior</a><a href="../1.3-genericos-reflexion/index.html">Siguiente</a></nav></main></body></html>
+<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../1.1-fundamentos/03-boxing-foreach-varargs/index.html">Anterior</a><a href="../1.4-patrones-genericos/01-creacionales/index.html">Siguiente</a></nav></main></body></html>
