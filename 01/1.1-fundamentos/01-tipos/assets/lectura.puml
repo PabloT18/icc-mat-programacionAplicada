@@ -1,0 +1,12 @@
+También puedes representarlo con PlantUML:
+
+class Lectura<T> {
+    - idSensor : String
+    - valor : T
+    - unidad : String
+
+    + Lectura(idSensor : String, valor : T, unidad : String)
+    + getIdSensor() : String
+    + getValor() : T
+    + getUnidad() : String
+}

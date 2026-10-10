@@ -358,7 +358,7 @@
       ],
       "source": "ejemplos/ReflexionDemo.java",
       "prev": "01/1.2-subtipos-comodines",
-      "next": "01/1.4-patrones-genericos",
+      "next": "01/1.4-patrones-genericos/01-creacionales",
       "references": [
         [
           "Genéricos en Java",
@@ -376,79 +376,28 @@
       "image": null
     },
     {
+      "id": "1.4a",
+      "title": "Patrones creacionales",
       "unit": 1,
-      "id": "1.4",
-      "path": "01/1.4-patrones-genericos",
-      "title": "Patrones con programación genérica",
-      "context": "El catálogo debe guardar sensores y lecturas sin duplicar operaciones. También necesita cambiar criterios de selección y fuentes de datos. Los patrones ayudan cuando corresponden a variaciones reales del sistema.",
-      "sections": [
-        {
-          "title": "Repository y contrato de identidad",
-          "text": "Un Repository ofrece operaciones de colección sobre objetos del dominio y concentra decisiones de almacenamiento. Un contrato Repository<ID,T> separa el tipo de identificador del tipo de entidad. Definir guardar, buscar y listar obliga a decidir qué significa una identidad duplicada y qué ocurre si no hay coincidencia.\n\nEn memoria, LinkedHashMap conserva el orden de inserción y simplifica búsquedas por clave. Devolver una copia de la colección evita que el cliente elimine elementos del repositorio sin pasar por sus operaciones. Esa copia es superficial: si las entidades son mutables, aún pueden alterarse. Los records ayudan a mantener datos de valor inmutables.",
-          "code": ""
-        },
-        {
-          "title": "Strategy con interfaces funcionales",
-          "text": "Strategy encapsula un comportamiento intercambiable. Comparator<T> ya cumple ese papel para ordenar, y Predicate<T> para seleccionar. No hace falta crear una jerarquía de clases cuando una interfaz funcional expresa toda la variación. En CampusMonitor, un criterio puede escoger sensores por ubicación y otro por estado.\n\nLa estrategia no debería modificar silenciosamente la colección que recibe. Separa las consultas de las actualizaciones y conserva funciones pequeñas. Si la comparación depende de unidades, valida la compatibilidad antes de aplicar el criterio. El uso de genéricos garantiza tipos compatibles, no equivalencia de magnitudes.",
-          "code": ""
-        },
-        {
-          "title": "Factory y dependencias explícitas",
-          "text": "Una fábrica concentra cómo se construye un objeto. Supplier<T> permite inyectar la construcción sin reflexión. El consumidor solicita instancias a la fábrica y utiliza únicamente el contrato. Esto facilita cambiar una fuente simulada por una fuente serial en la unidad 5.\n\nRepository, Strategy y Factory se pueden combinar, pero no deben añadirse por obligación. Una clase genérica que necesita veinte parámetros o múltiples casts suele indicar responsabilidades mezcladas. Diseña primero el caso concreto y generaliza la parte repetida que mantiene el mismo comportamiento.",
-          "code": ""
-        },
-        {
-          "title": "Evolución hacia persistencia",
-          "text": "El repositorio en memoria desaparecerá al cerrar el programa. Más adelante, una implementación JDBC mantendrá el contrato de consulta, pero incorporará errores de E/S, transacciones y restricciones de base de datos. Esas diferencias no deben esconderse detrás de promesas falsas: guardar puede fallar y varias operaciones pueden requerir una unidad transaccional.\n\nLa demostración ofrece un repositorio reutilizable sin capas innecesarias. La PL de esta unidad pide un catálogo autónomo con criterios intercambiables. No incluye base de datos, hilos ni hardware para que el diseño genérico pueda revisarse por separado.",
-          "code": ""
-        }
-      ],
-      "class_name": "PatronesDemo",
-      "demo": "package edu.ups.pap.u01;\nimport java.util.*;\nimport java.util.function.*;\npublic class PatronesDemo {\n    record Sensor(String id, String ubicacion) {}\n    interface Repositorio<ID,T> {\n        void guardar(T valor);\n        Optional<T> buscar(ID id);\n        List<T> listar();\n    }\n    static class Memoria<ID,T> implements Repositorio<ID,T> {\n        private final Map<ID,T> datos = new LinkedHashMap<>();\n        private final Function<T,ID> identidad;\n        Memoria(Function<T,ID> identidad) { this.identidad = identidad; }\n        public void guardar(T valor) {\n            Objects.requireNonNull(valor);\n            ID id = Objects.requireNonNull(identidad.apply(valor));\n            if (datos.putIfAbsent(id,valor) != null) throw new IllegalArgumentException(\"ID duplicado\");\n        }\n        public Optional<T> buscar(ID id) { return Optional.ofNullable(datos.get(id)); }\n        public List<T> listar() { return List.copyOf(datos.values()); }\n    }\n    public static void main(String[] args) {\n        Repositorio<String,Sensor> repo = new Memoria<>(Sensor::id);\n        Supplier<Sensor> fabrica = () -> new Sensor(\"S01\",\"Lab\");\n        repo.guardar(fabrica.get());\n        repo.guardar(new Sensor(\"S02\",\"Biblioteca\"));\n        Predicate<Sensor> enLab = s -> s.ubicacion().equals(\"Lab\");\n        System.out.println(repo.listar().stream().filter(enLab).toList());\n        System.out.println(repo.buscar(\"S99\"));\n        try { repo.guardar(fabrica.get()); }\n        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }\n    }\n}\n",
-      "expected": "[Sensor[id=S01, ubicacion=Lab]]\nOptional.empty\nID duplicado",
-      "steps": [
-        "Integra Repositorio<ID,T> en CampusMonitor para Sensor y Lectura<Double>, con identidades explícitas y sin casts no comprobados.",
-        "Agrega estrategias de consulta por ubicación y por umbral. El repositorio debe devolver listas que no permitan alterar su estructura interna.",
-        "Registra fuentes con Supplier y conserva los comandos anteriores. Documenta dónde existe una variación que justifica cada patrón."
-      ],
-      "cases": [
-        [
-          "Insertar dos IDs distintos",
-          "Ambos consultables"
-        ],
-        [
-          "Insertar ID existente",
-          "Error controlado, sin reemplazo silencioso"
-        ],
-        [
-          "Buscar ID ausente",
-          "Optional.empty"
-        ]
-      ],
-      "concepts": [
-        "Repository separa acceso y almacenamiento.",
-        "Strategy cambia un criterio sin duplicar el algoritmo.",
-        "Factory centraliza la creación.",
-        "Los patrones responden a variaciones concretas."
-      ],
-      "source": "ejemplos/PatronesDemo.java",
+      "path": "01/1.4-patrones-genericos/01-creacionales",
       "prev": "01/1.3-genericos-reflexion",
-      "next": "02/2.1-lenguajes-regulares",
-      "references": [
-        [
-          "Genéricos en Java",
-          "https://dev.java/learn/generics/"
-        ],
-        [
-          "Reflexión",
-          "https://dev.java/learn/reflection/"
-        ],
-        [
-          "API Java 25",
-          "https://docs.oracle.com/en/java/javase/25/docs/api/index.html"
-        ]
-      ],
-      "image": null
+      "next": "01/1.4-patrones-genericos/02-estructurales"
+    },
+    {
+      "id": "1.4b",
+      "title": "Patrones estructurales",
+      "unit": 1,
+      "path": "01/1.4-patrones-genericos/02-estructurales",
+      "prev": "01/1.4-patrones-genericos/01-creacionales",
+      "next": "01/1.4-patrones-genericos/03-comportamiento"
+    },
+    {
+      "id": "1.4c",
+      "title": "Patrones de comportamiento",
+      "unit": 1,
+      "path": "01/1.4-patrones-genericos/03-comportamiento",
+      "prev": "01/1.4-patrones-genericos/02-estructurales",
+      "next": "02/2.1-lenguajes-regulares"
     },
     {
       "unit": 2,
@@ -507,7 +456,7 @@
         "matches comprueba toda la entrada; el dominio valida su sentido."
       ],
       "source": "ejemplos/LenguajeDemo.java",
-      "prev": "01/1.4-patrones-genericos",
+      "prev": "01/1.4-patrones-genericos/03-comportamiento",
       "next": "02/2.2-diseno-expresiones",
       "references": [
         [
