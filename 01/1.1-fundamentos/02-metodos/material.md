@@ -13,7 +13,6 @@
 
 ## 1. Conceptos y ejemplos
 
-<a id="concepto-1"></a>
 
 ### 1.1. Qué es un método genérico
 
@@ -37,7 +36,6 @@ El compilador normalmente **infiere** el argumento de tipo a partir de los argum
 
 Un método estático no tiene acceso al parámetro de tipo de una instancia. Puede declarar el suyo, como `static <N> N identidad(N valor)`. Un método de instancia sí puede combinar el parámetro de la clase con uno propio. El método `mapear` de la demostración utiliza esta segunda posibilidad.
 
-<a id="concepto-2"></a>
 
 ### 1.3. Cotas y operaciones disponibles
 
@@ -53,7 +51,6 @@ static <N extends Number> double convertir(N numero) {
 
 En una cota, `extends` se usa tanto para clases como para interfaces. `Comparable<N>` exige un orden natural; `Comparator<N>` es un objeto que aporta un criterio externo. Una cota múltiple usa `&`, como `<E extends Number & Comparable<E>>`: si contiene una clase debe ir primero y solo puede haber una. Agrega únicamente las restricciones que el algoritmo utiliza.
 
-<a id="concepto-3"></a>
 
 ### 1.4. Transformaciones mediante Function
 
@@ -68,7 +65,6 @@ La expresión `texto -> texto.length()` es una **lambda**: implementa la operaci
 
 En una clase `Contenedor<T>`, un método `<R> Contenedor<R> mapear(Function<T, R> operacion)` conserva `T` como entrada y utiliza `R` como salida. El resultado no cambia el parámetro de tipo del contenedor original; se crea un contenedor diferente.
 
-<a id="concepto-4"></a>
 
 ### 1.5. Contrato de una operación genérica
 
@@ -78,9 +74,24 @@ En una transformación inmutable, el original conserva sus atributos y el result
 
 Generalizar el tipo no valida el significado del dato. Una conversión de unidad necesita una fórmula correcta y una unidad de destino coherente, además de tipos compatibles.
 
+
+### 1.6 Orden natural con `Comparable`
+
+`Comparable<T>` es una interfaz que permite definir el **orden natural** de los objetos mediante el método `compareTo`.
+
+El resultado de `a.compareTo(b)` indica:
+
+| Resultado | Significado |
+|---|---|
+| Negativo | `a` es menor que `b` |
+| Cero | Ambos son equivalentes según el orden |
+| Positivo | `a` es mayor que `b` |
+
+Clases como `Integer` y `String` ya implementan esta interfaz. Por eso podemos utilizarlas en un método genérico que obtenga el mayor de dos valores:
+
+
 ---
 
-<a id="demostracion"></a>
 
 ## 2. Demostración: transformar sin modificar el original
 
@@ -167,9 +178,78 @@ La operación es obligatoria
 
 La primera transformación produce `Contenedor<Integer>`; la segunda, `Contenedor<String>`. `obtener()` utiliza el parámetro de su clase y `mapear()` es el método que declara un parámetro nuevo. El original sigue conteniendo `Algoritmos`.
 
+
+### 2.2 Demostración de Compararble
+
+Editar la clase sensor: 
+
+```java
+/**
+ * Sensor cuyo orden natural se establece por su identificador.
+ */
+public record Sensor(String id, String ubicacion)
+        implements Comparable<Sensor> {
+
+    /**
+     * Compara identificadores en orden lexicográfico.
+     *
+     * @return negativo, cero o positivo si este identificador
+     *         es menor, igual o mayor que el del otro sensor
+     */
+    @Override
+    public int compareTo(Sensor otro) {
+        // String ya implementa Comparable<String>.
+        return this.id.compareTo(otro.id);
+    }
+}
+```
+
+Crea la nueva clase `CompableDemo`
+
+```java
+public class ComparableDemo {
+
+    /**
+     * Devuelve el mayor objeto según su orden natural.
+     * Si empatan, devuelve el primero.
+     *
+     * @param <T> tipo que implementa Comparable<T>
+     */
+    static <T extends Comparable<T>> T mayor(T primero, T segundo) {
+        // El criterio de comparación lo define la clase de los objetos.
+        return primero.compareTo(segundo) >= 0 ? primero : segundo;
+    }
+
+    public static void main(String[] args) {
+        Sensor sensor1 = new Sensor("S01", "Laboratorio");
+        Sensor sensor2 = new Sensor("S02", "Biblioteca");
+
+        // Invoca Sensor.compareTo: compara "S01" con "S02".
+        int resultado = sensor1.compareTo(sensor2);
+
+        System.out.println("S01 es menor que S02: " + (resultado < 0));
+
+        // El compilador infiere que T es Sensor.
+        Sensor seleccionado = mayor(sensor1, sensor2);
+
+        System.out.println("Sensor con mayor identificador: " + seleccionado);
+
+        // El mismo método también funciona con otros tipos comparables.
+        System.out.println("Mayor número: " + mayor(12, 25));
+    }
+}
+```
+
+
+`T` solo puede representar tipos que implementen `Comparable<T>`. Aunque `Comparable` es una interfaz, **las cotas de los parámetros genéricos se declaran con `extends`**.
+
+Sin esa cota, el compilador no podría garantizar que `primero` tenga el método `compareTo`.
+
+**Diferencia con `Comparator`:** `Comparable` establece el orden natural del tipo; `Comparator` permite proporcionar distintos criterios externos, como ordenar por nombre, valor o fecha.
+
+
 ---
 
-<a id="pc"></a>
 
 ## 3. PC1.1b · Transformación de lecturas
 
@@ -208,6 +288,37 @@ Original: S02 | 18 personas
 Transformada: S02 | 18 personas | unidad: texto
 ```
 
+#### ¿Cómo funciona el método genérico?
+
+La declaración más importante es:
+
+```
+public <R> Lectura<R> transformar(
+    Function<T, R> conversor,
+    String nuevaUnidad)
+```
+
+Analicemos cada componente:
+
+| Elemento         | Significado                                             |
+| ---------------- | ------------------------------------------------------- |
+| `T`              | Tipo original almacenado en `Lectura<T>`                |
+| `<R>`            | Declara un nuevo parámetro de tipo exclusivo del método |
+| `Lectura<R>`     | Tipo de lectura que devuelve el método                  |
+| `Function<T, R>` | Función que recibe un `T` y devuelve un `R`             |
+| `nuevaUnidad`    | Unidad que tendrá la nueva lectura                      |
+
+Lo importante: `T` pertenece a la clase y `R` pertenece al método. No tienen que ser iguales.
+
+Por ejemplo, una lectura `Lectura<Integer>` puede transformarse en `Lectura<String>`.
+
+Transformación entre tipos conservando el identificador del sensor.
+
+
+![alt text](assets/ima.png)
+
+
+
 ### 3.3. Estructura resultante
 
 Se muestran los archivos relevantes del proyecto; conserva la configuración Gradle existente. `u01` contiene las demostraciones y `modelo` contiene el modelo acumulativo.
@@ -245,3 +356,14 @@ Agrega una captura que muestre ambas transformaciones y sus valores originales, 
 - [Métodos genéricos — Oracle](https://docs.oracle.com/javase/tutorial/java/generics/methods.html)
 - [Cotas — Oracle](https://docs.oracle.com/javase/tutorial/java/generics/bounded.html)
 - [Function — API Java](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html)
+
+
+
+```java
+Sensor sensor1 = new Sensor("S01", "Laboratorio");
+Sensor sensor2 = new Sensor("S02", "Biblioteca");
+
+if (sensor1.compareTo(sensor2) < 0) {
+    System.out.println("S01 va antes que S02");
+}
+```

@@ -2,18 +2,16 @@
 01.1.2-metodosGenericos
 01.1.3.BoxinForechVargArgs
 
-01.4.1-Creacionales
-01.4.2-Estructurales
-01.4.3-Comportamiento
 
 
 # Generación de diapositivas – Programación Aplicada
 
 Genera una presentación académica universitaria utilizando exclusivamente el contenido de las siguientes fuentes:
 
-- `01.1.1-TiposGenericos`
-- `01.1.2-metodosGenericos`
-- `01.1.3.BoxinForechVargArgs`
+
+01.4.1-Creacionales
+01.4.2-Estructurales
+01.4.3-Comportamiento
 
 ## 1. Objetivo
 
@@ -27,33 +25,15 @@ Debe funcionar como material de apoyo para la explicación del docente durante l
 
 Desarrollar los siguientes temas respetando el orden de las fuentes:
 
-**Tema 1. Tipos genéricos**
-- Concepto y propósito de la programación genérica.
-- Datos genericos 
-- Parámetros de tipo.
-- Clases e interfaces genéricas.
-- Seguridad de tipos y reutilización de código.
-- Comparación entre el uso de `Object` y los tipos genéricos.
-- Restricciones y consideraciones importantes.
+de las 3 categorias de los patronnes 
+- creacionales
+- estructurales
+- comportamiento
 
-**Tema 2. Métodos genéricos**
-- Definición y sintaxis.
-- Declaración de parámetros de tipo en métodos.
-- Diferencias entre clases genéricas y métodos genéricos.
-- Inferencia de tipos.
-- Parámetros acotados y uso de `extends`.
-- Ejemplos que permitan comprender cuándo y por qué utilizar métodos genéricos.
+Cada tipo de patrones de diseno separado uno en cada diapositiva, con ejemplo practica, ejempllo real y en otra el ejemplo del codfiogo. 
 
-**Tema 3. Boxing, Unboxing, for-each y Varargs**
-- Conceptos y funcionamiento de autoboxing y unboxing.
-- Tipos primitivos y clases envoltorio.
-- Implicaciones y consideraciones de rendimiento.
-- Funcionamiento y sintaxis de `for-each`.
-- Diferencias frente al ciclo `for` tradicional.
-- Concepto, sintaxis y funcionamiento de `varargs`.
-- Restricciones y buenas prácticas.
+al final de cada secicon de tipo de patron una ciomparativa de todos los patrones segun tipo, leugo seguir conla otra categoria 
 
-Utiliza estos apartados como orientación temática, pero prioriza los conceptos y el alcance real de las fuentes proporcionadas.
 
 ## 3. Restricciones de contenido
 

@@ -13,7 +13,7 @@
 
 ## 1. Conceptos y ejemplos
 
-<a id="concepto-1"></a>
+
 
 ### 1.1. Subtipado y sustitución
 
@@ -40,7 +40,7 @@ El **comodín `?`** representa un argumento de tipo desconocido. Permite declara
 
 `List<Object>`, en cambio, tiene un argumento conocido: `Object`. Admite elementos de tipos diferentes, pero no puede recibir por asignación una `List<String>` debido a la invariancia.
 
-<a id="concepto-2"></a>
+
 
 ### 1.3. Cota superior: ? extends T
 
@@ -56,7 +56,7 @@ Se puede leer como `Number`, pero no insertar un `Integer` ni un `Double` arbitr
 
 Esto no convierte la lista en inmutable. Operaciones como `clear()` o `remove()` pueden seguir disponibles si la implementación las admite. Además, otras referencias podrían modificarla. La restricción afecta a las operaciones seguras a través de esa referencia.
 
-<a id="concepto-3"></a>
+
 
 ### 1.4. Cota inferior: ? super T
 
@@ -85,7 +85,7 @@ La tabla describe seguridad de tipos; una lista inmodificable puede rechazar cua
 
 La firma `<T> void copiar(List<? extends T> origen, List<? super T> destino)` conecta ambas posiciones mediante `T`. Usar únicamente dos `List<?>` perdería esa relación: no habría garantía de que lo leído del origen sea aceptable en el destino.
 
-<a id="concepto-4"></a>
+
 
 ### 1.6. Parámetro declarado frente a comodín
 
@@ -105,7 +105,7 @@ Estas cotas permiten reutilizar funciones ya existentes. No amplían los tipos q
 
 ---
 
-<a id="demostracion"></a>
+
 
 ## 2. Demostración: consumir y producir tipos compatibles
 
@@ -181,7 +181,7 @@ El tipo explícito `<CharSequence>` hace visible que el retorno declarado puede 
 
 ---
 
-<a id="pc"></a>
+
 
 ## 3. PC1.2 · Transformaciones flexibles y reporte numérico
 

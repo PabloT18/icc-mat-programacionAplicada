@@ -13,7 +13,7 @@
 
 ## 1. Conceptos y ejemplos
 
-<a id="concepto-1"></a>
+
 
 ### 1.1. Primitivos y clases envolventes
 
@@ -42,7 +42,7 @@ int primitivo = explicita.intValue();
 
 Una operación como `cantidad + 1` utiliza el valor primitivo. Si el resultado se asigna nuevamente a `Integer`, interviene también boxing. En recorridos intensivos, estas conversiones y el almacenamiento de referencias pueden tener un costo; usa primitivos cuando no necesites un contrato basado en objetos.
 
-<a id="concepto-2"></a>
+
 
 ### 1.3. Nulos, igualdad y conversión de texto
 
@@ -59,6 +59,27 @@ Entre dos referencias envolventes, `==` compara identidad. Algunos valores puede
 
 El **parsing** interpreta una representación textual. `Integer.parseInt("12")` devuelve `int` y puede lanzar `NumberFormatException`; no es boxing. `Integer.valueOf("12")` interpreta texto y devuelve `Integer`.
 
+
+
+Ejemplo de las conversiones:
+```java
+String texto = "12";
+// Parsing: String -> int
+int a = Integer.parseInt(texto);
+
+// Parsing: String -> Integer
+Integer b = Integer.valueOf(texto);
+
+// Autoboxing: int -> Integer
+Integer c = a;
+
+// Unboxing: Integer -> int
+int d = b;
+System.out.println(a); // 12
+System.out.println(b); // 12
+System.out.println(c); // 12
+System.out.println(d); // 12
+```
 ### 1.4. Variables y alcance en un recorrido
 
 Una variable local tiene un tipo y un ámbito. En `for (Integer valor : datos)`, `valor` existe dentro del cuerpo del bucle y recibe cada elemento sucesivamente. Reasignarla no reemplaza una posición de la colección.
@@ -73,14 +94,14 @@ for (Integer valor : datos) {
 
 Si el elemento fuera un objeto modificable, sí podrías cambiar su estado mediante sus métodos. Reasignar la variable y modificar el objeto al que apunta son operaciones distintas.
 
-<a id="concepto-3"></a>
+
 
 ### 1.5. for-each: recorrido por elementos
 
 El **for mejorado**, o `for-each`, recorre arreglos y objetos que implementan `Iterable`. Expresa que interesa cada elemento, sin manejar explícitamente una posición.
 
 ```java
-for (String nombre : List.of("Ana", "Luis")) {
+for (String nombre : List.of("Pablo", "Andres")) {
     System.out.println(nombre);
 }
 ```
@@ -89,7 +110,7 @@ Conviene usar un `for` con índice cuando se necesita reemplazar posiciones o re
 
 El orden del recorrido depende del contenedor: una lista conserva su secuencia; no debe suponerse un orden general para cualquier colección. El bucle no introduce concurrencia ni paralelismo.
 
-<a id="concepto-4"></a>
+
 
 ### 1.6. Varargs: cantidad variable de argumentos
 
@@ -101,7 +122,14 @@ static int contar(String... nombres) {
 }
 // contar();                 devuelve 0
 // contar("Ana", "Luis");    devuelve 2
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hola mundo");
+    }
+}
 ```
+
+
 
 El cliente también puede pasar un arreglo existente. En ese caso, modificar el arreglo recibido afecta al mismo arreglo del cliente. Varargs no implica copia defensiva.
 
@@ -116,7 +144,7 @@ Una declaración `<T> void procesar(T... valores)` combina arreglos con un tipo 
 
 ---
 
-<a id="demostracion"></a>
+
 
 ## 2. Demostración: reunir y recorrer valores
 

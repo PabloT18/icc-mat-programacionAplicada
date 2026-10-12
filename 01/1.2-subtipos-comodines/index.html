@@ -5,7 +5,6 @@
 <p><a href="../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<p><a id="concepto-1"></a></p>
 <h3>1.1. Subtipado y sustitución</h3>
 <p>Un tipo es <strong>subtipo</strong> de otro cuando puede utilizarse donde se espera el tipo más general, respetando su contrato. <code>Integer</code> es subtipo de <code>Number</code>, de modo que una referencia <code>Number</code> puede apuntar a un <code>Integer</code>.</p>
 <pre><code class="language-java">Number numero = Integer.valueOf(8);
@@ -19,7 +18,6 @@
 <p>El <strong>comodín <code>?</code></strong> representa un argumento de tipo desconocido. Permite declarar referencias que aceptan diferentes parametrizaciones, restringiendo las operaciones a las que resultan seguras para todas ellas.</p>
 <p><code>List&lt;?&gt;</code> significa «lista de algún tipo que no conocemos», no «lista de cualquier objeto». Una variable de ese tipo puede referirse a <code>List&lt;String&gt;</code> o a <code>List&lt;Integer&gt;</code>, pero no permite insertar indistintamente cadenas y enteros. Al leer, solo se garantiza <code>Object</code>.</p>
 <p><code>List&lt;Object&gt;</code>, en cambio, tiene un argumento conocido: <code>Object</code>. Admite elementos de tipos diferentes, pero no puede recibir por asignación una <code>List&lt;String&gt;</code> debido a la invariancia.</p>
-<p><a id="concepto-2"></a></p>
 <h3>1.3. Cota superior: ? extends T</h3>
 <p><code>List&lt;? extends Number&gt;</code> acepta una lista cuyo argumento sea <code>Number</code> o un subtipo suyo. Es útil para un método que <strong>consume información de la lista</strong>, es decir, que lee los elementos que esa lista produce.</p>
 <pre><code class="language-java">List&lt;? extends Number&gt; origen = List.of(2, 4, 6);
@@ -28,7 +26,6 @@ Number primero = origen.get(0);
 </code></pre>
 <p>Se puede leer como <code>Number</code>, pero no insertar un <code>Integer</code> ni un <code>Double</code> arbitrario: se desconoce el argumento exacto. La excepción de tipos es <code>null</code>, aunque la colección concreta puede rechazarlo.</p>
 <p>Esto no convierte la lista en inmutable. Operaciones como <code>clear()</code> o <code>remove()</code> pueden seguir disponibles si la implementación las admite. Además, otras referencias podrían modificarla. La restricción afecta a las operaciones seguras a través de esa referencia.</p>
-<p><a id="concepto-3"></a></p>
 <h3>1.4. Cota inferior: ? super T</h3>
 <p><code>List&lt;? super Integer&gt;</code> acepta <code>List&lt;Integer&gt;</code>, <code>List&lt;Number&gt;</code> o <code>List&lt;Object&gt;</code>. Permite insertar enteros porque todos esos destinos pueden almacenarlos.</p>
 <pre><code class="language-java">List&lt;? super Integer&gt; destino = new ArrayList&lt;Number&gt;();
@@ -74,7 +71,6 @@ Object recuperado = destino.get(0);
 </tbody></table></div>
 <p>La tabla describe seguridad de tipos; una lista inmodificable puede rechazar cualquier escritura en ejecución.</p>
 <p>La firma <code>&lt;T&gt; void copiar(List&lt;? extends T&gt; origen, List&lt;? super T&gt; destino)</code> conecta ambas posiciones mediante <code>T</code>. Usar únicamente dos <code>List&lt;?&gt;</code> perdería esa relación: no habría garantía de que lo leído del origen sea aceptable en el destino.</p>
-<p><a id="concepto-4"></a></p>
 <h3>1.6. Parámetro declarado frente a comodín</h3>
 <p><code>&lt;T extends Number&gt;</code> <strong>declara un nombre</strong> que puede reutilizarse en la firma y en el cuerpo. <code>? extends Number</code> expresa un tipo desconocido en una posición de uso. Elige un parámetro cuando necesites relacionar entradas o conservar ese tipo como resultado.</p>
 <p>Evita devolver comodines sin una necesidad concreta: el cliente tendría que trabajar con un tipo desconocido. Tampoco uses casts a tipos crudos para «resolver» una incompatibilidad; eso oculta el problema que el compilador está detectando.</p>
@@ -83,7 +79,6 @@ Object recuperado = destino.get(0);
 <p>En <code>Function&lt;? super T, ? extends R&gt;</code>, el primer argumento representa lo que la función recibe y el segundo lo que produce. Una función que recibe <code>Number</code> puede procesar un <code>Integer</code>; una función que devuelve <code>String</code> puede producir un resultado utilizado como <code>CharSequence</code>.</p>
 <p>Estas cotas permiten reutilizar funciones ya existentes. No amplían los tipos que puede contener el objeto original ni convierten una función de <code>Integer</code> en una función válida para cualquier <code>Number</code>.</p>
 <hr>
-<p><a id="demostracion"></a></p>
 <h2>2. Demostración: consumir y producir tipos compatibles</h2>
 <p>La transferencia de listas utiliza <code>extends</code> para el origen y <code>super</code> para el destino. La transformación usa esas mismas relaciones en los parámetros de <code>Function</code>.</p>
 <p><strong>Archivo:</strong> <code>app/src/main/java/edu/ups/pap/u01/ComodinesDemo.java</code>.</p>
@@ -145,7 +140,6 @@ Original: 12
 </code></pre>
 <p>El tipo explícito <code>&lt;CharSequence&gt;</code> hace visible que el retorno declarado puede ser más general que el <code>String</code> producido por la función. Sin comodines, <code>Function&lt;Number, String&gt;</code> no coincide con <code>Function&lt;Integer, CharSequence&gt;</code>.</p>
 <hr>
-<p><a id="pc"></a></p>
 <h2>3. PC1.2 · Transformaciones flexibles y reporte numérico</h2>
 <p>Continúa sobre <code>Lectura&lt;T&gt;</code> y su método <code>transformar</code>, implementado en PC1.1b. CampusMonitor utilizará una función común para distintos tipos numéricos y reunirá sus lecturas en un reporte.</p>
 <h3>3.1. Ampliación de Lectura y clase de reporte</h3>

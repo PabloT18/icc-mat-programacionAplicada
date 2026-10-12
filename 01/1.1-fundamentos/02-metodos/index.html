@@ -5,7 +5,6 @@
 <p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<p><a id="concepto-1"></a></p>
 <h3>1.1. Qué es un método genérico</h3>
 <p>Un <strong>método genérico</strong> declara sus propios parámetros de tipo para relacionar los datos que recibe y los que devuelve. La declaración aparece antes del tipo de retorno. El método puede pertenecer a una clase genérica o a una clase que no lo sea.</p>
 <pre><code class="language-java">static &lt;R&gt; R identidad(R valor) {
@@ -18,7 +17,6 @@
 <p>El parámetro del método tiene alcance en su declaración y cuerpo. Conviene usar nombres diferentes cuando ya existe otro parámetro en la clase: <code>T</code> para el dato almacenado y <code>R</code> para el resultado de una transformación.</p>
 <p>El compilador normalmente <strong>infiere</strong> el argumento de tipo a partir de los argumentos y del contexto. También se puede indicar explícitamente: <code>Utilidades.&lt;String&gt;identidad(&quot;texto&quot;)</code>, si <code>Utilidades</code> declara ese método estático. La inferencia es una comprobación de compilación, no tipado dinámico.</p>
 <p>Un método estático no tiene acceso al parámetro de tipo de una instancia. Puede declarar el suyo, como <code>static &lt;N&gt; N identidad(N valor)</code>. Un método de instancia sí puede combinar el parámetro de la clase con uno propio. El método <code>mapear</code> de la demostración utiliza esta segunda posibilidad.</p>
-<p><a id="concepto-2"></a></p>
 <h3>1.3. Cotas y operaciones disponibles</h3>
 <p>Una <strong>cota</strong> limita los tipos admisibles y garantiza ciertas operaciones. Sin una cota explícita, un parámetro solo ofrece las operaciones de <code>Object</code>.</p>
 <pre><code class="language-java">static &lt;N extends Number&gt; double convertir(N numero) {
@@ -27,7 +25,6 @@
 </code></pre>
 <p><code>N extends Number</code> admite <code>Integer</code>, <code>Double</code> y otros subtipos. Permite invocar <code>doubleValue()</code>, pero no escribir <code>numero + numero</code>: <code>N</code> no se convierte en un primitivo. Además, convertir cualquier número a <code>double</code> puede perder precisión.</p>
 <p>En una cota, <code>extends</code> se usa tanto para clases como para interfaces. <code>Comparable&lt;N&gt;</code> exige un orden natural; <code>Comparator&lt;N&gt;</code> es un objeto que aporta un criterio externo. Una cota múltiple usa <code>&amp;</code>, como <code>&lt;E extends Number &amp; Comparable&lt;E&gt;&gt;</code>: si contiene una clase debe ir primero y solo puede haber una. Agrega únicamente las restricciones que el algoritmo utiliza.</p>
-<p><a id="concepto-3"></a></p>
 <h3>1.4. Transformaciones mediante Function</h3>
 <p><code>Function&lt;A, B&gt;</code> es una interfaz de Java que representa una operación: recibe un valor <code>A</code> y produce un resultado <code>B</code>. Su método principal es <code>B apply(A valor)</code>. Una función puede cambiar el tipo, cambiar el valor conservando el tipo, o construir otro objeto.</p>
 <pre><code class="language-java">Function&lt;String, Integer&gt; longitud = texto -&gt; texto.length();
@@ -35,13 +32,35 @@ Integer cantidad = longitud.apply(&quot;Java&quot;); // 4
 </code></pre>
 <p>La expresión <code>texto -&gt; texto.length()</code> es una <strong>lambda</strong>: implementa la operación de la interfaz funcional. La parte izquierda es el parámetro; la derecha calcula el resultado. Aquí se utiliza para pasar una transformación como argumento, sin desarrollar todavía una cadena de operaciones con Streams.</p>
 <p>En una clase <code>Contenedor&lt;T&gt;</code>, un método <code>&lt;R&gt; Contenedor&lt;R&gt; mapear(Function&lt;T, R&gt; operacion)</code> conserva <code>T</code> como entrada y utiliza <code>R</code> como salida. El resultado no cambia el parámetro de tipo del contenedor original; se crea un contenedor diferente.</p>
-<p><a id="concepto-4"></a></p>
 <h3>1.5. Contrato de una operación genérica</h3>
 <p>La firma expresa compatibilidad de tipos; el contrato debe definir los valores admitidos. Es necesario decidir qué ocurre si la función es nula, devuelve nulo o lanza una excepción. También debe indicarse si la operación modifica el objeto original o devuelve uno nuevo.</p>
 <p>En una transformación inmutable, el original conserva sus atributos y el resultado contiene los nuevos datos. No significa que toda función recibida sea pura: una lambda puede acceder a estado externo o producir efectos. El método no debe prometer propiedades que no puede garantizar de sus colaboradores.</p>
 <p>Generalizar el tipo no valida el significado del dato. Una conversión de unidad necesita una fórmula correcta y una unidad de destino coherente, además de tipos compatibles.</p>
+<h3>1.6 Orden natural con <code>Comparable</code></h3>
+<p><code>Comparable&lt;T&gt;</code> es una interfaz que permite definir el <strong>orden natural</strong> de los objetos mediante el método <code>compareTo</code>.</p>
+<p>El resultado de <code>a.compareTo(b)</code> indica:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Resultado</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Negativo</td>
+<td><code>a</code> es menor que <code>b</code></td>
+</tr>
+<tr>
+<td>Cero</td>
+<td>Ambos son equivalentes según el orden</td>
+</tr>
+<tr>
+<td>Positivo</td>
+<td><code>a</code> es mayor que <code>b</code></td>
+</tr>
+</tbody></table></div>
+<p>Clases como <code>Integer</code> y <code>String</code> ya implementan esta interfaz. Por eso podemos utilizarlas en un método genérico que obtenga el mayor de dos valores:</p>
 <hr>
-<p><a id="demostracion"></a></p>
 <h2>2. Demostración: transformar sin modificar el original</h2>
 <p>El ejemplo convierte un texto en su longitud y después en una etiqueta. La clase declara <code>T</code>, mientras que <code>mapear</code> declara su propio <code>R</code>. Cada llamada puede producir un tipo diferente.</p>
 <p><strong>Archivo:</strong> <code>app/src/main/java/edu/ups/pap/u01/MetodosDemo.java</code>.</p>
@@ -115,8 +134,64 @@ Doble: 20.0
 La operación es obligatoria
 </code></pre>
 <p>La primera transformación produce <code>Contenedor&lt;Integer&gt;</code>; la segunda, <code>Contenedor&lt;String&gt;</code>. <code>obtener()</code> utiliza el parámetro de su clase y <code>mapear()</code> es el método que declara un parámetro nuevo. El original sigue conteniendo <code>Algoritmos</code>.</p>
+<h3>2.2 Demostración de Compararble</h3>
+<p>Editar la clase sensor: </p>
+<pre><code class="language-java">/**
+ * Sensor cuyo orden natural se establece por su identificador.
+ */
+public record Sensor(String id, String ubicacion)
+        implements Comparable&lt;Sensor&gt; {
+
+    /**
+     * Compara identificadores en orden lexicográfico.
+     *
+     * @return negativo, cero o positivo si este identificador
+     *         es menor, igual o mayor que el del otro sensor
+     */
+    @Override
+    public int compareTo(Sensor otro) {
+        // String ya implementa Comparable&lt;String&gt;.
+        return this.id.compareTo(otro.id);
+    }
+}
+</code></pre>
+<p>Crea la nueva clase <code>CompableDemo</code></p>
+<pre><code class="language-java">public class ComparableDemo {
+
+    /**
+     * Devuelve el mayor objeto según su orden natural.
+     * Si empatan, devuelve el primero.
+     *
+     * @param &lt;T&gt; tipo que implementa Comparable&lt;T&gt;
+     */
+    static &lt;T extends Comparable&lt;T&gt;&gt; T mayor(T primero, T segundo) {
+        // El criterio de comparación lo define la clase de los objetos.
+        return primero.compareTo(segundo) &gt;= 0 ? primero : segundo;
+    }
+
+    public static void main(String[] args) {
+        Sensor sensor1 = new Sensor(&quot;S01&quot;, &quot;Laboratorio&quot;);
+        Sensor sensor2 = new Sensor(&quot;S02&quot;, &quot;Biblioteca&quot;);
+
+        // Invoca Sensor.compareTo: compara &quot;S01&quot; con &quot;S02&quot;.
+        int resultado = sensor1.compareTo(sensor2);
+
+        System.out.println(&quot;S01 es menor que S02: &quot; + (resultado &lt; 0));
+
+        // El compilador infiere que T es Sensor.
+        Sensor seleccionado = mayor(sensor1, sensor2);
+
+        System.out.println(&quot;Sensor con mayor identificador: &quot; + seleccionado);
+
+        // El mismo método también funciona con otros tipos comparables.
+        System.out.println(&quot;Mayor número: &quot; + mayor(12, 25));
+    }
+}
+</code></pre>
+<p><code>T</code> solo puede representar tipos que implementen <code>Comparable&lt;T&gt;</code>. Aunque <code>Comparable</code> es una interfaz, <strong>las cotas de los parámetros genéricos se declaran con <code>extends</code></strong>.</p>
+<p>Sin esa cota, el compilador no podría garantizar que <code>primero</code> tenga el método <code>compareTo</code>.</p>
+<p><strong>Diferencia con <code>Comparator</code>:</strong> <code>Comparable</code> establece el orden natural del tipo; <code>Comparator</code> permite proporcionar distintos criterios externos, como ordenar por nombre, valor o fecha.</p>
 <hr>
-<p><a id="pc"></a></p>
 <h2>3. PC1.1b · Transformación de lecturas</h2>
 <p>Continúa en el proyecto de <a href="../01-tipos/index.html">PC1.1a</a>. Ya existe <code>Lectura&lt;T&gt;</code>, con identificador, valor y unidad. Ahora podrá producir una lectura transformada conservando la medición original.</p>
 <h3>3.1. Ampliación de la clase Lectura</h3>
@@ -141,6 +216,45 @@ Transformada: S01 | 72.5 °F
 Original: S02 | 18 personas
 Transformada: S02 | 18 personas | unidad: texto
 </code></pre>
+<h4>¿Cómo funciona el método genérico?</h4>
+<p>La declaración más importante es:</p>
+<pre><code>public &lt;R&gt; Lectura&lt;R&gt; transformar(
+    Function&lt;T, R&gt; conversor,
+    String nuevaUnidad)
+</code></pre>
+<p>Analicemos cada componente:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>T</code></td>
+<td>Tipo original almacenado en <code>Lectura&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td><code>&lt;R&gt;</code></td>
+<td>Declara un nuevo parámetro de tipo exclusivo del método</td>
+</tr>
+<tr>
+<td><code>Lectura&lt;R&gt;</code></td>
+<td>Tipo de lectura que devuelve el método</td>
+</tr>
+<tr>
+<td><code>Function&lt;T, R&gt;</code></td>
+<td>Función que recibe un <code>T</code> y devuelve un <code>R</code></td>
+</tr>
+<tr>
+<td><code>nuevaUnidad</code></td>
+<td>Unidad que tendrá la nueva lectura</td>
+</tr>
+</tbody></table></div>
+<p>Lo importante: <code>T</code> pertenece a la clase y <code>R</code> pertenece al método. No tienen que ser iguales.</p>
+<p>Por ejemplo, una lectura <code>Lectura&lt;Integer&gt;</code> puede transformarse en <code>Lectura&lt;String&gt;</code>.</p>
+<p>Transformación entre tipos conservando el identificador del sensor.</p>
+<p><img src="assets/ima.png" alt="alt text"></p>
 <h3>3.3. Estructura resultante</h3>
 <p>Se muestran los archivos relevantes del proyecto; conserva la configuración Gradle existente. <code>u01</code> contiene las demostraciones y <code>modelo</code> contiene el modelo acumulativo.</p>
 <pre><code class="language-text">icc-pap-campusmonitor-apellido/
@@ -168,4 +282,11 @@ Transformada: S02 | 18 personas | unidad: texto
 <li><a href="https://docs.oracle.com/javase/tutorial/java/generics/bounded.html">Cotas — Oracle</a></li>
 <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function — API Java</a></li>
 </ul>
+<pre><code class="language-java">Sensor sensor1 = new Sensor(&quot;S01&quot;, &quot;Laboratorio&quot;);
+Sensor sensor2 = new Sensor(&quot;S02&quot;, &quot;Biblioteca&quot;);
+
+if (sensor1.compareTo(sensor2) &lt; 0) {
+    System.out.println(&quot;S01 va antes que S02&quot;);
+}
+</code></pre>
 <nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../01-tipos/index.html">Anterior</a><a href="../03-boxing-foreach-varargs/index.html">Siguiente</a></nav></main></body></html>

@@ -5,7 +5,6 @@
 <p><a href="../../../README.md">Inicio del curso</a> · <a href="index.html">Ver en el navegador</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
-<p><a id="concepto-1"></a></p>
 <h3>1.1. Primitivos y clases envolventes</h3>
 <p>Un <strong>tipo primitivo</strong> representa directamente un valor, como un entero o un booleano. Una <strong>clase envolvente</strong> permite representar ese valor mediante un objeto. Esta distinción importa porque los argumentos de los genéricos deben ser tipos de referencia: una colección de enteros se declara <code>List&lt;Integer&gt;</code>, no <code>List&lt;int&gt;</code>.</p>
 <div class="table-scroll"><table>
@@ -52,7 +51,6 @@ Integer explicita = Integer.valueOf(12);
 int primitivo = explicita.intValue();
 </code></pre>
 <p>Una operación como <code>cantidad + 1</code> utiliza el valor primitivo. Si el resultado se asigna nuevamente a <code>Integer</code>, interviene también boxing. En recorridos intensivos, estas conversiones y el almacenamiento de referencias pueden tener un costo; usa primitivos cuando no necesites un contrato basado en objetos.</p>
-<p><a id="concepto-2"></a></p>
 <h3>1.3. Nulos, igualdad y conversión de texto</h3>
 <p>El unboxing de <code>null</code> lanza <code>NullPointerException</code>. No representa un cero ni un dato ausente que Java pueda completar automáticamente.</p>
 <pre><code class="language-java">Integer pendiente = null;
@@ -61,6 +59,24 @@ int primitivo = explicita.intValue();
 <p>Entre dos referencias envolventes, <code>==</code> compara identidad. Algunos valores pueden compartir objetos por caché; por ello, no debes usar ese resultado como comparación numérica. Utiliza <code>equals</code> para envolventes del mismo tipo, o convierte conscientemente a primitivos cuando corresponda.</p>
 <p><code>Integer.valueOf(5).equals(Long.valueOf(5))</code> es <code>false</code>: <code>equals</code> también exige compatibilidad de tipo. Si uno de los operandos de <code>==</code> es primitivo, puede producirse unboxing del otro, con el riesgo de nulos mencionado.</p>
 <p>El <strong>parsing</strong> interpreta una representación textual. <code>Integer.parseInt(&quot;12&quot;)</code> devuelve <code>int</code> y puede lanzar <code>NumberFormatException</code>; no es boxing. <code>Integer.valueOf(&quot;12&quot;)</code> interpreta texto y devuelve <code>Integer</code>.</p>
+<p>Ejemplo de las conversiones:</p>
+<pre><code class="language-java">String texto = &quot;12&quot;;
+// Parsing: String -&gt; int
+int a = Integer.parseInt(texto);
+
+// Parsing: String -&gt; Integer
+Integer b = Integer.valueOf(texto);
+
+// Autoboxing: int -&gt; Integer
+Integer c = a;
+
+// Unboxing: Integer -&gt; int
+int d = b;
+System.out.println(a); // 12
+System.out.println(b); // 12
+System.out.println(c); // 12
+System.out.println(d); // 12
+</code></pre>
 <h3>1.4. Variables y alcance en un recorrido</h3>
 <p>Una variable local tiene un tipo y un ámbito. En <code>for (Integer valor : datos)</code>, <code>valor</code> existe dentro del cuerpo del bucle y recibe cada elemento sucesivamente. Reasignarla no reemplaza una posición de la colección.</p>
 <pre><code class="language-java">Integer[] datos = {1, 2};
@@ -70,16 +86,14 @@ for (Integer valor : datos) {
 // datos sigue conteniendo 1 y 2.
 </code></pre>
 <p>Si el elemento fuera un objeto modificable, sí podrías cambiar su estado mediante sus métodos. Reasignar la variable y modificar el objeto al que apunta son operaciones distintas.</p>
-<p><a id="concepto-3"></a></p>
 <h3>1.5. for-each: recorrido por elementos</h3>
 <p>El <strong>for mejorado</strong>, o <code>for-each</code>, recorre arreglos y objetos que implementan <code>Iterable</code>. Expresa que interesa cada elemento, sin manejar explícitamente una posición.</p>
-<pre><code class="language-java">for (String nombre : List.of(&quot;Ana&quot;, &quot;Luis&quot;)) {
+<pre><code class="language-java">for (String nombre : List.of(&quot;Pablo&quot;, &quot;Andres&quot;)) {
     System.out.println(nombre);
 }
 </code></pre>
 <p>Conviene usar un <code>for</code> con índice cuando se necesita reemplazar posiciones o relacionar elementos por su ubicación. Para eliminar durante la iteración, utiliza una operación apropiada de la colección o un iterador que admita eliminación. Modificar estructuralmente un <code>ArrayList</code> mientras se recorre con <code>for-each</code> puede producir <code>ConcurrentModificationException</code>.</p>
 <p>El orden del recorrido depende del contenedor: una lista conserva su secuencia; no debe suponerse un orden general para cualquier colección. El bucle no introduce concurrencia ni paralelismo.</p>
-<p><a id="concepto-4"></a></p>
 <h3>1.6. Varargs: cantidad variable de argumentos</h3>
 <p><strong>Varargs</strong> permite recibir cero o más argumentos mediante un parámetro declarado con <code>...</code>. Dentro del método se trata como un arreglo. Debe existir como máximo un parámetro varargs y ocupar la última posición.</p>
 <pre><code class="language-java">static int contar(String... nombres) {
@@ -87,6 +101,11 @@ for (Integer valor : datos) {
 }
 // contar();                 devuelve 0
 // contar(&quot;Ana&quot;, &quot;Luis&quot;);    devuelve 2
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(&quot;Hola mundo&quot;);
+    }
+}
 </code></pre>
 <p>El cliente también puede pasar un arreglo existente. En ese caso, modificar el arreglo recibido afecta al mismo arreglo del cliente. Varargs no implica copia defensiva.</p>
 <p><code>int...</code> permite números primitivos sin boxing para formar el arreglo; <code>Integer...</code> admite referencias, incluidos elementos nulos. <code>args</code> es un nombre convencional, no una palabra reservada. En <code>main(String[] args)</code>, representa los argumentos de la línea de comandos; la sintaxis habitual de <code>main</code> ya recibe un arreglo.</p>
@@ -94,7 +113,6 @@ for (Integer valor : datos) {
 <p>Una declaración <code>&lt;T&gt; void procesar(T... valores)</code> combina arreglos con un tipo cuyo argumento se borra. Puede generar una advertencia por posible <strong>contaminación del heap</strong>: una referencia parametrizada termina apuntando a un contenido incompatible con su contrato, normalmente por operaciones inseguras con arreglos o tipos crudos.</p>
 <p><code>@SafeVarargs</code> declara que la implementación no realiza operaciones inseguras con ese arreglo; no verifica ni repara el código automáticamente. Solo se permite en constructores y métodos estáticos, finales o privados. Para recibir colecciones genéricas, una firma con <code>List&lt;T&gt;</code> suele evitar esta dificultad y expresar mejor el contrato.</p>
 <hr>
-<p><a id="demostracion"></a></p>
 <h2>2. Demostración: reunir y recorrer valores</h2>
 <p>El ejemplo reúne enteros mediante varargs, los almacena en una lista y los suma con un <code>for-each</code>. También comprueba que reasignar la variable del bucle no reemplaza los elementos de la lista.</p>
 <p><strong>Archivo:</strong> <code>app/src/main/java/edu/ups/pap/u01/ConversionesDemo.java</code>.</p>
