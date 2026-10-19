@@ -7,7 +7,7 @@
 **Autor:** Ing. Pablo Torres, Mgtr.  
 **Unidad:** 1. Programación genérica
 
-[Inicio del curso](../../../README.md) · [Ver en el navegador](index.html)
+
 
 ---
 

@@ -8,7 +8,7 @@
 **Unidad:** 2. Expresiones regulares  
 **Proyecto de trabajo:** CampusMonitor
 
-[Inicio del curso](../../README.md) · [Presentación editable](presentacion.pptx) · [Ver en el navegador](index.html)
+[Inicio del curso](../../README.md) · [Presentación editable](presentacion.pptx)
 
 ---
 

@@ -8,7 +8,7 @@
 **Unidad:** 3. Programación concurrente  
 **Proyecto de trabajo:** CampusMonitor
 
-[Inicio del curso](../../../README.md) · [Presentación editable](presentacion.pptx) · [Ver en el navegador](index.html)
+ · [Presentación editable](presentacion.pptx)
 
 ---
 

@@ -8,7 +8,7 @@
 **Unidad:** 4. Conexión a bases de datos  
 **Proyecto de trabajo:** CampusMonitor
 
-[Inicio del curso](../../../README.md) · [Presentación editable](presentacion.pptx) · [Ver en el navegador](index.html)
+ · [Presentación editable](presentacion.pptx)
 
 ---
 
