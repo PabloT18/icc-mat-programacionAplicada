@@ -27,7 +27,18 @@ Un **patrón de diseño** describe una organización de responsabilidades y cola
 
 **Acoplamiento** es el grado de dependencia entre componentes. Si un servicio decide qué implementación construir, conoce su constructor y también la usa, cambiar esa implementación puede afectar varias partes del servicio. Una abstracción estable permite separar estas decisiones, a cambio de más tipos y relaciones.
 
-**Producto** es el objeto que se obtiene; **creador** es el componente que lo suministra; **cliente** es quien lo utiliza. Estos nombres describen roles: un mismo objeto puede desempeñar más de uno. La creación concreta sigue necesitando constructores o mecanismos equivalentes; el patrón establece dónde reside esa decisión.
+
+| Rol | Responsabilidad |
+|---|---|
+| Producto | Objeto que se crea o proporciona. |
+| Creador | Componente responsable de suministrar el producto. |
+| Cliente | Componente que solicita o utiliza el objeto. |
+
+Estos roles no representan necesariamente clases diferentes ni aparecen de la misma forma en todos los patrones.
+
+Los patrones creacionales no eliminan la instanciación mediante `new` u otros mecanismos. Organizan dónde y cómo se toman las decisiones de creación.
+
+
 
 Los patrones no requieren genéricos. Estos pueden reforzar contratos de tipos, como `Copiable<PerfilSensor>`, pero añadir `<T>` no convierte por sí solo una clase en un patrón.
 
@@ -37,106 +48,144 @@ Los patrones no requieren genéricos. Estos pueden reforzar contratos de tipos, 
 
 ### Definición
 
-**Factory Method** es un patrón de diseño creacional que define un método para crear objetos, pero permite que las subclases decidan qué clase concreta instanciar.
+**Factory Method** es un patrón de diseño creacional que define un método para crear objetos y permite que las subclases decidan qué clase concreta instanciar.
 
-La clase base establece un proceso común y utiliza el objeto devuelto por el método fábrica, sin conocer su implementación concreta. Cada subclase sobrescribe ese método para proporcionar el objeto adecuado.
+La clase base declara el método de creación y puede utilizar el objeto resultante dentro de sus operaciones. Las subclases implementan o sobrescriben ese método para proporcionar diferentes productos.
 
-De esta manera, **se separa la lógica de creación de objetos de la lógica que los utiliza**, facilitando la incorporación de nuevas implementaciones sin modificar el proceso principal [1].
+**Idea principal:** separar la creación de un objeto de las operaciones que lo utilizan, permitiendo cambiar el producto mediante herencia y polimorfismo [1].
+### 2.1. ¿Qué problema resuelve?
 
-### Problema: importar formatos diferentes
+Supongamos que una aplicación realiza un proceso que necesita utilizar objetos de diferentes clases.
 
-Un proceso recibe líneas con identificador, valor y unidad. Un proveedor separa los campos con punto y coma; otro usa tabulaciones. En ambos casos se deben omitir líneas vacías, interpretar datos, validar lecturas y señalar en qué línea apareció un error.
+Una implementación podría crear directamente esos objetos mediante `new` y seleccionar su tipo con condiciones `if` o `switch`.
 
-Si cada formato implementa el proceso completo, se duplican el recorrido y el manejo de errores. Si el proceso instancia un lector concreto directamente, queda ligado a ese formato. La variación está en **cómo se interpreta una línea**, no en el flujo de importación.
+Esto provoca que el proceso dependa de clases concretas. Cuando aparecen nuevas variantes, puede ser necesario modificar la lógica existente.
 
-### Solución y participantes
+**Factory Method propone:**
 
-`Importador.importar()` conserva ese flujo. Solicita un `LectorLinea` mediante `crearLector()` y utiliza su operación `leer()`. La subclase del importador decide qué lector suministrar.
+1. Definir una abstracción común para los productos.
+2. Declarar un método de creación en una clase creadora.
+3. Delegar en las subclases la elección del producto concreto.
+4. Utilizar el producto mediante su abstracción, sin depender de una implementación específica.
 
-| Rol | Tipo del ejemplo | Responsabilidad |
-|---|---|---|
-| Producto | `LectorLinea` | Convertir una línea en `Lectura` |
-| Productos concretos | `LectorPuntoComa`, `LectorTabulacion` | Interpretar su delimitador |
-| Creador | `Importador` | Importar y contextualizar errores |
-| Creadores concretos | `ImportadorPuntoComa`, `ImportadorTabulacion` | Sobrescribir `crearLector()` |
-| Dato del dominio | `Lectura` | Mantener una medición válida |
+El patrón no elimina la necesidad de seleccionar una implementación concreta. Traslada esa decisión a los creadores concretos.
 
-`Lectura` no es el producto del Factory Method: el producto es el **lector**. La lectura es el resultado de utilizarlo. Esta distinción permite identificar el patrón aunque existan varios objetos creados durante la ejecución.
+### 2.2. Estructura y participantes
 
-### Decisiones de implementación
+| Participante | Responsabilidad |
+|---|---|
+| Producto | Interfaz o clase abstracta que define las operaciones disponibles. |
+| Producto concreto | Implementa las operaciones del producto. |
+| Creador | Declara el Factory Method y puede contener operaciones que utilizan el producto. |
+| Creador concreto | Sobrescribe el Factory Method para devolver el producto correspondiente. |
+| Cliente | Selecciona el creador que necesita y utiliza sus operaciones. |
 
-El lector se solicita una vez por importación y se reutiliza en sus líneas. `importar()` es `final` para conservar el procedimiento del ejemplo; `crearLector()` es `protected abstract` para exigir una decisión a cada subclase. El creador podría proporcionar una implementación predeterminada si el diseño lo necesitara.
+El **Factory Method es el método de creación**, no necesariamente toda la clase creadora.
 
-El cliente todavía debe seleccionar un creador concreto al configurar la aplicación. El patrón concentra esa selección; no elimina toda referencia a clases concretas. Un método estático con un `switch` puede ser una fábrica simple, pero no demuestra esta delegación mediante sobrescritura.
+### 2.3. ¿Cuándo utilizarlo?
 
-### Cuándo utilizarlo
+Conviene utilizar Factory Method cuando:
 
-Conviene cuando una jerarquía de servicios comparte un proceso, pero necesita variar un colaborador que crea. Incorporar un tercer formato exige otro lector y otro creador, sin cambiar el recorrido. Si solo existe un formato estable, el par adicional de jerarquías puede resultar innecesario. También sería posible recibir el lector por constructor: esa alternativa usa composición y evita crear una subclase del importador por cada variante.
+- Un proceso necesita trabajar con diferentes implementaciones de un producto.
+- Se desea conservar un procedimiento común y variar el objeto que utiliza.
+- Las subclases deben decidir qué producto crear.
+- Se prevé incorporar nuevas variantes sin modificar el algoritmo compartido.
+
+No siempre es necesario. Si existe una única implementación estable, agregar jerarquías de creadores y productos podría aumentar innecesariamente la complejidad.
+
+### 2.4. Caso práctico: importación de lecturas
+
+En **CampusMonitor** necesitamos importar lecturas de sensores desde diferentes formatos.
+
+Cada lectura contiene:
+
+- Identificador del sensor.
+- Valor numérico.
+- Unidad de medida.
+
+Se reciben dos formatos:
+
+**Formato separado por punto y coma:**
+
+```text
+S01;22.5;°C
+S02;18;personas
+```
+
+**Formato separado por tabulaciones:**
+
+```text
+S01	22.5	°C
+S02	18	personas
+```
+
+Independientemente del formato, el proceso debe:
+
+1. Recorrer las líneas recibidas.
+2. Omitir las líneas vacías.
+3. Interpretar los datos.
+4. Validar las lecturas.
+5. Identificar los errores indicando el número de línea.
+6. Devolver una lista de objetos `Lectura`.
 
 
-### Estructura UML
+**Problema:** el procedimiento de importación es el mismo, pero cambia la forma de interpretar los campos.
 
+Si duplicamos el proceso para cada formato, repetimos el recorrido, la validación del flujo y el manejo de errores.
 
+**Solución mediante Factory Method:** conservar el proceso en `Importador` y delegar la creación del lector específico a sus subclases.
 
-![Diagrama UML Factory Method](assets/actory-method-mmd.svg)
+### 2.5. Estructura UML
 
+![Diagrama UML Factory Method | medium](assets/actory-method-mmd.svg)
 
-![Diagrama UML Factory Method | small](assets/actory-method-mmd.svg)
+#### Identificación de participantes
 
+| Rol del patrón | Implementación en CampusMonitor |
+|---|---|
+| Producto | `LectorLinea` |
+| Productos concretos | `LectorPuntoComa`, `LectorTabulacion` |
+| Creador | `Importador` |
+| Creadores concretos | `ImportadorPuntoComa`, `ImportadorTabulacion` |
+| Factory Method | `crearLector()` |
 
-### Implementación Java · Factory Method
+La clase `Lectura` representa los datos obtenidos, pero **no es el producto del Factory Method**.
+
+El producto del patrón es el objeto `LectorLinea`, que se utiliza para obtener las lecturas.
+
+### 2.6. Implementación del ejemplo en Java
 
 **Código de referencia:** [FactoryMethodDemo.java](ejemplos/FactoryMethodDemo.java).
 
-El ejemplo reúne las clases en un solo archivo para facilitar su ejecución. En un proyecto Java se recomienda organizarlas en archivos independientes, manteniendo las responsabilidades y relaciones del diagrama UML.
+El archivo contiene una demostración ejecutable con las clases agrupadas. Para desarrollar el ejercicio en un proyecto Java, se recomienda distribuirlas en archivos independientes.
 
-#### 1. Clases que deben implementarse
+#### Clases necesarias
 
 | Clase | Tipo | Responsabilidad |
 |---|---|---|
-| `Lectura` | Record | Representar una lectura con identificador, valor y unidad. Validar sus datos. |
-| `LectorLinea` | Interfaz | Definir el contrato `leer(String linea): Lectura`. |
-| `LectorPuntoComa` | Clase concreta | Implementar `LectorLinea` para procesar datos separados por `;`. |
-| `LectorTabulacion` | Clase concreta | Implementar `LectorLinea` para procesar datos separados por tabulaciones. |
-| `Importador` | Clase abstracta | Definir el proceso común de importación y declarar el Factory Method. |
-| `ImportadorPuntoComa` | Creador concreto | Sobrescribir `crearLector()` para devolver un `LectorPuntoComa`. |
-| `ImportadorTabulacion` | Creador concreto | Sobrescribir `crearLector()` para devolver un `LectorTabulacion`. |
-| `FactoryMethodDemo` | Clase ejecutable | Demostrar el funcionamiento mediante `main()`. |
+| `Lectura` | Record | Almacenar y validar los datos de una lectura. |
+| `LectorLinea` | Interfaz | Declarar `leer(String linea)`, que recibe texto y devuelve una `Lectura`. |
+| `LectorPuntoComa` | Clase concreta | Interpretar líneas separadas por `;`. |
+| `LectorTabulacion` | Clase concreta | Interpretar líneas separadas por tabulaciones. |
+| `Importador` | Clase abstracta | Mantener el proceso común y declarar `crearLector()`. |
+| `ImportadorPuntoComa` | Creador concreto | Devolver un `LectorPuntoComa`. |
+| `ImportadorTabulacion` | Creador concreto | Devolver un `LectorTabulacion`. |
+| `FactoryMethodDemo` | Clase ejecutable | Probar los diferentes importadores mediante `main()`. |
 
-La función auxiliar `interpretar(String linea, String separador)` centraliza la conversión y validación de los campos. Puede mantenerse como método auxiliar en la demostración; no constituye el Factory Method.
+**Consideraciones de implementación:**
 
-#### 2. ¿Dónde se implementa el patrón?
+- `Importador` declara `protected abstract LectorLinea crearLector()`.
+- Cada creador concreto sobrescribe `crearLector()` y devuelve su lector correspondiente.
+- `importar()` contiene el algoritmo común y es `final` en este ejemplo.
+- Los lectores implementan el método `leer()` definido por la interfaz.
+- El método auxiliar `interpretar()` permite reutilizar la separación y validación de campos. No constituye el Factory Method.
 
-**Creador abstracto: `Importador`**
+El lector se crea una vez por importación y se reutiliza para procesar las líneas recibidas.
 
-Define dos operaciones principales:
 
-- `crearLector()`: método abstracto que devuelve `LectorLinea`. Es el **Factory Method**.
-- `importar(lineas)`: proceso común que obtiene un lector, recorre las líneas, omite las vacías y procesa las lecturas.
+### 2.7. ¿Cómo se utiliza el patrón?
 
-**Creadores concretos**
-
-- `ImportadorPuntoComa` devuelve un objeto `LectorPuntoComa`.
-- `ImportadorTabulacion` devuelve un objeto `LectorTabulacion`.
-
-Cada subclase decide qué lector crear, sin modificar el algoritmo de importación.
-
-**Productos**
-
-La interfaz `LectorLinea` establece el contrato de lectura. Las clases `LectorPuntoComa` y `LectorTabulacion` proporcionan implementaciones diferentes.
-
-#### 3. ¿Cómo funciona?
-
-1. El cliente instancia un creador concreto, por ejemplo `ImportadorPuntoComa`.
-2. Invoca el método heredado `importar(lineas)`.
-3. `Importador` ejecuta `crearLector()` mediante polimorfismo.
-4. La subclase devuelve el lector correspondiente.
-5. `Importador` utiliza `lector.leer(linea)` para procesar cada registro.
-6. El resultado se devuelve como una lista de objetos `Lectura`.
-
-**Punto clave:** el proceso de importación permanece en la clase base; la selección del producto se delega a las subclases.
-
-#### 4. Uso desde el cliente
+El cliente selecciona un importador concreto y ejecuta el proceso común.
 
 ```java
 Importador importador = new ImportadorPuntoComa();
@@ -148,25 +197,25 @@ List<Lectura> resultado = importador.importar(
 System.out.println(resultado);
 ```
 
-Para cambiar el formato de entrada, se selecciona otro creador:
+#### Flujo de ejecución
+
+1. El cliente instancia un creador concreto, por ejemplo `ImportadorPuntoComa`.
+2. Invoca el método heredado `importar(lineas)`.
+3. `Importador` ejecuta `crearLector()` mediante polimorfismo.
+4. La subclase devuelve el lector correspondiente.
+5. `Importador` utiliza `lector.leer(linea)` para procesar cada registro.
+6. El resultado se devuelve como una lista de objetos `Lectura`.
+
+
+Para utilizar otro formato, el cliente selecciona otro creador:
 
 ```java
 Importador importador = new ImportadorTabulacion();
 ```
 
-El método `importar()` no necesita modificarse.
+**Observación:** cambia el creador y, por tanto, el lector utilizado. El algoritmo `importar()` permanece sin modificaciones.
 
-#### 5. Preguntas de análisis
-
-1. ¿Por qué `crearLector()` devuelve `LectorLinea` y no `LectorPuntoComa`?
-2. ¿Qué método contiene el algoritmo común y cuál es el Factory Method?
-3. ¿Qué sucede si una subclase devuelve un lector diferente?
-4. ¿Qué clases deben agregarse para admitir archivos delimitados por comas?
-5. ¿Por qué no es necesario utilizar `if` o `switch` dentro de `importar()` para seleccionar el lector?
-
-**Conclusión:** Factory Method permite reutilizar un proceso común y delegar en las subclases la creación del objeto que dicho proceso necesita.
-
-### Salida y lectura de la ejecución
+### 2.8. Resultado de la ejecución
 
 ```text
 [Lectura[idSensor=S01, valor=22.5, unidad=°C]]
@@ -174,17 +223,31 @@ El método `importar()` no necesita modificarse.
 Línea 1: Lectura inválida
 ```
 
-La primera importación interpreta `;`; la segunda interpreta una tabulación. Ambas recorren los datos con el mismo método. `NaN` se convierte en un `double`, pero el constructor de `Lectura` lo rechaza porque no es finito. El importador añade el número de línea al error.
+Las dos importaciones utilizan el mismo procedimiento con lectores diferentes.
 
-La secuencia relevante es `importar → crearLector → leer → new Lectura`. La llamada a `crearLector` se resuelve según el tipo concreto del importador, mientras el resto del proceso permanece estable.
+El tercer resultado corresponde a una lectura con valor `NaN`. Aunque Java puede convertirlo a `double`, el constructor de `Lectura` lo rechaza porque no es un valor finito.
 
-### Comprobaciones y límites del ejemplo
+`Importador` incorpora el número de línea al mensaje de error.
 
-- Una lista sin líneas produce una lista vacía. Una línea en blanco se omite.
-- Dos campos en lugar de tres generan un error con el número de línea.
-- Un identificador vacío o un valor infinito no generan una lectura válida.
-- El formato es deliberadamente delimitado y simple: no admite comillas ni delimitadores escapados. No es un analizador CSV general.
-- El contrato de entrada presupone una lista no nula con líneas no nulas. La validación de lecturas no sustituye la validación de un archivo o petición externa.
+### 2.9. Análisis
+
+**Preguntas:**
+
+1. ¿Por qué `crearLector()` devuelve `LectorLinea` en lugar de una clase concreta?
+2. ¿Cuál es la diferencia entre `crearLector()` e `importar()`?
+3. ¿Qué mecanismo de programación orientada a objetos permite ejecutar la implementación correspondiente de `crearLector()`?
+4. ¿Qué clases serían necesarias para incorporar un tercer formato separado por comas?
+5. ¿Por qué el método `importar()` no necesita condiciones para identificar el formato?
+
+**Limitaciones del ejemplo:**
+
+- Las líneas vacías se omiten.
+- Los datos inválidos generan excepciones con su número de línea.
+- No se admiten delimitadores escapados ni campos entre comillas.
+- Se presupone una lista de entrada no nula con elementos no nulos.
+
+**Conclusión:** Factory Method permite que un proceso trabaje con diferentes productos mediante una abstracción común, delegando en las subclases la creación de la implementación correspondiente.
+
 
 [Volver al índice](#indice)
 
