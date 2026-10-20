@@ -1,0 +1,31 @@
+@startuml
+skinparam defaultFontName DejaVu Sans
+skinparam classBackgroundColor #F3F3FA
+skinparam classBorderColor #003772
+abstract class "Importador" as I {
+# crearLector(): LectorLinea
+~ importar(lineas): List<Lectura>
+}
+interface "LectorLinea" as L {
++ leer(linea): Lectura
+}
+class "ImportadorPuntoComa" as IP {
+# crearLector(): LectorLinea
+}
+class "LectorPuntoComa" as LP {
++ leer(linea): Lectura
+}
+class "ImportadorTabulacion" as IT {
+# crearLector(): LectorLinea
+}
+class "LectorTabulacion" as LT {
++ leer(linea): Lectura
+}
+IP --|> I
+IT --|> I
+LP ..|> L
+LT ..|> L
+I ..> L : usa
+IP ..> LP : crea
+IT ..> LT : crea
+@enduml

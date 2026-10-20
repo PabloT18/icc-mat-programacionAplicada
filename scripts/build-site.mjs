@@ -6,17 +6,126 @@ import { marked } from './vendor/marked.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const data = JSON.parse(await fs.readFile(path.join(root, 'assets/catalogo.json'), 'utf8'));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const relative = (base, target) => path.relative(path.join(root, base), path.join(root, target)).split(path.sep).join('/');
+const relative = (base, target) =>
+  path.relative(
+    path.join(root, base),
+    path.join(root, target)
+  ).split(path.sep).join('/');
+
 async function write(p, s) { await fs.mkdir(path.dirname(path.join(root, p)), { recursive: true }); await fs.writeFile(path.join(root, p), s); }
-const head = (title, css) => `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} · Programación Aplicada</title><link rel="stylesheet" href="${css}"></head>`;
+// base: carpeta donde se generará el HTML, relativa a la raíz.
+const head = (title, base = '') => `
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>${esc(title)} · Programación Aplicada</title>
+
+  <link
+    rel="stylesheet"
+    href="${relative(base, 'assets/css/styles.css')}"
+  >
+
+  <script
+    defer
+    src="${relative(base, 'assets/js/vendor/mermaid.min.js')}"
+  ></script>
+
+  <script
+    defer
+    src="${relative(base, 'assets/js/mermaid-init.js')}"
+  ></script>
+  <script
+    defer
+    src="${relative(base, 'assets/js/diagram-viewer.js')}"
+  ></script>
+</head>`;
 const wrapTables = s => s.replace(/<table>/g, '<div class="table-scroll"><table>').replace(/<\/table>/g, '</table></div>');
 for (const t of data.topics) {
   const md = await fs.readFile(path.join(root, t.path, 'material.md'), 'utf8');
+
   let body = marked.parse(md, { gfm: true });
+
+  // Identificar imágenes SVG y aplicar tamaños.
+  body = body.replace(
+    /<img\b[^>]*>/gi,
+    (img) => {
+      const src = img.match(/\bsrc=["']([^"']+)["']/i);
+
+      if (!src || !/\.svg(?:[?#].*)?$/i.test(src[1])) {
+        return img;
+      }
+
+      const alt = img.match(/\balt=["']([^"']*)["']/i);
+
+      let size = 'medium';
+      let cleanAlt = alt ? alt[1] : '';
+
+      const sizeMatch = cleanAlt.match(
+        /\s*\|\s*(small|medium|large)\s*$/i
+      );
+
+      if (sizeMatch) {
+        size = sizeMatch[1].toLowerCase();
+        cleanAlt = cleanAlt.slice(0, sizeMatch.index).trim();
+      }
+
+      // Eliminar el tamaño del texto alternativo.
+      if (alt) {
+        img = img.replace(
+          /\balt=(["'])[^"']*\1/i,
+          `alt="${cleanAlt}"`
+        );
+      }
+
+      // Agregar clases CSS.
+      const classes = `zoomable-diagram ${size}`;
+
+      if (/\bclass=["'][^"']*["']/i.test(img)) {
+        img = img.replace(
+          /\bclass=(["'])(.*?)\1/i,
+          (_, quote, existing) =>
+            `class=${quote}${existing} ${classes}${quote}`
+        );
+      } else {
+        img = img.replace(/>$/, ` class="${classes}">`);
+      }
+
+      return img;
+    }
+  );
+
   // Keep the Markdown source available, while navigating related lessons as HTML.
-  body = body.replace(/href="([^"]*\/material)\.md(#[^"]*)?"/g, (_, base, hash) => `href="${base.slice(0, -8)}index.html${hash || ''}"`);
-  const nav = `<nav class="article-nav" aria-label="Recursos del contenido"><a href="${relative(t.path, 'index.html')}" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a>${t.prev ? `<a href="${relative(t.path, t.prev + '/index.html')}">Anterior</a>` : ''}${t.next ? `<a href="${relative(t.path, t.next + '/index.html')}">Siguiente</a>` : ''}</nav>`;
-  await write(t.path + '/index.html', head(t.id + ' · ' + t.title, relative(t.path, 'assets/css/styles.css')) + `<body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido">${nav}${wrapTables(body)}${nav}</main></body></html>`);
+
+  body = body.replace(
+    /href="([^"]*\/material)\.md(#[^"]*)?"/g,
+    (_, base, hash) =>
+      `href="${base.slice(0, -8)}index.html${hash || ''}"`
+  );
+  const nav = `
+  <nav class="article-nav" aria-label="Recursos del contenido">
+    <a href="${relative(t.path, 'index.html')}" target="_top">Índice del curso</a>
+    <a href="material.md" download>Descargar MD</a>
+    <a href="presentacion.pptx" download>Descargar PPTX</a>
+    ${t.prev ? `<a href="${relative(t.path, t.prev + '/index.html')}">Anterior</a>` : ''}
+    ${t.next ? `<a href="${relative(t.path, t.next + '/index.html')}">Siguiente</a>` : ''}
+  </nav>`;
+  await write(
+    t.path + '/index.html',
+    head(t.id + ' · ' + t.title, t.path) + `
+  <body>
+    <a class="skip" href="#contenido">Ir al material</a>
+
+    <main class="page" id="contenido">
+      ${nav}
+      ${wrapTables(body)}
+      ${nav}
+    </main>
+  </body>
+  </html>`
+  );
 }
 for (const lab of data.labs) {
   const dir = `${String(lab.unit).padStart(2, '0')}/PLs`;
@@ -28,9 +137,9 @@ for (const lab of data.labs) {
   const requirements = '<ol>' + lab.requirements.map(r => `<li>${esc(r)}</li>`).join('') + '</ol>';
   const materials = lab.unit === 5 ? 'PC con JDK 25, PostgreSQL, Arduino IDE, UNO R3, cable USB de datos, potenciómetro de 10 kΩ, pulsador y protoboard.' : lab.unit === 4 ? 'PC con JDK 25, Gradle Wrapper, PostgreSQL y un cliente SQL.' : 'PC con JDK 25, editor o IDE y Git. No se requiere hardware externo.';
   const guide = `<div class="table-scroll"><table class="guide-table"><tr><td><img class="guide-logo" src="../../assets/logos/ups.png" alt="Universidad Politécnica Salesiana"></td><td colspan="3" class="guide-heading">GUÍA DE PRÁCTICA DE LABORATORIO / TALLERES / CENTROS DE SIMULACIÓN</td></tr><tr><td colspan="2"><strong>CARRERA:</strong> Computación</td><td colspan="2"><strong>ASIGNATURA:</strong> Programación Aplicada</td></tr><tr><td><strong>NRO. PRÁCTICA:</strong> ${lab.id}</td><td colspan="3"><strong>TÍTULO:</strong> ${esc(lab.title)}</td></tr>${row('OBJETIVO', list(lab.objectives))}${row('CONTEXTO', `<p>${esc(lab.problem)}</p>`)}${row('RECURSOS', `<p>${materials}</p><p>Tiempo orientativo de desarrollo: ${lab.hours} horas. La fecha y modalidad de entrega se establecen en el aula.</p>`)}${row('INSTRUCCIONES', requirements)}${row('ACTIVIDADES POR DESARROLLAR', phaseHTML)}${row('CASOS DE ACEPTACIÓN', testTable)}${row('ENTREGABLES', list(lab.deliverables))}${row('RÚBRICA', rubric)}${row('RESULTADOS OBTENIDOS', '<p>Presenta una tabla propia con escenario, entrada, resultado esperado, resultado real y evidencia. Los datos deben proceder de tu ejecución. Identifica las limitaciones y cualquier caso que no hayas completado.</p>')}${row('DEFENSA', `<p>${esc(lab.defense)}</p><p>Explica el código del commit entregado y realiza la modificación solicitada. Declara herramientas externas utilizadas y comprueba personalmente cada resultado.</p>`)}${row('CONCLUSIONES', '<p>Redacta al menos tres conclusiones basadas en resultados reales. Relaciona cada conclusión con un caso ejecutado y una decisión del diseño.</p>')}${row('RECOMENDACIONES', '<p>Conserva datos de prueba reproducibles, valida casos de error y registra los cambios por fase. Revisa las instrucciones de cada contenido antes de integrar componentes.</p>')}</table></div>`;
-  await write(dir + '/' + lab.id + '.html', head(lab.id + ' · ' + lab.title, '../../assets/css/styles.css') + `<body><a class="skip" href="#practice-content">Ir a la práctica</a><main class="page" id="practice-content" data-protected="true"><nav class="article-nav"><a href="../../index.html" target="_top">Índice del curso</a><a href="${lab.id}.pptx" download>Presentación de la práctica</a></nav>${guide}<div class="signature"><p>Docente / Técnico Docente: Ing. Pablo Torres, Mgtr.</p><p>Firma: _______________________________</p></div><p class="reference-note">Guía adaptada del formato proporcionado para Programación Aplicada. Rúbrica: 10 puntos.</p></main><script src="../../assets/js/protection.js"></script></body></html>`);
+  await write(dir + '/' + lab.id + '.html', head(lab.id + ' · ' + lab.title, dir) + `<body><a class="skip" href="#practice-content">Ir a la práctica</a><main class="page" id="practice-content" data-protected="true"><nav class="article-nav"><a href="../../index.html" target="_top">Índice del curso</a><a href="${lab.id}.pptx" download>Presentación de la práctica</a></nav>${guide}<div class="signature"><p>Docente / Técnico Docente: Ing. Pablo Torres, Mgtr.</p><p>Firma: _______________________________</p></div><p class="reference-note">Guía adaptada del formato proporcionado para Programación Aplicada. Rúbrica: 10 puntos.</p></main><script src="../../assets/js/protection.js"></script></body></html>`);
 }
 const navData = { topics: data.topics.map(({ id, title, path, unit }) => ({ id, title, path, unit })), labs: data.labs.map(({ id, title, unit, problem }) => ({ id, title, unit, problem })), units: data.units };
 await write('assets/js/course-data.js', 'window.COURSE = ' + JSON.stringify(navData).replace(/</g, '\\u003c') + ';');
-await write('index.html', head('Material de curso', 'assets/css/styles.css') + `<body><a class="skip" href="#main">Ir al contenido</a><header class="topbar"><img class="brand" src="assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación · Sede Cuenca"><span class="course-label">Programación Aplicada</span></header><div class="shell"><aside class="sidebar"><h2>Unidades del curso</h2><nav class="unit-nav" aria-label="Unidades">${Object.entries(data.units).map(([u, [name]]) => `<button class="unit-button" data-unit="${u}"><span>Unidad ${u}</span><small>${esc(name)}</small></button>`).join('')}</nav><div class="support"><p>Proyecto acumulativo<br><strong>CampusMonitor</strong></p><a href="README.md">README del proyecto</a></div></aside><main class="workspace" id="main"><section id="listing"><p class="eyebrow" id="unitLabel"></p><h1 id="unitTitle"></h1><p class="intro">Consulta el material, ejecuta la demostración y resuelve la PC en tu proyecto Java.</p><div class="tabs" aria-label="Tipo de recurso"><button class="tab active" data-tab="material" aria-pressed="true">Material de clase</button><button class="tab" data-tab="labs" aria-pressed="false">Prácticas de laboratorio</button></div><div id="resources"></div><p class="footer">Ing. Pablo Torres, Mgtr. · Universidad Politécnica Salesiana</p></section><section id="reader" class="hidden"><div class="viewer-bar"><button class="button" id="back">Volver a la unidad</button><div class="viewer-title" id="readerTitle"></div><div class="viewer-links"><a id="fullPage" class="button" target="_blank" rel="noopener">Abrir página</a><a id="deckLink" class="button primary" download>PPTX</a></div></div><iframe class="viewer" id="viewer" title="Material de Programación Aplicada"></iframe></section></main></div><script src="assets/js/course-data.js"></script><script src="assets/js/app.js"></script></body></html>`);
+await write('index.html', head('Material de curso', '') + `<body><a class="skip" href="#main">Ir al contenido</a><header class="topbar"><img class="brand" src="assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación · Sede Cuenca"><span class="course-label">Programación Aplicada</span></header><div class="shell"><aside class="sidebar"><h2>Unidades del curso</h2><nav class="unit-nav" aria-label="Unidades">${Object.entries(data.units).map(([u, [name]]) => `<button class="unit-button" data-unit="${u}"><span>Unidad ${u}</span><small>${esc(name)}</small></button>`).join('')}</nav><div class="support"><p>Proyecto acumulativo<br><strong>CampusMonitor</strong></p><a href="README.md">README del proyecto</a></div></aside><main class="workspace" id="main"><section id="listing"><p class="eyebrow" id="unitLabel"></p><h1 id="unitTitle"></h1><p class="intro">Consulta el material, ejecuta la demostración y resuelve la PC en tu proyecto Java.</p><div class="tabs" aria-label="Tipo de recurso"><button class="tab active" data-tab="material" aria-pressed="true">Material de clase</button><button class="tab" data-tab="labs" aria-pressed="false">Prácticas de laboratorio</button></div><div id="resources"></div><p class="footer">Ing. Pablo Torres, Mgtr. · Universidad Politécnica Salesiana</p></section><section id="reader" class="hidden"><div class="viewer-bar"><button class="button" id="back">Volver a la unidad</button><div class="viewer-title" id="readerTitle"></div><div class="viewer-links"><a id="fullPage" class="button" target="_blank" rel="noopener">Abrir página</a><a id="deckLink" class="button primary" download>PPTX</a></div></div><iframe class="viewer" id="viewer" title="Material de Programación Aplicada"></iframe></section></main></div><script src="assets/js/course-data.js"></script><script src="assets/js/app.js"></script></body></html>`);
 console.log(`HTML generado: ${data.topics.length} contenidos y ${data.labs.length} prácticas.`);

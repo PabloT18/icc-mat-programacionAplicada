@@ -6,9 +6,13 @@
   "description": "Material de Programación Aplicada · UPS",
   "scripts": {
     "build:site": "node scripts/build-site.mjs",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "build:mermaid": "node scripts/build-mermaid.mjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^12.0.0"
   }
 }

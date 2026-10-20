@@ -1,8 +1,48 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3.3a · Sincronización con monitores y locks · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../../3.2-hilos-ejecutables/02-procesos-unix/index.html">Anterior</a><a href="../02-barreras-semaforos-atomicas/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>3.3a · Sincronización con monitores y locks · Programación Aplicada</title>
+
+  <link
+    rel="stylesheet"
+    href="../../../assets/css/styles.css"
+  >
+
+  <script
+    defer
+    src="../../../assets/js/vendor/mermaid.min.js"
+  ></script>
+
+  <script
+    defer
+    src="../../../assets/js/mermaid-init.js"
+  ></script>
+  <script
+    defer
+    src="../../../assets/js/diagram-viewer.js"
+  ></script>
+</head>
+  <body>
+    <a class="skip" href="#contenido">Ir al material</a>
+
+    <main class="page" id="contenido">
+      
+  <nav class="article-nav" aria-label="Recursos del contenido">
+    <a href="../../../index.html" target="_top">Índice del curso</a>
+    <a href="material.md" download>Descargar MD</a>
+    <a href="presentacion.pptx" download>Descargar PPTX</a>
+    <a href="../../3.2-hilos-ejecutables/02-procesos-unix/index.html">Anterior</a>
+    <a href="../02-barreras-semaforos-atomicas/index.html">Siguiente</a>
+  </nav>
+      <h1>Programación Aplicada</h1>
 <h2>3.3a. Sincronización con monitores y locks</h2>
 <p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
 <p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 3. Programación concurrente<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a> · <a href="index.html">Ver en el navegador</a></p>
+<p> · <a href="presentacion.pptx">Presentación editable</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
 <h3>Contexto</h3>
@@ -34,7 +74,7 @@
 <p>Un deadlock puede aparecer cuando varias tareas esperan recursos retenidos por las demás. Un orden global de adquisición reduce ciclos: por ejemplo, ordenar las cuentas o sensores por ID y bloquear siempre en ese orden. Timeouts permiten detectar una espera prolongada, pero no reparan automáticamente un diseño inconsistente.</p>
 <p>La demostración protege un registro de IDs con un monitor. Dos tareas intentan insertar el mismo ID y exactamente una tiene éxito. La salida del ganador no es determinista. La invariante relevante es que el catálogo contiene un solo registro y el contador de éxitos vale uno.</p>
 <h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual"></p>
+<p><img src="assets/guia-visual.svg" alt="Resumen visual" class="zoomable-diagram medium"></p>
 <hr>
 <p><a id="demostracion"></a></p>
 <h2>2. Demostración guiada</h2>
@@ -141,4 +181,15 @@ git log -1 --format=%H
 <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html">Thread</a></li>
 <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.desktop/javax/swing/SwingWorker.html">SwingWorker</a></li>
 </ul>
-<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../../3.2-hilos-ejecutables/02-procesos-unix/index.html">Anterior</a><a href="../02-barreras-semaforos-atomicas/index.html">Siguiente</a></nav></main></body></html>
+
+      
+  <nav class="article-nav" aria-label="Recursos del contenido">
+    <a href="../../../index.html" target="_top">Índice del curso</a>
+    <a href="material.md" download>Descargar MD</a>
+    <a href="presentacion.pptx" download>Descargar PPTX</a>
+    <a href="../../3.2-hilos-ejecutables/02-procesos-unix/index.html">Anterior</a>
+    <a href="../02-barreras-semaforos-atomicas/index.html">Siguiente</a>
+  </nav>
+    </main>
+  </body>
+  </html>

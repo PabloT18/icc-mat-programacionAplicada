@@ -1,0 +1,51 @@
+@startuml
+skinparam defaultFontName DejaVu Sans
+skinparam classBackgroundColor #F3F3FA
+skinparam classBorderColor #003772
+class "Estacion" as E {
+- fuente: FuenteTemperatura
+- conversor: ConversorTemperatura
+~ medirCelsius(): double
+}
+interface "FabricaEquipo" as F {
++ crearFuente(): FuenteTemperatura
++ crearConversor(): ConversorTemperatura
+}
+class "EquipoCelsius" as C {
++ crearFuente()
++ crearConversor()
+}
+class "EquipoFahrenheit" as H {
++ crearFuente()
++ crearConversor()
+}
+interface "FuenteTemperatura" as FT {
++ leer(): double
+}
+interface "ConversorTemperatura" as CT {
++ aCelsius(valor): double
+}
+class "FuenteCelsius" as FC {
++ leer(): double
+}
+class "FuenteFahrenheit" as FF {
++ leer(): double
+}
+class "ConversorCelsius" as CC {
++ aCelsius(valor): double
+}
+class "ConversorFahrenheit" as CF {
++ aCelsius(valor): double
+}
+E ..> F : recibe
+C ..|> F
+H ..|> F
+FC ..|> FT
+FF ..|> FT
+CC ..|> CT
+CF ..|> CT
+C ..> FC : crea
+C ..> CC : crea
+H ..> FF : crea
+H ..> CF : crea
+@enduml

@@ -109,6 +109,8 @@ public class PatronesDemo {
 }
 ```
 
+
+
 ### 2.2. Ejecución
 
 Desde la raíz de este repositorio, con JDK 25:

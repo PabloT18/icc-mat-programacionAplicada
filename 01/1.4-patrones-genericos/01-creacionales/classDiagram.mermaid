@@ -1,0 +1,37 @@
+classDiagram
+    direction TB
+
+    class Importador {
+        <<abstract>>
+        +importacion(lineas) List~Lectura~
+        #crearLector()* LectorLinea
+    }
+
+    class ImportadorPuntoComa {
+        #crearLector() LectorLinea
+    }
+
+    class ImportadorTabulacion {
+        #crearLector() LectorLinea
+    }
+
+    class LectorLinea {
+        <<interface>>
+        +leer(linea) Lectura
+    }
+
+    class LectorPuntoComa {
+        +leer(linea) Lectura
+    }
+
+    class LectorTabulacion {
+        +leer(linea) Lectura
+    }
+
+    Importador <|-- ImportadorPuntoComa
+    Importador <|-- ImportadorTabulacion
+    LectorLinea <|.. LectorPuntoComa
+    LectorLinea <|.. LectorTabulacion
+    Importador ..> LectorLinea : utiliza
+    ImportadorPuntoComa ..> LectorPuntoComa : crea
+    ImportadorTabulacion ..> LectorTabulacion : crea

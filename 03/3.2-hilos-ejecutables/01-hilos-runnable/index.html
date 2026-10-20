@@ -1,8 +1,48 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3.2a · Hilos, Runnable, estados e interrupción · Programación Aplicada</title><link rel="stylesheet" href="../../../assets/css/styles.css"></head><body><a class="skip" href="#contenido">Ir al material</a><main class="page" id="contenido"><nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../../3.1-fundamentos/index.html">Anterior</a><a href="../02-procesos-unix/index.html">Siguiente</a></nav><h1>Programación Aplicada</h1>
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>3.2a · Hilos, Runnable, estados e interrupción · Programación Aplicada</title>
+
+  <link
+    rel="stylesheet"
+    href="../../../assets/css/styles.css"
+  >
+
+  <script
+    defer
+    src="../../../assets/js/vendor/mermaid.min.js"
+  ></script>
+
+  <script
+    defer
+    src="../../../assets/js/mermaid-init.js"
+  ></script>
+  <script
+    defer
+    src="../../../assets/js/diagram-viewer.js"
+  ></script>
+</head>
+  <body>
+    <a class="skip" href="#contenido">Ir al material</a>
+
+    <main class="page" id="contenido">
+      
+  <nav class="article-nav" aria-label="Recursos del contenido">
+    <a href="../../../index.html" target="_top">Índice del curso</a>
+    <a href="material.md" download>Descargar MD</a>
+    <a href="presentacion.pptx" download>Descargar PPTX</a>
+    <a href="../../3.1-fundamentos/index.html">Anterior</a>
+    <a href="../02-procesos-unix/index.html">Siguiente</a>
+  </nav>
+      <h1>Programación Aplicada</h1>
 <h2>3.2a. Hilos, Runnable, estados e interrupción</h2>
 <p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
 <p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 3. Programación concurrente<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a> · <a href="index.html">Ver en el navegador</a></p>
+<p> · <a href="presentacion.pptx">Presentación editable</a></p>
 <hr>
 <h2>1. Conceptos y ejemplos</h2>
 <h3>Contexto</h3>
@@ -26,7 +66,7 @@
 <p>CountDownLatch permite señalar que una fase comenzó. En la demostración evita interrumpir antes de que la tarea haya comunicado su arranque. El orden de impresión de otros mensajes podría variar, pero se garantiza que el hilo termina antes del mensaje final.</p>
 <p>La cancelación debe liberar recursos en finally o try-with-resources. Piensa qué ocurre con una lectura a medio procesar: se descarta, se reintenta o se guarda como pendiente. El contador de lecturas no debería incrementarse antes de que la operación correspondiente concluya correctamente.</p>
 <h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual"></p>
+<p><img src="assets/guia-visual.svg" alt="Resumen visual" class="zoomable-diagram medium"></p>
 <hr>
 <p><a id="demostracion"></a></p>
 <h2>2. Demostración guiada</h2>
@@ -134,4 +174,15 @@ git log -1 --format=%H
 <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Thread.html">Thread</a></li>
 <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.desktop/javax/swing/SwingWorker.html">SwingWorker</a></li>
 </ul>
-<nav class="article-nav" aria-label="Recursos del contenido"><a href="../../../index.html" target="_top">Índice del curso</a><a href="material.md" download>Descargar MD</a><a href="presentacion.pptx" download>Descargar PPTX</a><a href="../../3.1-fundamentos/index.html">Anterior</a><a href="../02-procesos-unix/index.html">Siguiente</a></nav></main></body></html>
+
+      
+  <nav class="article-nav" aria-label="Recursos del contenido">
+    <a href="../../../index.html" target="_top">Índice del curso</a>
+    <a href="material.md" download>Descargar MD</a>
+    <a href="presentacion.pptx" download>Descargar PPTX</a>
+    <a href="../../3.1-fundamentos/index.html">Anterior</a>
+    <a href="../02-procesos-unix/index.html">Siguiente</a>
+  </nav>
+    </main>
+  </body>
+  </html>

@@ -1,0 +1,15 @@
+{
+    "theme": "base",
+    "themeVariables": {
+        "fontFamily": "DejaVu Sans, Arial, sans-serif",
+        "primaryColor": "#F3F3FA",
+        "primaryTextColor": "#17376D",
+        "primaryBorderColor": "#003772",
+        "lineColor": "#003772",
+        "background": "#FFFFFF"
+    },
+    "flowchart": {
+        "curve": "basis",
+        "htmlLabels": false
+    }
+}
