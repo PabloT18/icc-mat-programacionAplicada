@@ -1,0 +1,24 @@
+classDiagram
+    direction TB
+
+    class Builder["PlanMuestreo.Builder"] {
+        -String nombre
+        -Duration intervalo
+        -List~String~ sensores
+        ~Builder(nombre)
+        ~cada(intervalo) Builder
+        ~agregarSensor(id) Builder
+        ~construir() PlanMuestreo
+    }
+
+    class PlanMuestreo {
+        -String nombre
+        -Duration intervalo
+        -List~String~ sensores
+        -PlanMuestreo(builder)
+        +resumen() String
+    }
+
+    Builder ..> PlanMuestreo : construye
+    note for Builder "Clase estatica anidada. Estado provisional mutable."
+    note for PlanMuestreo "Producto inmutable. Copia defensiva de sensores."

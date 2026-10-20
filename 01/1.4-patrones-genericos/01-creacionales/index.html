@@ -41,25 +41,55 @@
       <h1>Programación Aplicada</h1>
 <h2>1.4a. Patrones creacionales</h2>
 <p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.  </p>
+<p><strong>Unidad:</strong> 1. Programación genérica</p>
 <p>Los patrones creacionales organizan la construcción, selección o reutilización de objetos. Cada patrón resuelve una variación diferente: el tipo concreto que se crea, la familia a la que pertenece, sus etapas de configuración, la copia de un estado existente o el control de una instancia compartida.</p>
 <p><a id="indice"></a></p>
 <h2>Índice</h2>
 <ol>
-<li><a href="#fundamentos">Fundamentos</a></li>
-<li><a href="#factory-method">Factory Method · Seleccionar un lector de datos</a></li>
-<li><a href="#abstract-factory">Abstract Factory · Crear equipos compatibles</a></li>
-<li><a href="#builder">Builder · Configurar un plan de muestreo</a></li>
-<li><a href="#prototype">Prototype · Copiar perfiles de sensores</a></li>
-<li><a href="#singleton">Singleton · Compartir una configuración</a></li>
-<li><a href="#comparacion">Comparación y criterios de elección</a></li>
-<li><a href="#referencias">Referencias</a></li>
+<li><p><a href="#fundamentos">Fundamentos</a></p>
+</li>
+<li><p><a href="#factory-method">Factory Method · Seleccionar un lector de datos</a></p>
+</li>
+<li><p><a href="#abstract-factory">Abstract Factory · Crear equipos compatibles</a></p>
+</li>
+<li><p><a href="#builder">Builder · Configurar un plan de muestreo</a></p>
+</li>
+<li><p><a href="#prototype">Prototype · Copiar perfiles de sensores</a></p>
+</li>
+<li><p><a href="#singleton">Singleton · Compartir una configuración</a></p>
+</li>
+<li><p><a href="#comparacion">Comparación y criterios de elección</a></p>
+</li>
+<li><p><a href="#referencias">Referencias</a></p>
+</li>
 </ol>
 <p><a id="fundamentos"></a></p>
 <h2>1. Fundamentos</h2>
 <p>Un <strong>patrón de diseño</strong> describe una organización de responsabilidades y colaboraciones que resuelve un problema recurrente bajo determinadas condiciones. No es una clase lista para copiar ni una obligación de introducir interfaces en cualquier programa.</p>
 <p><strong>Acoplamiento</strong> es el grado de dependencia entre componentes. Si un servicio decide qué implementación construir, conoce su constructor y también la usa, cambiar esa implementación puede afectar varias partes del servicio. Una abstracción estable permite separar estas decisiones, a cambio de más tipos y relaciones.</p>
-<p><strong>Producto</strong> es el objeto que se obtiene; <strong>creador</strong> es el componente que lo suministra; <strong>cliente</strong> es quien lo utiliza. Estos nombres describen roles: un mismo objeto puede desempeñar más de uno. La creación concreta sigue necesitando constructores o mecanismos equivalentes; el patrón establece dónde reside esa decisión.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Producto</td>
+<td>Objeto que se crea o proporciona.</td>
+</tr>
+<tr>
+<td>Creador</td>
+<td>Componente responsable de suministrar el producto.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Componente que solicita o utiliza el objeto.</td>
+</tr>
+</tbody></table></div>
+<p>Estos roles no representan necesariamente clases diferentes ni aparecen de la misma forma en todos los patrones.</p>
+<p>Los patrones creacionales no eliminan la instanciación mediante <code>new</code> u otros mecanismos. Organizan dónde y cómo se toman las decisiones de creación.</p>
 <p>Los patrones no requieren genéricos. Estos pueden reforzar contratos de tipos, como <code>Copiable&lt;PerfilSensor&gt;</code>, pero añadir <code>&lt;T&gt;</code> no convierte por sí solo una clase en un patrón.</p>
 <hr>
 <p><a id="factory-method"></a></p>
@@ -74,10 +104,14 @@
 <p>Esto provoca que el proceso dependa de clases concretas. Cuando aparecen nuevas variantes, puede ser necesario modificar la lógica existente.</p>
 <p><strong>Factory Method propone:</strong></p>
 <ol>
-<li>Definir una abstracción común para los productos.</li>
-<li>Declarar un método de creación en una clase creadora.</li>
-<li>Delegar en las subclases la elección del producto concreto.</li>
-<li>Utilizar el producto mediante su abstracción, sin depender de una implementación específica.</li>
+<li><p>Definir una abstracción común para los productos.</p>
+</li>
+<li><p>Declarar un método de creación en una clase creadora.</p>
+</li>
+<li><p>Delegar en las subclases la elección del producto concreto.</p>
+</li>
+<li><p>Utilizar el producto mediante su abstracción, sin depender de una implementación específica.</p>
+</li>
 </ol>
 <p>El patrón no elimina la necesidad de seleccionar una implementación concreta. Traslada esa decisión a los creadores concretos.</p>
 <h3>2.2. Estructura y participantes</h3>
@@ -113,43 +147,60 @@
 <h3>2.3. ¿Cuándo utilizarlo?</h3>
 <p>Conviene utilizar Factory Method cuando:</p>
 <ul>
-<li>Un proceso necesita trabajar con diferentes implementaciones de un producto.</li>
-<li>Se desea conservar un procedimiento común y variar el objeto que utiliza.</li>
-<li>Las subclases deben decidir qué producto crear.</li>
-<li>Se prevé incorporar nuevas variantes sin modificar el algoritmo compartido.</li>
+<li><p>Un proceso necesita trabajar con diferentes implementaciones de un producto.</p>
+</li>
+<li><p>Se desea conservar un procedimiento común y variar el objeto que utiliza.</p>
+</li>
+<li><p>Las subclases deben decidir qué producto crear.</p>
+</li>
+<li><p>Se prevé incorporar nuevas variantes sin modificar el algoritmo compartido.</p>
+</li>
 </ul>
 <p>No siempre es necesario. Si existe una única implementación estable, agregar jerarquías de creadores y productos podría aumentar innecesariamente la complejidad.</p>
 <h3>2.4. Caso práctico: importación de lecturas</h3>
 <p>En <strong>CampusMonitor</strong> necesitamos importar lecturas de sensores desde diferentes formatos.</p>
 <p>Cada lectura contiene:</p>
 <ul>
-<li>Identificador del sensor.</li>
-<li>Valor numérico.</li>
-<li>Unidad de medida.</li>
+<li><p>Identificador del sensor.</p>
+</li>
+<li><p>Valor numérico.</p>
+</li>
+<li><p>Unidad de medida.</p>
+</li>
 </ul>
 <p>Se reciben dos formatos:</p>
 <p><strong>Formato separado por punto y coma:</strong></p>
-<pre><code class="language-text">S01;22.5;°C
+<pre><code class="language-text">
+S01;22.5;°C
+
 S02;18;personas
 </code></pre>
 <p><strong>Formato separado por tabulaciones:</strong></p>
-<pre><code class="language-text">S01	22.5	°C
-S02	18	personas
+<pre><code class="language-text">
+S01 22.5    °C
+
+S02 18  personas
 </code></pre>
 <p>Independientemente del formato, el proceso debe:</p>
 <ol>
-<li>Recorrer las líneas recibidas.</li>
-<li>Omitir las líneas vacías.</li>
-<li>Interpretar los datos.</li>
-<li>Validar las lecturas.</li>
-<li>Identificar los errores indicando el número de línea.</li>
-<li>Devolver una lista de objetos <code>Lectura</code>.</li>
+<li><p>Recorrer las líneas recibidas.</p>
+</li>
+<li><p>Omitir las líneas vacías.</p>
+</li>
+<li><p>Interpretar los datos.</p>
+</li>
+<li><p>Validar las lecturas.</p>
+</li>
+<li><p>Identificar los errores indicando el número de línea.</p>
+</li>
+<li><p>Devolver una lista de objetos <code>Lectura</code>.</p>
+</li>
 </ol>
 <p><strong>Problema:</strong> el procedimiento de importación es el mismo, pero cambia la forma de interpretar los campos.</p>
 <p>Si duplicamos el proceso para cada formato, repetimos el recorrido, la validación del flujo y el manejo de errores.</p>
 <p><strong>Solución mediante Factory Method:</strong> conservar el proceso en <code>Importador</code> y delegar la creación del lector específico a sus subclases.</p>
 <h3>2.5. Estructura UML</h3>
-<p><img src="assets/actory-method-mmd.svg" alt="Diagrama UML Factory Method" class="zoomable-diagram medium"></p>
+<p><img src="assets/factory-method-mmd.svg" alt="Diagrama UML Factory Method" class="zoomable-diagram medium"></p>
 <h4>Identificación de participantes</h4>
 <div class="table-scroll"><table>
 <thead>
@@ -236,39 +287,57 @@ S02	18	personas
 </tbody></table></div>
 <p><strong>Consideraciones de implementación:</strong></p>
 <ul>
-<li><code>Importador</code> declara <code>protected abstract LectorLinea crearLector()</code>.</li>
-<li>Cada creador concreto sobrescribe <code>crearLector()</code> y devuelve su lector correspondiente.</li>
-<li><code>importar()</code> contiene el algoritmo común y es <code>final</code> en este ejemplo.</li>
-<li>Los lectores implementan el método <code>leer()</code> definido por la interfaz.</li>
-<li>El método auxiliar <code>interpretar()</code> permite reutilizar la separación y validación de campos. No constituye el Factory Method.</li>
+<li><p><code>Importador</code> declara <code>protected abstract LectorLinea crearLector()</code>.</p>
+</li>
+<li><p>Cada creador concreto sobrescribe <code>crearLector()</code> y devuelve su lector correspondiente.</p>
+</li>
+<li><p><code>importar()</code> contiene el algoritmo común y es <code>final</code> en este ejemplo.</p>
+</li>
+<li><p>Los lectores implementan el método <code>leer()</code> definido por la interfaz.</p>
+</li>
+<li><p>El método auxiliar <code>interpretar()</code> permite reutilizar la separación y validación de campos. No constituye el Factory Method.</p>
+</li>
 </ul>
 <p>El lector se crea una vez por importación y se reutiliza para procesar las líneas recibidas.</p>
 <h3>2.7. ¿Cómo se utiliza el patrón?</h3>
 <p>El cliente selecciona un importador concreto y ejecuta el proceso común.</p>
-<pre><code class="language-java">Importador importador = new ImportadorPuntoComa();
+<pre><code class="language-java">
+Importador importador = new ImportadorPuntoComa();
 
 List&lt;Lectura&gt; resultado = importador.importar(
+
     List.of(&quot;S01;22.5;°C&quot;, &quot;S02;18;personas&quot;)
+
 );
 
 System.out.println(resultado);
 </code></pre>
 <h4>Flujo de ejecución</h4>
 <ol>
-<li>El cliente instancia un creador concreto, por ejemplo <code>ImportadorPuntoComa</code>.</li>
-<li>Invoca el método heredado <code>importar(lineas)</code>.</li>
-<li><code>Importador</code> ejecuta <code>crearLector()</code> mediante polimorfismo.</li>
-<li>La subclase devuelve el lector correspondiente.</li>
-<li><code>Importador</code> utiliza <code>lector.leer(linea)</code> para procesar cada registro.</li>
-<li>El resultado se devuelve como una lista de objetos <code>Lectura</code>.</li>
+<li><p>El cliente instancia un creador concreto, por ejemplo <code>ImportadorPuntoComa</code>.</p>
+</li>
+<li><p>Invoca el método heredado <code>importar(lineas)</code>.</p>
+</li>
+<li><p><code>Importador</code> ejecuta <code>crearLector()</code> mediante polimorfismo.</p>
+</li>
+<li><p>La subclase devuelve el lector correspondiente.</p>
+</li>
+<li><p><code>Importador</code> utiliza <code>lector.leer(linea)</code> para procesar cada registro.</p>
+</li>
+<li><p>El resultado se devuelve como una lista de objetos <code>Lectura</code>.</p>
+</li>
 </ol>
 <p>Para utilizar otro formato, el cliente selecciona otro creador:</p>
-<pre><code class="language-java">Importador importador = new ImportadorTabulacion();
+<pre><code class="language-java">
+Importador importador = new ImportadorTabulacion();
 </code></pre>
 <p><strong>Observación:</strong> cambia el creador y, por tanto, el lector utilizado. El algoritmo <code>importar()</code> permanece sin modificaciones.</p>
 <h3>2.8. Resultado de la ejecución</h3>
-<pre><code class="language-text">[Lectura[idSensor=S01, valor=22.5, unidad=°C]]
+<pre><code class="language-text">
+[Lectura[idSensor=S01, valor=22.5, unidad=°C]]
+
 [Lectura[idSensor=S02, valor=18.0, unidad=personas]]
+
 Línea 1: Lectura inválida
 </code></pre>
 <p>Las dos importaciones utilizan el mismo procedimiento con lectores diferentes.</p>
@@ -277,18 +346,27 @@ Línea 1: Lectura inválida
 <h3>2.9. Análisis</h3>
 <p><strong>Preguntas:</strong></p>
 <ol>
-<li>¿Por qué <code>crearLector()</code> devuelve <code>LectorLinea</code> en lugar de una clase concreta?</li>
-<li>¿Cuál es la diferencia entre <code>crearLector()</code> e <code>importar()</code>?</li>
-<li>¿Qué mecanismo de programación orientada a objetos permite ejecutar la implementación correspondiente de <code>crearLector()</code>?</li>
-<li>¿Qué clases serían necesarias para incorporar un tercer formato separado por comas?</li>
-<li>¿Por qué el método <code>importar()</code> no necesita condiciones para identificar el formato?</li>
+<li><p>¿Por qué <code>crearLector()</code> devuelve <code>LectorLinea</code> en lugar de una clase concreta?</p>
+</li>
+<li><p>¿Cuál es la diferencia entre <code>crearLector()</code> e <code>importar()</code>?</p>
+</li>
+<li><p>¿Qué mecanismo de programación orientada a objetos permite ejecutar la implementación correspondiente de <code>crearLector()</code>?</p>
+</li>
+<li><p>¿Qué clases serían necesarias para incorporar un tercer formato separado por comas?</p>
+</li>
+<li><p>¿Por qué el método <code>importar()</code> no necesita condiciones para identificar el formato?</p>
+</li>
 </ol>
 <p><strong>Limitaciones del ejemplo:</strong></p>
 <ul>
-<li>Las líneas vacías se omiten.</li>
-<li>Los datos inválidos generan excepciones con su número de línea.</li>
-<li>No se admiten delimitadores escapados ni campos entre comillas.</li>
-<li>Se presupone una lista de entrada no nula con elementos no nulos.</li>
+<li><p>Las líneas vacías se omiten.</p>
+</li>
+<li><p>Los datos inválidos generan excepciones con su número de línea.</p>
+</li>
+<li><p>No se admiten delimitadores escapados ni campos entre comillas.</p>
+</li>
+<li><p>Se presupone una lista de entrada no nula con elementos no nulos.</p>
+</li>
 </ul>
 <p><strong>Conclusión:</strong> Factory Method permite que un proceso trabaje con diferentes productos mediante una abstracción común, delegando en las subclases la creación de la implementación correspondiente.</p>
 <p><a href="#indice">Volver al índice</a></p>
@@ -296,238 +374,489 @@ Línea 1: Lectura inválida
 <p><a id="abstract-factory"></a></p>
 <h2>3. Abstract Factory · Crear equipos compatibles</h2>
 <h3>Definición</h3>
-<p><strong>Abstract Factory</strong> ofrece operaciones para obtener varios tipos de productos de una misma familia. El cliente trabaja con las interfaces de fábrica y productos; cada fábrica concreta suministra una variante coordinada [2].</p>
-<h3>Problema: una fuente debe corresponder a su conversor</h3>
-<p>Una estación utiliza una fuente de temperatura y un conversor a Celsius. Un equipo entrega Celsius; otro entrega Fahrenheit. Mezclar una fuente Fahrenheit con el conversor de Celsius no causa necesariamente un error de tipos: ambos intercambian <code>double</code>, pero el resultado sería físicamente incorrecto.</p>
-<p>No se necesita elegir solo un objeto. Se necesita elegir <strong>un conjunto coherente de colaboradores</strong>. La unidad no está representada en el tipo <code>double</code>, por lo que la composición correcta importa.</p>
-<h3>Solución y participantes</h3>
-<p><code>FabricaEquipo</code> entrega una <code>FuenteTemperatura</code> y un <code>ConversorTemperatura</code>. <code>Estacion</code> recibe una fábrica y obtiene ambos productos de ella.</p>
+<p><strong>Abstract Factory</strong> es un patrón de diseño creacional que define una interfaz para crear familias de objetos relacionados o compatibles, sin que el cliente tenga que conocer sus clases concretas [2].</p>
+<p>Una fábrica concreta proporciona los productos de una variante determinada. El cliente solicita cada producto mediante la interfaz de fábrica y utiliza los objetos obtenidos mediante sus propios contratos. La decisión sobre qué familia utilizar se toma al elegir la fábrica.</p>
+<p><strong>Idea principal:</strong> concentrar la creación de colaboradores que deben funcionar juntos, de modo que cambiar de familia no obligue a modificar el código que los utiliza.</p>
+<h3>3.1. ¿Qué problema resuelve?</h3>
+<p>Supongamos que una aplicación necesita varios objetos para realizar una operación. No basta con que cada objeto implemente una interfaz: sus comportamientos también deben ser compatibles.</p>
+<p>Una estación puede leer una temperatura y convertirla a Celsius. Si la fuente entrega Fahrenheit y el conversor interpreta el valor como Celsius, el programa puede compilar y ejecutarse, pero el resultado será incorrecto. Ambos componentes intercambian un <code>double</code>; ese tipo no expresa la unidad de medida.</p>
+<p>Si cada cliente construye la fuente y el conversor por separado, la regla de compatibilidad queda repartida entre distintos lugares. Incorporar otro equipo obliga a revisar cada punto de construcción y aumenta el riesgo de mezclar variantes.</p>
+<p><strong>Abstract Factory propone:</strong></p>
+<ol>
+<li>Identificar los tipos de producto que colaboran.</li>
+<li>Definir un contrato para cada tipo de producto.</li>
+<li>Declarar una interfaz de fábrica con una operación de creación por tipo de producto.</li>
+<li>Implementar una fábrica por familia compatible.</li>
+<li>Entregar al cliente una fábrica y obtener de ella los colaboradores necesarios.</li>
+</ol>
+<p>El patrón no elimina la elección de la familia. Esa elección permanece en el punto de composición de la aplicación; lo que se evita es repetirla dentro de cada operación del cliente.</p>
+<h3>3.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fábrica abstracta</td>
+<td>Declarar las operaciones para crear los distintos tipos de producto.</td>
+</tr>
+<tr>
+<td>Fábrica concreta</td>
+<td>Proporcionar productos que pertenecen a una familia determinada.</td>
+</tr>
+<tr>
+<td>Producto abstracto</td>
+<td>Definir las operaciones de uno de los tipos de producto.</td>
+</tr>
+<tr>
+<td>Producto concreto</td>
+<td>Implementar un tipo de producto para una familia.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Obtener y utilizar productos mediante abstracciones.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Tipo de producto y familia no significan lo mismo.</strong> Fuente y conversor son dos tipos de producto. Celsius y Fahrenheit son dos familias. Cada fábrica concreta suministra una fuente y un conversor de su familia.</p>
+<p>Tampoco es obligatorio que una fábrica produzca varias instancias de una misma clase. Lo relevante es que ofrece operaciones para varios roles relacionados y conserva una política de creación coherente.</p>
+<h3>3.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene utilizar Abstract Factory cuando:</p>
+<ul>
+<li>Una funcionalidad depende de varios componentes que deben seleccionarse juntos.</li>
+<li>Existen familias alternativas, como proveedores, plataformas o protocolos.</li>
+<li>Se desea cambiar una familia sin alterar el cliente que consume sus productos.</li>
+<li>La compatibilidad de los componentes constituye una regla del dominio.</li>
+</ul>
+<p>No siempre es necesario. Si solo hay un colaborador o no existe relación entre los objetos creados, una dependencia por constructor o una fábrica más pequeña puede ser suficiente.</p>
+<p><strong>Costo de extensión:</strong> agregar una familia permite implementar los contratos existentes. Agregar un nuevo tipo de producto obliga a ampliar la interfaz de fábrica y a revisar todas sus implementaciones. El diseño facilita un eje de cambio, pero no elimina todos los cambios posibles.</p>
+<h3>3.4. Caso práctico: equipos de temperatura</h3>
+<p>En <strong>CampusMonitor</strong>, una estación debe mostrar la temperatura en Celsius aunque reciba equipos con escalas diferentes. La estación necesita dos colaboradores:</p>
+<ul>
+<li>Una fuente que entregue una muestra.</li>
+<li>Un conversor que transforme esa muestra a Celsius.</li>
+</ul>
 <div class="table-scroll"><table>
 <thead>
 <tr>
 <th>Familia</th>
 <th>Fuente concreta</th>
+<th>Muestra simulada</th>
 <th>Conversor concreto</th>
+<th>Resultado en Celsius</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Celsius</td>
 <td><code>FuenteCelsius</code></td>
+<td>25,0 °C</td>
 <td><code>ConversorCelsius</code></td>
+<td>25,0 °C</td>
 </tr>
 <tr>
 <td>Fahrenheit</td>
 <td><code>FuenteFahrenheit</code></td>
+<td>77,0 °F</td>
 <td><code>ConversorFahrenheit</code></td>
+<td>25,0 °C</td>
 </tr>
 </tbody></table></div>
-<p>Los dos contratos de producto son distintos: la fuente obtiene una muestra y el conversor interpreta su escala. <code>EquipoCelsius</code> y <code>EquipoFahrenheit</code> implementan la fábrica. <code>Estacion</code> es el cliente y no pregunta qué clase concreta recibió.</p>
-<h3>Decisiones de implementación</h3>
-<p>Las fuentes devuelven muestras fijas para probar la composición. La transformación Fahrenheit–Celsius sí se calcula. Una implementación conectada a hardware sustituiría la fuente y definiría su gestión de recursos, tiempos de espera y errores de lectura.</p>
-<p>La familia es una garantía del diseño de cada fábrica, no una propiedad que Java verifique automáticamente aquí. Una fábrica mal implementada podría mezclar productos. Por eso se comprueba que <code>77 °F</code> se interpreten como <code>25 °C</code>. Con dominios más estrictos se pueden representar las unidades mediante tipos específicos.</p>
-<h3>Cuándo utilizarlo</h3>
-<p>Conviene cuando cambia un conjunto de componentes relacionados: proveedor, protocolo, plataforma o familia de equipos. Añadir una familia Kelvin requeriría su fuente, conversor y fábrica; <code>Estacion</code> seguiría usando los mismos contratos. Añadir un nuevo tipo de producto, como un calibrador, exigiría modificar la interfaz de fábrica y todas sus implementaciones.</p>
-<p>La diferencia con Factory Method es el eje de variación. Allí un creador especializa una operación de construcción dentro de un proceso. Aquí un cliente recibe un objeto fábrica que suministra varios productos coordinados. Ambos patrones pueden coexistir, pero no son sinónimos.</p>
-<h3>Estructura UML</h3>
-<p><img src="assets/abstract-factory.svg" alt="UML de Abstract Factory · Crear equipos compatibles" class="zoomable-diagram medium"></p>
-<p><a href="assets/abstract-factory.puml">Fuente editable del diagrama</a>. El dibujo omite los contenedores externos <code>*Demo</code> y algunas operaciones auxiliares.</p>
-<h3>Implementación Java comentada</h3>
-<p><strong>Archivo:</strong> <a href="ejemplos/AbstractFactoryDemo.java">AbstractFactoryDemo.java</a>.</p>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-
-import java.util.Locale;
-import java.util.Objects;
-
-/** Crea una fuente y un conversor compatibles como una sola familia. */
-public class AbstractFactoryDemo {
-    interface FuenteTemperatura { double leer(); }
-    interface ConversorTemperatura { double aCelsius(double valor); }
-
-    /** Fábrica abstracta: dos tipos de producto que deben trabajar juntos. */
-    interface FabricaEquipo {
-        FuenteTemperatura crearFuente();
-        ConversorTemperatura crearConversor();
-    }
-
-    // Fuentes simuladas: permiten probar las conversiones sin hardware.
-    static final class FuenteCelsius implements FuenteTemperatura {
-        @Override
-        public double leer() { return 25.0; }
-    }
-
-    static final class FuenteFahrenheit implements FuenteTemperatura {
-        @Override
-        public double leer() { return 77.0; }
-    }
-
-    static final class ConversorCelsius implements ConversorTemperatura {
-        @Override
-        public double aCelsius(double valor) { return valor; }
-    }
-
-    static final class ConversorFahrenheit implements ConversorTemperatura {
-        @Override
-        public double aCelsius(double valor) { return (valor - 32) * 5.0 / 9.0; }
-    }
-
-    static final class EquipoCelsius implements FabricaEquipo {
-        @Override
-        public FuenteTemperatura crearFuente() { return new FuenteCelsius(); }
-        @Override
-        public ConversorTemperatura crearConversor() { return new ConversorCelsius(); }
-    }
-
-    static final class EquipoFahrenheit implements FabricaEquipo {
-        @Override
-        public FuenteTemperatura crearFuente() { return new FuenteFahrenheit(); }
-        @Override
-        public ConversorTemperatura crearConversor() { return new ConversorFahrenheit(); }
-    }
-
-    /** Cliente: solo obtiene los productos mediante una misma fábrica. */
-    static final class Estacion {
-        private final FuenteTemperatura fuente;
-        private final ConversorTemperatura conversor;
-
-        Estacion(FabricaEquipo fabrica) {
-            Objects.requireNonNull(fabrica, &quot;Fábrica obligatoria&quot;);
-            fuente = Objects.requireNonNull(fabrica.crearFuente());
-            conversor = Objects.requireNonNull(fabrica.crearConversor());
-        }
-
-        double medirCelsius() {
-            double valor = conversor.aCelsius(fuente.leer());
-            if (!Double.isFinite(valor)) {
-                throw new IllegalStateException(&quot;Medición no finita&quot;);
-            }
-            return valor;
-        }
-    }
-
-    public static void main(String[] args) {
-        Estacion local = new Estacion(new EquipoCelsius());
-        Estacion importada = new Estacion(new EquipoFahrenheit());
-        System.out.printf(Locale.ROOT, &quot;Equipo Celsius: %.1f °C%n&quot;, local.medirCelsius());
-        System.out.printf(Locale.ROOT, &quot;Equipo Fahrenheit: %.1f °C%n&quot;, importada.medirCelsius());
-        // Si se mezclara FuenteFahrenheit con ConversorCelsius,
-        // 77 °F se interpretarían incorrectamente como 77 °C.
-    }
-}
+<p>La conversión se define como <code>C = (F − 32) × 5 / 9</code>. Para una entrada que ya está en Celsius, el conversor devuelve el valor recibido.</p>
+<p><strong>Problema:</strong> una combinación incorrecta de fuente Fahrenheit y conversor Celsius interpretaría 77 °F como 77 °C. El error no se detecta mediante las firmas, porque ambas aceptan o devuelven números <code>double</code>.</p>
+<p><strong>Solución mediante Abstract Factory:</strong> <code>EquipoCelsius</code> y <code>EquipoFahrenheit</code> crean parejas compatibles. <code>Estacion</code> recibe una <code>FabricaEquipo</code>, obtiene sus dos productos y conserva únicamente las referencias a los contratos de esos productos.</p>
+<p>Las fuentes son simuladas y devuelven valores fijos. El ejemplo comprueba la composición de la familia y la conversión, sin depender de sensores físicos.</p>
+<h3>3.5. Estructura UML</h3>
+<p><img src="assets/abstract-factory-mmd.svg" alt="Diagrama UML Abstract Factory" class="zoomable-diagram medium"></p>
+<p><a href="assets/abstract-factory.mmd">Fuente editable del diagrama</a>.</p>
+<h4>Identificación de participantes</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol del patrón</th>
+<th>Implementación en CampusMonitor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fábrica abstracta</td>
+<td><code>FabricaEquipo</code></td>
+</tr>
+<tr>
+<td>Fábricas concretas</td>
+<td><code>EquipoCelsius</code>, <code>EquipoFahrenheit</code></td>
+</tr>
+<tr>
+<td>Productos abstractos</td>
+<td><code>FuenteTemperatura</code>, <code>ConversorTemperatura</code></td>
+</tr>
+<tr>
+<td>Productos concretos de la familia Celsius</td>
+<td><code>FuenteCelsius</code>, <code>ConversorCelsius</code></td>
+</tr>
+<tr>
+<td>Productos concretos de la familia Fahrenheit</td>
+<td><code>FuenteFahrenheit</code>, <code>ConversorFahrenheit</code></td>
+</tr>
+<tr>
+<td>Cliente de los productos</td>
+<td><code>Estacion</code></td>
+</tr>
+<tr>
+<td>Punto de composición</td>
+<td><code>main()</code> de <code>AbstractFactoryDemo</code></td>
+</tr>
+</tbody></table></div>
+<p>Las realizaciones de interfaz aparecen con línea discontinua y triángulo hacia el contrato. Las dependencias etiquetadas <code>crea</code> relacionan cada fábrica con sus productos concretos. Las asociaciones desde <code>Estacion</code> muestran los colaboradores que conserva como atributos.</p>
+<p><code>Estacion</code> recibe la fábrica al construirse, pero no la guarda. Esa relación se representa como dependencia. El diagrama omite la clase ejecutable externa para concentrarse en los participantes del patrón.</p>
+<h3>3.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código de referencia:</strong> <a href="ejemplos/AbstractFactoryDemo.java">AbstractFactoryDemo.java</a>.</p>
+<p>El ejemplo reúne los tipos en una clase ejecutable. Si se distribuyen en archivos independientes, se deben ajustar las visibilidades necesarias para su utilización entre paquetes.</p>
+<h4>Clases necesarias</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Clase o interfaz</th>
+<th>Tipo</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FabricaEquipo</code></td>
+<td>Interfaz</td>
+<td>Declarar <code>crearFuente()</code> y <code>crearConversor()</code>.</td>
+</tr>
+<tr>
+<td><code>FuenteTemperatura</code></td>
+<td>Interfaz</td>
+<td>Obtener una muestra mediante <code>leer()</code>.</td>
+</tr>
+<tr>
+<td><code>ConversorTemperatura</code></td>
+<td>Interfaz</td>
+<td>Convertir una muestra mediante <code>aCelsius()</code>.</td>
+</tr>
+<tr>
+<td><code>EquipoCelsius</code></td>
+<td>Fábrica concreta</td>
+<td>Construir la pareja que trabaja con Celsius.</td>
+</tr>
+<tr>
+<td><code>EquipoFahrenheit</code></td>
+<td>Fábrica concreta</td>
+<td>Construir la pareja que trabaja con Fahrenheit.</td>
+</tr>
+<tr>
+<td><code>FuenteCelsius</code>, <code>FuenteFahrenheit</code></td>
+<td>Clases concretas</td>
+<td>Entregar muestras simuladas en sus escalas.</td>
+</tr>
+<tr>
+<td><code>ConversorCelsius</code>, <code>ConversorFahrenheit</code></td>
+<td>Clases concretas</td>
+<td>Aplicar la transformación correspondiente.</td>
+</tr>
+<tr>
+<td><code>Estacion</code></td>
+<td>Cliente</td>
+<td>Coordinar lectura y conversión mediante los contratos.</td>
+</tr>
+<tr>
+<td><code>AbstractFactoryDemo</code></td>
+<td>Clase ejecutable</td>
+<td>Seleccionar las familias y mostrar sus resultados.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Consideraciones de implementación:</strong></p>
+<ul>
+<li>Las operaciones de la fábrica devuelven interfaces, no tipos concretos.</li>
+<li>El constructor de <code>Estacion</code> rechaza una fábrica nula y productos nulos.</li>
+<li>Los productos se obtienen una vez al construir cada estación.</li>
+<li><code>medirCelsius()</code> primero lee, después convierte y finalmente rechaza un resultado no finito.</li>
+<li>La expresión de conversión usa <code>5.0 / 9.0</code> para evitar una división entera entre constantes.</li>
+<li>La implementación de cada fábrica es responsable de la compatibilidad; Java no verifica la unidad representada por el <code>double</code>.</li>
+</ul>
+<h3>3.7. ¿Cómo se utiliza el patrón?</h3>
+<p>El cliente selecciona una fábrica concreta y la entrega a la estación:</p>
+<pre><code class="language-java">Estacion estacion = new Estacion(new EquipoFahrenheit());
+double temperatura = estacion.medirCelsius();
+System.out.println(temperatura);
 </code></pre>
-<h3>Salida y lectura de la ejecución</h3>
+<p>El fragmento se utiliza dentro del contexto de la demostración, donde los tipos están disponibles. El cliente no crea directamente <code>FuenteFahrenheit</code> ni <code>ConversorFahrenheit</code>.</p>
+<h4>Flujo de ejecución</h4>
+<ol>
+<li><code>main()</code> construye <code>EquipoFahrenheit</code>.</li>
+<li>Entrega ese objeto al constructor de <code>Estacion</code> mediante el contrato <code>FabricaEquipo</code>.</li>
+<li>La estación solicita <code>crearFuente()</code> y <code>crearConversor()</code>.</li>
+<li>La fábrica devuelve <code>FuenteFahrenheit</code> y <code>ConversorFahrenheit</code>.</li>
+<li><code>medirCelsius()</code> obtiene 77,0 de la fuente.</li>
+<li>El conversor calcula 25,0 y la estación comprueba que el resultado sea finito.</li>
+<li>El cliente recibe la temperatura expresada en Celsius.</li>
+</ol>
+<p>Para cambiar de familia se modifica la composición:</p>
+<pre><code class="language-java">Estacion estacion = new Estacion(new EquipoCelsius());
+</code></pre>
+<p><strong>Observación:</strong> la operación <code>medirCelsius()</code> no necesita identificar la familia con un <code>if</code>. El comportamiento apropiado llega a través de los productos creados por la fábrica.</p>
+<h3>3.8. Resultado de la ejecución</h3>
 <pre><code class="language-text">Equipo Celsius: 25.0 °C
 Equipo Fahrenheit: 25.0 °C
 </code></pre>
-<p>Los equipos proporcionan muestras distintas: <code>25.0</code> y <code>77.0</code>. Las estaciones publican el mismo resultado porque cada fuente está asociada a su conversor. El cliente realiza <code>fuente.leer()</code> y después <code>conversor.aCelsius(...)</code>; no selecciona la fórmula con un condicional.</p>
-<p>El punto de cambio es la fábrica entregada al constructor. Esta recibe la responsabilidad de componer la familia completa.</p>
-<h3>Comprobaciones y límites del ejemplo</h3>
+<p>Las entradas de las fuentes son distintas, pero los resultados coinciden porque las parejas fueron construidas de forma coherente. <code>Locale.ROOT</code> estabiliza el punto decimal de la salida de referencia.</p>
+<p>Una prueba que solo compruebe que los objetos no son nulos sería insuficiente: también se necesita verificar una conversión conocida. El caso 77 °F → 25 °C permite detectar una pareja incorrecta aunque las clases implementen las interfaces esperadas.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Resultado esperado</th>
+<th>Qué verifica</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Familia Celsius</td>
+<td>25,0 °C</td>
+<td>La fuente y el conversor conservan la escala.</td>
+</tr>
+<tr>
+<td>Familia Fahrenheit</td>
+<td>25,0 °C</td>
+<td>Se aplica la conversión correspondiente.</td>
+</tr>
+<tr>
+<td>Fábrica nula</td>
+<td>Rechazo en el constructor</td>
+<td>La estación no queda sin origen de productos.</td>
+</tr>
+<tr>
+<td>Resultado no finito de una pareja de prueba</td>
+<td><code>IllegalStateException</code></td>
+<td>El cliente no publica una medición no finita.</td>
+</tr>
+</tbody></table></div>
+<h3>3.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Por qué fuente y conversor son tipos de producto distintos y no dos familias?</li>
+<li>¿Qué error produciría mezclar <code>FuenteFahrenheit</code> con <code>ConversorCelsius</code>?</li>
+<li>¿Por qué el compilador no detecta automáticamente esa mezcla?</li>
+<li>¿Qué tipos habría que incorporar para añadir una familia Kelvin sin modificar <code>Estacion</code>?</li>
+<li>¿Qué cambiaría si todas las familias debieran proporcionar también un calibrador?</li>
+<li>¿Qué parte del ejemplo depende de la fábrica y qué parte utiliza directamente los productos?</li>
+</ol>
+<p><strong>Diferencia con Factory Method.</strong> Aquí el cliente recibe un objeto fábrica que proporciona una familia. No necesita heredar de una clase creadora para variar sus productos. Una implementación de Abstract Factory puede utilizar Factory Methods internamente, pero las intenciones y responsabilidades de ambos patrones siguen siendo diferentes.</p>
+<p><strong>Limitaciones del ejemplo:</strong></p>
 <ul>
-<li>Ambas familias deben devolver <code>25.0 °C</code> con las muestras del ejemplo.</li>
-<li>Al crear <code>Estacion</code> con una fábrica nula se rechaza la construcción.</li>
-<li>Si una fuente devuelve un valor no finito, <code>medirCelsius</code> lo rechaza.</li>
-<li>Las fuentes son simuladas; la salida no demuestra comunicación real con un dispositivo.</li>
-<li>Probar cada familia es indispensable: la interfaz común no detecta una fórmula o una pareja de productos equivocadas.</li>
+<li>La coherencia de la familia depende de implementar correctamente la fábrica.</li>
+<li>Las muestras son fijas; no hay hardware, comunicaciones ni tiempos de espera.</li>
+<li>Los tipos numéricos no distinguen unidades; un modelo más estricto podría introducir tipos para ellas.</li>
+<li>La fábrica crea productos nuevos en estas implementaciones; el patrón no exige por sí solo una política universal de reutilización.</li>
+<li>Añadir un tipo de producto afecta a todas las fábricas concretas.</li>
 </ul>
+<p><strong>Conclusión:</strong> Abstract Factory concentra la selección de una familia compatible y permite que el cliente coordine sus productos sin conocer las clases concretas.</p>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="builder"></a></p>
 <h2>4. Builder · Configurar un plan de muestreo</h2>
 <h3>Definición</h3>
-<p><strong>Builder</strong> separa la preparación progresiva de un producto de su obtención final. Acumula decisiones de construcción y entrega el objeto cuando se cumplen sus condiciones. En el diseño clásico puede existir un director que ordena pasos y varios builders que producen representaciones diferentes [3].</p>
-<h3>Problema: configuraciones parcialmente válidas</h3>
-<p>Un plan de muestreo necesita nombre, intervalo y sensores. Crear el plan con un constructor vacío y agregar datos después permite que otros componentes reciban un plan incompleto. Un constructor con numerosas opciones, por otra parte, resulta difícil de leer y extender.</p>
-<p>La necesidad no es elegir una subclase: es <strong>reunir y validar una configuración antes de publicarla</strong>. El plan debe contener al menos un sensor y un intervalo mínimo de un segundo; los identificadores no pueden repetirse.</p>
-<h3>Solución y participantes</h3>
-<p>El builder conserva el estado provisional. Los métodos <code>cada()</code> y <code>agregarSensor()</code> lo configuran; <code>construir()</code> verifica las condiciones finales y crea <code>PlanMuestreo</code>.</p>
+<p><strong>Builder</strong> es un patrón de diseño creacional que organiza la construcción de un objeto mediante pasos separados de su utilización. El cliente configura un constructor especializado y obtiene el producto al finalizar el proceso [3].</p>
+<p>En la estructura clásica, distintos builders pueden ejecutar una secuencia de pasos para obtener representaciones diferentes. Un director puede coordinar esa secuencia. En Java también es habitual un builder fluido asociado a un único tipo de producto, que reúne opciones y valida el estado antes de construirlo.</p>
+<p><strong>Idea principal:</strong> separar el estado provisional de construcción del objeto que se entrega como resultado, haciendo explícitas sus opciones y condiciones de validez.</p>
+<h3>4.1. ¿Qué problema resuelve?</h3>
+<p>Supongamos que un objeto necesita datos obligatorios, opciones y valores predeterminados. Un constructor con muchos parámetros puede ser difícil de interpretar: varias cadenas, números o booleanos consecutivos no explican por sí mismos qué configura cada posición.</p>
+<p>Otra alternativa sería crear un objeto vacío y llamar a varios setters. Sin embargo, ese objeto ya existe y podría entregarse a otro componente antes de estar completo. El servicio receptor tendría que distinguir entre un producto utilizable y uno que todavía está en preparación.</p>
+<p><strong>Builder propone:</strong></p>
+<ol>
+<li>Mantener las opciones de construcción en un objeto separado.</li>
+<li>Exponer operaciones con nombres que expresen cada decisión.</li>
+<li>Validar los datos y las restricciones conjuntas.</li>
+<li>Construir y devolver el producto cuando el estado sea aceptable.</li>
+<li>Evitar que los cambios posteriores del constructor alteren los productos ya entregados.</li>
+</ol>
+<p>El último punto es una decisión de este ejemplo, no una garantía automática del patrón. Un Builder también puede construir productos mutables si ese es el contrato previsto.</p>
+<h3>4.2. Estructura y participantes</h3>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Rol</th>
-<th>Tipo u operación</th>
+<th>Participante</th>
 <th>Responsabilidad</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Producto</td>
+<td>Representar el resultado construido.</td>
+</tr>
+<tr>
+<td>Builder</td>
+<td>Definir o proporcionar las operaciones de construcción.</td>
+</tr>
+<tr>
+<td>Builder concreto</td>
+<td>Mantener el estado provisional y producir una representación.</td>
+</tr>
+<tr>
+<td>Director opcional</td>
+<td>Coordinar una secuencia de construcción reutilizable.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Elegir las opciones o el director y solicitar el resultado.</td>
+</tr>
+</tbody></table></div>
+<p>En la variante de esta sección, <code>PlanMuestreo.Builder</code> reúne los papeles de contrato y builder concreto: no se introduce una interfaz adicional porque solo hay una representación. <code>main()</code> organiza las llamadas, por lo que no se necesita una clase directora.</p>
+<p><strong>Una interfaz fluida no equivale por sí sola a Builder.</strong> Devolver <code>this</code> permite encadenar métodos; la separación entre configuración provisional y producto final es lo que da sentido al diseño de este ejemplo.</p>
+<h3>4.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene utilizar Builder cuando:</p>
+<ul>
+<li>El producto tiene varias opciones o parámetros difíciles de distinguir por posición.</li>
+<li>Se desea aplicar valores predeterminados de forma explícita.</li>
+<li>Existen restricciones que dependen de la combinación de varios datos.</li>
+<li>El producto no debe quedar disponible mientras está incompleto.</li>
+<li>Varias recetas de construcción podrían reutilizar pasos comunes.</li>
+</ul>
+<p>Para una lectura con tres datos obligatorios y un contrato simple, un constructor validado o un <code>record</code> puede resultar suficiente. El builder agrega otro tipo y otro estado mutable que deben mantenerse.</p>
+<p>Un director sería útil si numerosas partes de CampusMonitor repitieran la misma receta de plan. No debe añadirse únicamente para completar un diagrama teórico.</p>
+<h3>4.4. Caso práctico: plan de muestreo</h3>
+<p>En <strong>CampusMonitor</strong>, un plan define qué sensores se consultarán y con qué intervalo. Antes de entregarlo a un servicio, debe cumplir las siguientes reglas:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Regla</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nombre</td>
+<td>Obligatorio y no formado únicamente por espacios.</td>
+</tr>
+<tr>
+<td>Intervalo</td>
+<td>No nulo y de al menos un segundo.</td>
+</tr>
+<tr>
+<td>Sensores</td>
+<td>Al menos uno, con identificadores no vacíos y sin duplicados exactos.</td>
+</tr>
+<tr>
+<td>Valor predeterminado</td>
+<td>Treinta segundos si no se configura otro intervalo.</td>
+</tr>
+<tr>
+<td>Producto entregado</td>
+<td>No cambia cuando se reutiliza su builder.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Problema:</strong> configurar primero un plan vacío permitiría estados que no cumplen esas reglas. Además, agregar un sensor al constructor de un segundo plan no debería modificar el primero.</p>
+<p><strong>Solución mediante Builder:</strong> el cliente prepara un <code>PlanMuestreo.Builder</code>, aplica <code>cada()</code> y <code>agregarSensor()</code> y solicita <code>construir()</code>. El producto recibe una instantánea independiente de la lista de sensores.</p>
+<p>El caso construye un plan con <code>S01</code>, reutiliza el builder para agregar <code>S02</code> y construye otro. La comparación de sus resúmenes permite observar si el primer producto quedó aislado correctamente.</p>
+<h3>4.5. Estructura UML</h3>
+<p><img src="assets/builder.svg" alt="Diagrama UML Builder" class="zoomable-diagram medium"></p>
+<p><a href="assets/builder.mmd">Fuente editable del diagrama</a>.</p>
+<h4>Identificación de participantes</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol del patrón</th>
+<th>Implementación en CampusMonitor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Producto</td>
 <td><code>PlanMuestreo</code></td>
-<td>Mantener el plan construido</td>
 </tr>
 <tr>
 <td>Builder concreto</td>
 <td><code>PlanMuestreo.Builder</code></td>
-<td>Reunir nombre, intervalo y sensores</td>
 </tr>
 <tr>
-<td>Etapas</td>
-<td><code>cada</code>, <code>agregarSensor</code></td>
-<td>Configurar opciones legibles</td>
+<td>Pasos de configuración</td>
+<td><code>cada()</code>, <code>agregarSensor()</code></td>
 </tr>
 <tr>
-<td>Terminación</td>
-<td><code>construir</code></td>
-<td>Validar y crear el producto</td>
+<td>Obtención del producto</td>
+<td><code>construir()</code></td>
 </tr>
 <tr>
 <td>Cliente</td>
-<td><code>main</code></td>
-<td>Elegir los pasos y solicitar el resultado</td>
+<td><code>main()</code> de <code>BuilderDemo</code></td>
+</tr>
+<tr>
+<td>Director</td>
+<td>No se incorpora en esta variante.</td>
 </tr>
 </tbody></table></div>
-<h3>Variante fluida y director</h3>
-<p>El ejemplo utiliza la variante <strong>builder fluido</strong>: cada etapa devuelve <code>this</code> para encadenar llamadas. Encadenar métodos no es suficiente para demostrar Builder; aquí existe además un producto separado que se obtiene al finalizar. No se necesita una interfaz de builder porque solo se construye una representación.</p>
-<p>Un director sería una clase que conoce recetas repetidas, por ejemplo un plan de laboratorio con intervalo de diez segundos y sensores predeterminados. Usaría las operaciones del builder sin asumir su almacenamiento interno. Solo tendría sentido incorporarlo si esas secuencias se reutilizan. El ejemplo conserva esa responsabilidad en <code>main</code>.</p>
-<h3>Inmutabilidad y validación</h3>
-<p>El builder es mutable y se puede reutilizar. El producto mantiene campos <code>final</code>, usa tipos inmutables para nombre e intervalo y copia la lista mediante <code>List.copyOf</code>. Como los elementos son cadenas inmutables, no hace falta duplicarlos. Cambiar el builder no modifica un plan ya construido.</p>
-<p>Se valida el identificador al agregarlo y las condiciones globales al construir. El constructor del producto es privado para evitar que otros clientes omitan este proceso. Que una clase se construya con Builder no garantiza por sí mismo que sea inmutable.</p>
-<h3>Cuándo utilizarlo</h3>
-<p>Es útil con opciones, valores predeterminados y restricciones conjuntas. Para una lectura de solo tres campos obligatorios puede bastar un constructor o un <code>record</code> validado. El costo consiste en mantener otro objeto mutable y una API de configuración. El builder del ejemplo no está diseñado para compartirse entre hilos.</p>
-<h3>Estructura UML</h3>
-<p><img src="assets/builder.svg" alt="UML de Builder · Configurar un plan de muestreo" class="zoomable-diagram medium"></p>
-<p><a href="assets/builder.puml">Fuente editable del diagrama</a>. El dibujo omite los contenedores externos <code>*Demo</code> y algunas operaciones auxiliares.</p>
-<h3>Implementación Java comentada</h3>
-<p><strong>Archivo:</strong> <a href="ejemplos/BuilderDemo.java">BuilderDemo.java</a>.</p>
+<p>La dependencia <code>construye</code> expresa que el builder produce un <code>PlanMuestreo</code>; no representa una relación de herencia. El nombre <code>PlanMuestreo.Builder</code> indica que la clase Builder está anidada dentro del producto. Al ser estática, no necesita una instancia previa de <code>PlanMuestreo</code> para existir.</p>
+<p>El producto y el builder tienen atributos parecidos, pero responsabilidades diferentes. Uno conserva configuración provisional; el otro representa el resultado validado.</p>
+<h3>4.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código de referencia:</strong> <a href="ejemplos/BuilderDemo.java">BuilderDemo.java</a>.</p>
+<h4>Clases necesarias</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Clase</th>
+<th>Tipo</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PlanMuestreo</code></td>
+<td>Clase final</td>
+<td>Conservar nombre, intervalo y sensores del producto.</td>
+</tr>
+<tr>
+<td><code>PlanMuestreo.Builder</code></td>
+<td>Clase estática anidada</td>
+<td>Configurar y validar el plan antes de crearlo.</td>
+</tr>
+<tr>
+<td><code>BuilderDemo</code></td>
+<td>Clase ejecutable</td>
+<td>Construir dos planes y mostrar el rechazo de uno incompleto.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Consideraciones de implementación:</strong></p>
+<ul>
+<li>El constructor del producto es privado y recibe el builder.</li>
+<li>El nombre obligatorio se establece al crear el builder.</li>
+<li><code>cada()</code> y <code>agregarSensor()</code> devuelven <code>this</code> para permitir encadenamiento.</li>
+<li><code>construir()</code> rechaza intervalos menores a un segundo y listas vacías.</li>
+<li><code>List.copyOf()</code> obtiene una lista no modificable separada del <code>ArrayList</code> mutable del builder.</li>
+<li>Los elementos son <code>String</code>, por lo que no requieren duplicación para evitar modificaciones internas.</li>
+<li>Los campos <code>final</code>, los tipos inmutables utilizados y la ausencia de métodos de modificación permiten que este producto sea inmutable.</li>
+</ul>
+<p><code>final</code> por sí solo no hace inmutable una lista: impide cambiar la referencia del campo, pero no necesariamente modificar el objeto referenciado. Aquí la política de copia también es necesaria.</p>
+<h4>Código completo</h4>
 <pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 /** Construye una configuración válida antes de entregarla al servicio. */
 public class BuilderDemo {
     static final class PlanMuestreo {
         private final String nombre;
         private final Duration intervalo;
         private final List&lt;String&gt; sensores;
-
         private PlanMuestreo(Builder builder) {
             nombre = builder.nombre;
             intervalo = builder.intervalo;
             sensores = List.copyOf(builder.sensores); // Copia defensiva.
         }
-
         public String resumen() {
             return nombre + &quot; | &quot; + intervalo.toSeconds() + &quot; s | &quot; + sensores;
         }
-
         /** Builder mutable: todavía no representa un plan ejecutable. */
         static final class Builder {
             private final String nombre;
             private Duration intervalo = Duration.ofSeconds(30);
             private final List&lt;String&gt; sensores = new ArrayList&lt;&gt;();
-
             Builder(String nombre) {
                 if (nombre == null || nombre.isBlank()) {
                     throw new IllegalArgumentException(&quot;Nombre obligatorio&quot;);
                 }
                 this.nombre = nombre;
             }
-
             Builder cada(Duration intervalo) {
                 this.intervalo = Objects.requireNonNull(intervalo);
                 return this;
             }
-
             Builder agregarSensor(String id) {
                 if (id == null || id.isBlank()) {
                     throw new IllegalArgumentException(&quot;Identificador obligatorio&quot;);
@@ -538,7 +867,6 @@ public class BuilderDemo {
                 sensores.add(id);
                 return this;
             }
-
             PlanMuestreo construir() {
                 // Invariantes del producto: no se entrega un plan incompleto.
                 if (intervalo.compareTo(Duration.ofSeconds(1)) &lt; 0) {
@@ -551,7 +879,6 @@ public class BuilderDemo {
             }
         }
     }
-
     public static void main(String[] args) {
         PlanMuestreo.Builder builder = new PlanMuestreo.Builder(&quot;Laboratorio&quot;)
                 .cada(Duration.ofSeconds(10)).agregarSensor(&quot;S01&quot;);
@@ -568,86 +895,300 @@ public class BuilderDemo {
     }
 }
 </code></pre>
-<h3>Salida y lectura de la ejecución</h3>
+<h3>4.7. ¿Cómo se utiliza el patrón?</h3>
+<p>El cliente expresa la configuración mediante operaciones con nombres:</p>
+<pre><code class="language-java">PlanMuestreo plan = new PlanMuestreo.Builder(&quot;Laboratorio&quot;)
+        .cada(Duration.ofSeconds(10))
+        .agregarSensor(&quot;S01&quot;)
+        .agregarSensor(&quot;S02&quot;)
+        .construir();
+
+System.out.println(plan.resumen());
+</code></pre>
+<h4>Flujo de ejecución</h4>
+<ol>
+<li>Se crea el builder con un nombre obligatorio.</li>
+<li>El builder parte de un intervalo de treinta segundos y una lista vacía.</li>
+<li><code>cada()</code> sustituye el intervalo provisional.</li>
+<li>Cada llamada a <code>agregarSensor()</code> valida el identificador y lo incorpora si no está repetido.</li>
+<li><code>construir()</code> comprueba las restricciones finales.</li>
+<li>Si el estado es válido, se crea <code>PlanMuestreo</code> con una copia de la lista.</li>
+<li>El cliente recibe el producto; el builder puede conservarse para preparar otro.</li>
+</ol>
+<p><strong>Momento de validación.</strong> Un intervalo nulo se rechaza al llamar a <code>cada()</code>. Un intervalo no nulo de 500 milisegundos puede almacenarse provisionalmente, pero será rechazado al llamar a <code>construir()</code>. El producto no se crea con ese estado inválido.</p>
+<p><strong>Observación:</strong> si falla una validación final, no se entrega un plan parcialmente construido. El cliente puede corregir el builder y volver a intentar la construcción.</p>
+<h3>4.8. Resultado de la ejecución</h3>
 <pre><code class="language-text">Laboratorio | 10 s | [S01]
 Laboratorio | 10 s | [S01, S02]
 Agrega al menos un sensor
 </code></pre>
-<p>El primer plan contiene únicamente <code>S01</code>. Después se agrega <code>S02</code> al builder y se construye otro plan. La primera salida conserva su contenido, lo que demuestra la separación del producto respecto al estado provisional.</p>
-<p>La tercera salida corresponde a un intento de construir sin sensores. No se devuelve un plan inválido para que otra clase lo corrija posteriormente.</p>
-<h3>Comprobaciones y límites del ejemplo</h3>
+<p>La demostración completa construye primero un plan con <code>S01</code>. Después agrega <code>S02</code> al mismo builder y obtiene un segundo plan. La primera salida conserva un único sensor: el primer producto no comparte la lista mutable del constructor.</p>
+<p>La tercera línea corresponde a una construcción sin sensores. El mensaje expresa la regla incumplida y no representa un plan devuelto al cliente.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Resultado esperado</th>
+<th>Qué verifica</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Omitir <code>cada()</code> y agregar un sensor</td>
+<td>Intervalo de 30 segundos</td>
+<td>Valor predeterminado.</td>
+</tr>
+<tr>
+<td>Agregar <code>S01</code> dos veces</td>
+<td>Error de sensor duplicado</td>
+<td>Validación de elementos.</td>
+</tr>
+<tr>
+<td>Configurar 500 milisegundos y construir</td>
+<td>Error de intervalo mínimo</td>
+<td>Restricción final del producto.</td>
+</tr>
+<tr>
+<td>Construir sin sensores</td>
+<td>Error de lista vacía</td>
+<td>El producto no se entrega incompleto.</td>
+</tr>
+<tr>
+<td>Reutilizar el builder</td>
+<td>El primer plan permanece igual</td>
+<td>Copia defensiva.</td>
+</tr>
+</tbody></table></div>
+<h3>4.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre el estado de <code>Builder</code> y el estado de <code>PlanMuestreo</code>?</li>
+<li>¿Por qué <code>cada()</code> devuelve <code>Builder</code> y no el producto final?</li>
+<li>¿Qué problema aparecería si el producto guardara directamente <code>builder.sensores</code>?</li>
+<li>¿Por qué <code>final</code> no sería suficiente para proteger una lista mutable?</li>
+<li>¿Qué validaciones se realizan al configurar y cuáles al construir?</li>
+<li>¿Cuándo justificaría una receta repetida la incorporación de un director?</li>
+</ol>
+<p><strong>Diferencia con Factory Method.</strong> El ejemplo no cambia el tipo concreto de producto mediante subclases creadoras. Reúne opciones para construir instancias válidas del mismo tipo. También difiere de Prototype: no parte de una copia de un plan existente, sino del estado provisional del builder.</p>
+<p><strong>Limitaciones del ejemplo:</strong></p>
 <ul>
-<li>Agregar dos veces <code>S01</code> debe producir un error de identificador duplicado.</li>
-<li>Un intervalo menor que un segundo debe impedir la construcción.</li>
-<li>Omitir <code>cada()</code> utiliza el valor predeterminado de treinta segundos.</li>
-<li>Un plan ya construido debe permanecer igual después de reutilizar su builder.</li>
-<li>La demostración construye configuración; no inicia un temporizador ni ejecuta tareas periódicas.</li>
+<li>El builder es mutable y no está diseñado para ser compartido entre hilos.</li>
+<li>La comparación de identificadores es exacta: no normaliza mayúsculas ni espacios.</li>
+<li>No se ejecuta el muestreo ni se crea un temporizador.</li>
+<li>El intervalo puede incluir fracciones de segundo; <code>resumen()</code> usa <code>toSeconds()</code> y muestra solo los segundos enteros.</li>
+<li>La inmutabilidad del producto depende de estos campos y de su política de copia, no del nombre Builder.</li>
 </ul>
+<p><strong>Conclusión:</strong> Builder mantiene la configuración provisional separada del producto y centraliza las comprobaciones que permiten entregarlo en un estado válido.</p>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="prototype"></a></p>
 <h2>5. Prototype · Copiar perfiles de sensores</h2>
 <h3>Definición</h3>
-<p><strong>Prototype</strong> permite crear un objeto a partir de otro previamente configurado mediante una operación de copia. El tipo que posee el estado define cómo duplicarlo; el cliente solicita la copia sin reconstruir cada detalle de su configuración [4].</p>
-<h3>Problema: personalizar una configuración existente</h3>
-<p>Un perfil contiene reglas para temperatura y humedad. Varios laboratorios parten de un perfil aprobado, pero algunos necesitan cambiar un umbral. Reconstruir las reglas en cada cliente duplica valores predeterminados. Asignar <code>copia = original</code>, en cambio, comparte el mismo perfil: modificar uno modifica lo observado por el otro.</p>
-<p>La solución debe crear un perfil distinto y también independizar sus <strong>reglas mutables</strong>. Copiar solo la lista no basta si sus elementos siguen siendo los mismos objetos.</p>
-<h3>Solución y participantes</h3>
-<p><code>Copiable&lt;T&gt;</code> declara la operación. <code>PerfilSensor</code> implementa <code>Copiable&lt;PerfilSensor&gt;</code> y crea una copia de sí mismo. <code>ReglaUmbral</code> conoce cómo duplicar su magnitud y límite. El cliente modifica únicamente el resultado de <code>copiar()</code>.</p>
+<p><strong>Prototype</strong> es un patrón de diseño creacional que obtiene nuevos objetos a partir de objetos existentes mediante una operación de copia. El objeto que conoce su estado define cómo reproducirlo, mientras el cliente solicita una copia sin reconstruir manualmente toda su configuración [4].</p>
+<p>El objeto utilizado como punto de partida es el prototipo. No necesita ser una instancia especial de una clase llamada <code>Prototype</code>: puede ser un objeto ordinario que ya contiene la configuración que se desea reutilizar.</p>
+<p><strong>Idea principal:</strong> delegar en el objeto configurado la creación de una variante de su estado y definir qué partes deben ser independientes y cuáles pueden compartirse.</p>
+<h3>5.1. ¿Qué problema resuelve?</h3>
+<p>Supongamos que varios laboratorios utilizan un perfil de sensores con reglas ya definidas. Cada laboratorio parte de ese perfil, pero necesita cambiar algunos umbrales.</p>
+<p>Reconstruir el perfil en cada cliente obliga a conocer sus detalles internos y repetir los valores predeterminados. Si cambia una regla base, pueden quedar copias manuales desactualizadas. Además, el cliente podría no conocer el tipo concreto de todos los objetos que necesita reproducir.</p>
+<p>Asignar una referencia tampoco crea una copia:</p>
+<pre><code class="language-java">PerfilSensor laboratorio = base;
+</code></pre>
+<p>En ese caso, <code>laboratorio</code> y <code>base</code> identifican el mismo objeto. Una modificación realizada por una referencia se observa al consultar la otra.</p>
+<p><strong>Prototype propone:</strong></p>
+<ol>
+<li>Exponer una operación de copia con un contrato claro.</li>
+<li>Hacer que el tipo que posee el estado implemente esa operación.</li>
+<li>Crear el nuevo objeto a partir de los valores del prototipo.</li>
+<li>Duplicar las partes mutables que deban ser independientes.</li>
+<li>Permitir que el cliente personalice la copia sin reconstruir la plantilla.</li>
+</ol>
+<p>El patrón no significa evitar todos los constructores. La implementación de <code>copiar()</code> puede utilizarlos; lo que cambia es quién conoce los detalles de reconstrucción.</p>
+<h3>5.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Prototipo</td>
+<td>Definir el contrato de copia.</td>
+</tr>
+<tr>
+<td>Prototipo concreto</td>
+<td>Implementar la duplicación de su estado.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Solicitar una copia y personalizarla.</td>
+</tr>
+<tr>
+<td>Registro opcional</td>
+<td>Localizar prototipos por un identificador y facilitar su reutilización.</td>
+</tr>
+</tbody></table></div>
+<p>En este ejemplo, <code>Copiable&lt;T&gt;</code> es el contrato genérico y <code>PerfilSensor</code> lo implementa con <code>T = PerfilSensor</code>. El método devuelve un resultado del tipo correcto sin exigir una conversión explícita.</p>
+<p><code>ReglaUmbral</code> es un componente mutable del perfil. Su operación <code>copiar()</code> ayuda a duplicar el estado interno, aunque no implementa la interfaz genérica. No es necesario que todos los colaboradores adopten la misma interfaz para que el perfil cumpla el contrato de copia.</p>
+<p>No se incluye un registro de prototipos: <code>main()</code> conserva directamente el perfil base. Un registro tendría sentido si existieran muchas plantillas que debieran seleccionarse por nombre o categoría.</p>
+<h3>5.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene utilizar Prototype cuando:</p>
+<ul>
+<li>Los objetos iniciales contienen configuraciones extensas que se reutilizan.</li>
+<li>Se requieren variantes de plantillas previamente preparadas.</li>
+<li>El cliente no debe conocer todos los detalles de construcción.</li>
+<li>El tipo concreto del objeto puede variar, pero existe una operación común de copia.</li>
+<li>Reconstruir la configuración desde sus fuentes resulta menos apropiado que partir del estado disponible.</li>
+</ul>
+<p>No siempre es necesario. Para un objeto pequeño e inmutable, compartir la misma instancia o usar un constructor explícito puede ser más sencillo. Una copia tampoco es automáticamente más rápida: su costo depende de la cantidad de estado que deba duplicarse.</p>
+<p>La principal dificultad consiste en mantener el contrato de copia. Cada nuevo atributo mutable exige decidir si se duplica, se comparte o se reinicializa.</p>
+<h3>5.4. Caso práctico: perfiles de sensores</h3>
+<p>En <strong>CampusMonitor</strong>, el perfil base contiene dos reglas:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Magnitud</th>
+<th>Límite inicial</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Temperatura</td>
+<td>28,0</td>
+</tr>
+<tr>
+<td>Humedad</td>
+<td>70,0</td>
+</tr>
+</tbody></table></div>
+<p>Un laboratorio necesita reducir el límite de temperatura a 25,0 y cambiar el nombre del perfil. El perfil base debe conservar sus valores y permanecer disponible para crear otras variantes.</p>
+<p><strong>Problema:</strong> copiar únicamente la referencia comparte todo el objeto. Crear otro perfil con una lista nueva, pero con las mismas reglas, tampoco es suficiente: las reglas contienen un límite modificable.</p>
+<p><strong>Solución mediante Prototype:</strong> <code>PerfilSensor.copiar()</code> crea otro perfil y solicita una copia de cada <code>ReglaUmbral</code>. El cliente cambia el nombre y el umbral de la copia obtenida.</p>
+<h4>Qué debe copiarse</h4>
 <div class="table-scroll"><table>
 <thead>
 <tr>
 <th>Elemento</th>
-<th>Decisión de copia</th>
+<th>Política de este ejemplo</th>
+<th>Motivo</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Objeto <code>PerfilSensor</code></td>
+<td><code>PerfilSensor</code></td>
 <td>Crear una instancia nueva</td>
+<td>Separar la identidad de los perfiles.</td>
 </tr>
 <tr>
 <td>Lista de reglas</td>
 <td>Crear una lista nueva</td>
+<td>Agregar o quitar elementos sin afectar la otra lista.</td>
 </tr>
 <tr>
 <td>Cada <code>ReglaUmbral</code></td>
-<td>Crear un objeto nuevo porque su límite es mutable</td>
+<td>Crear una regla nueva</td>
+<td>Su límite es mutable.</td>
 </tr>
 <tr>
-<td>Cadenas de nombre y magnitud</td>
-<td>Compartir referencias porque son inmutables</td>
+<td>Nombre y magnitud</td>
+<td>Reutilizar las referencias a cadenas</td>
+<td><code>String</code> es inmutable.</td>
 </tr>
 <tr>
 <td>Límite <code>double</code></td>
-<td>Copiar el valor primitivo</td>
+<td>Copiar el valor</td>
+<td>Es un dato primitivo.</td>
 </tr>
 </tbody></table></div>
-<h3>Copia superficial y profunda</h3>
-<p>Una <strong>copia superficial</strong> duplica el contenedor, pero conserva referencias a objetos internos. Una <strong>copia profunda</strong> duplica también el estado mutable que debe ser independiente. El alcance debe definirse para cada modelo: no significa copiar indiscriminadamente todo lo alcanzable desde un objeto.</p>
-<p>En este caso el grafo es simple: perfil, lista y reglas. <code>copiar()</code> duplica cada regla, por lo que cambiar el límite de la copia no altera el original. No se usa <code>Cloneable</code> ni <code>Object.clone()</code>; un método explícito permite expresar y verificar mejor este contrato.</p>
-<h3>Identidad, recursos y registros de prototipos</h3>
-<p>Copiar una plantilla no debe interpretarse automáticamente como duplicar la identidad de una entidad persistida. En otro modelo, un identificador de base de datos podría necesitar regenerarse. Tampoco se deberían copiar directamente conexiones, archivos abiertos o hilos.</p>
-<p>Un registro de prototipos puede mantener perfiles por nombre y devolver <code>perfil.copiar()</code> cuando se solicita una variante. Ese registro no es obligatorio y no aparece en el ejemplo: primero se demuestra la independencia de la copia sin añadir otra responsabilidad.</p>
-<h3>Cuándo utilizarlo</h3>
-<p>Conviene cuando la configuración inicial es extensa, se modifica a partir de plantillas o el cliente no debe conocer todos los detalles de construcción. Su principal costo es especificar y mantener la política de copia. Añadir un nuevo atributo mutable obliga a revisar <code>copiar()</code>. Para este perfil, copiar n reglas requiere tiempo y espacio adicionales O(n).</p>
-<h3>Estructura UML</h3>
-<p><img src="assets/prototype.svg" alt="UML de Prototype · Copiar perfiles de sensores" class="zoomable-diagram medium"></p>
-<p><a href="assets/prototype.puml">Fuente editable del diagrama</a>. El dibujo omite los contenedores externos <code>*Demo</code> y algunas operaciones auxiliares.</p>
-<h3>Implementación Java comentada</h3>
-<p><strong>Archivo:</strong> <a href="ejemplos/PrototypeDemo.java">PrototypeDemo.java</a>.</p>
+<p><strong>Copia superficial y profunda.</strong> Una copia superficial conserva referencias a componentes internos. Una copia profunda, respecto del contrato de este modelo, reproduce también las reglas mutables. No se exige duplicar indiscriminadamente todos los objetos alcanzables: las cadenas inmutables pueden compartirse sin provocar cambios cruzados.</p>
+<h3>5.5. Estructura UML</h3>
+<p><img src="assets/prototype.svg" alt="Diagrama UML Prototype" class="zoomable-diagram medium"></p>
+<p><a href="assets/prototype.mmd">Fuente editable del diagrama</a>.</p>
+<h4>Identificación de participantes</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol del patrón</th>
+<th>Implementación en CampusMonitor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contrato del prototipo</td>
+<td><code>Copiable&lt;T&gt;</code></td>
+</tr>
+<tr>
+<td>Prototipo concreto</td>
+<td><code>PerfilSensor</code></td>
+</tr>
+<tr>
+<td>Operación de copia</td>
+<td><code>PerfilSensor.copiar()</code></td>
+</tr>
+<tr>
+<td>Estado mutable interno</td>
+<td>Lista y objetos <code>ReglaUmbral</code></td>
+</tr>
+<tr>
+<td>Colaboración de copia</td>
+<td><code>ReglaUmbral.copiar()</code></td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td><code>main()</code> de <code>PrototypeDemo</code></td>
+</tr>
+</tbody></table></div>
+<p>La realización de <code>Copiable</code> indica que <code>PerfilSensor</code> cumple el contrato con su propio tipo como resultado. La composición expresa que el perfil posee sus reglas. La multiplicidad <code>0..*</code> es coherente con el constructor: puede existir un perfil sin reglas, aunque la demostración base agrega dos.</p>
+<p>La dependencia etiquetada <code>solicita copiar</code> muestra que la copia del perfil delega la duplicación de cada regla en la propia regla. Esa colaboración es distinta de la relación de pertenencia.</p>
+<h3>5.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código de referencia:</strong> <a href="ejemplos/PrototypeDemo.java">PrototypeDemo.java</a>.</p>
+<h4>Clases necesarias</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Clase o interfaz</th>
+<th>Tipo</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Copiable&lt;T&gt;</code></td>
+<td>Interfaz genérica</td>
+<td>Declarar <code>copiar()</code> con resultado de tipo <code>T</code>.</td>
+</tr>
+<tr>
+<td><code>PerfilSensor</code></td>
+<td>Clase concreta</td>
+<td>Mantener el nombre y las reglas; implementar la copia del perfil.</td>
+</tr>
+<tr>
+<td><code>ReglaUmbral</code></td>
+<td>Clase concreta</td>
+<td>Mantener una magnitud y un límite finito; copiar la regla.</td>
+</tr>
+<tr>
+<td><code>PrototypeDemo</code></td>
+<td>Clase ejecutable</td>
+<td>Preparar el prototipo, copiarlo y mostrar la independencia.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Consideraciones de implementación:</strong></p>
+<ul>
+<li><code>copiar()</code> crea un perfil nuevo con el nombre existente.</li>
+<li>El constructor del perfil crea su propia lista vacía.</li>
+<li>Cada regla se duplica mediante <code>regla.copiar()</code> antes de incorporarla.</li>
+<li>No se utiliza <code>Cloneable</code> ni <code>Object.clone()</code>; el contrato de copia se expresa con un método propio.</li>
+<li>Los constructores y modificadores validan nombres y límites.</li>
+<li><code>Double.isFinite()</code> impide límites <code>NaN</code> e infinitos.</li>
+<li><code>ajustarLimite()</code> supone que el índice identifica una regla existente; un índice inválido produce la excepción de la lista.</li>
+</ul>
+<p>La política de copia debe revisarse si se añaden campos. Por ejemplo, un identificador de base de datos podría necesitar regenerarse y una conexión abierta no debería duplicarse como si fuera configuración ordinaria.</p>
+<h4>Código completo</h4>
 <pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-
 import java.util.ArrayList;
 import java.util.List;
-
 /** Duplica un perfil y sus reglas mutables para configurarlos por separado. */
 public class PrototypeDemo {
     interface Copiable&lt;T&gt; { T copiar(); }
-
     static final class ReglaUmbral {
         private final String magnitud;
         private double limite;
-
         ReglaUmbral(String magnitud, double limite) {
             if (magnitud == null || magnitud.isBlank()) {
                 throw new IllegalArgumentException(&quot;Magnitud obligatoria&quot;);
@@ -655,41 +1196,32 @@ public class PrototypeDemo {
             this.magnitud = magnitud;
             cambiarLimite(limite);
         }
-
         void cambiarLimite(double nuevo) {
             if (!Double.isFinite(nuevo)) {
                 throw new IllegalArgumentException(&quot;Límite no finito&quot;);
             }
             limite = nuevo;
         }
-
         ReglaUmbral copiar() { return new ReglaUmbral(magnitud, limite); }
-
         @Override
         public String toString() { return magnitud + &quot; &gt; &quot; + limite; }
     }
-
     static final class PerfilSensor implements Copiable&lt;PerfilSensor&gt; {
         private String nombre;
         private final List&lt;ReglaUmbral&gt; reglas = new ArrayList&lt;&gt;();
-
         PerfilSensor(String nombre) { renombrar(nombre); }
-
         void renombrar(String nuevo) {
             if (nuevo == null || nuevo.isBlank()) {
                 throw new IllegalArgumentException(&quot;Nombre obligatorio&quot;);
             }
             nombre = nuevo;
         }
-
         void agregarRegla(String magnitud, double limite) {
             reglas.add(new ReglaUmbral(magnitud, limite));
         }
-
         void ajustarLimite(int indice, double limite) {
             reglas.get(indice).cambiarLimite(limite);
         }
-
         @Override
         public PerfilSensor copiar() {
             PerfilSensor copia = new PerfilSensor(nombre);
@@ -699,100 +1231,284 @@ public class PrototypeDemo {
             }
             return copia;
         }
-
         @Override
         public String toString() { return nombre + &quot;: &quot; + reglas; }
     }
-
     public static void main(String[] args) {
         PerfilSensor base = new PerfilSensor(&quot;Base&quot;);
         base.agregarRegla(&quot;temperatura&quot;, 28.0);
         base.agregarRegla(&quot;humedad&quot;, 70.0);
-
         // El cliente no reconstruye la configuración de cada regla.
         PerfilSensor laboratorio = base.copiar();
         laboratorio.renombrar(&quot;Laboratorio&quot;);
         laboratorio.ajustarLimite(0, 25.0);
-
         System.out.println(base);
         System.out.println(laboratorio);
         System.out.println(&quot;Mismo perfil: &quot; + (base == laboratorio));
     }
 }
 </code></pre>
-<h3>Salida y lectura de la ejecución</h3>
+<h3>5.7. ¿Cómo se utiliza el patrón?</h3>
+<p>El cliente prepara o recibe un perfil existente y solicita su copia:</p>
+<pre><code class="language-java">PerfilSensor base = new PerfilSensor(&quot;Base&quot;);
+base.agregarRegla(&quot;temperatura&quot;, 28.0);
+base.agregarRegla(&quot;humedad&quot;, 70.0);
+
+PerfilSensor laboratorio = base.copiar();
+laboratorio.renombrar(&quot;Laboratorio&quot;);
+laboratorio.ajustarLimite(0, 25.0);
+</code></pre>
+<p>El cliente conoce qué desea cambiar, pero no tiene que reconstruir el resto de reglas. La responsabilidad de conservar correctamente el estado original corresponde a <code>copiar()</code>.</p>
+<h4>Flujo de ejecución</h4>
+<ol>
+<li>Se construye el perfil base y se agregan sus reglas.</li>
+<li>El cliente invoca <code>base.copiar()</code>.</li>
+<li>El perfil crea una nueva instancia con el mismo nombre.</li>
+<li>Recorre sus reglas y solicita una copia de cada una.</li>
+<li>Agrega las nuevas reglas a la lista del nuevo perfil.</li>
+<li>Devuelve la copia al cliente.</li>
+<li>El cliente cambia el nombre y un límite únicamente en la copia.</li>
+<li>Se consultan ambos perfiles para comprobar que el original conserva su configuración.</li>
+</ol>
+<p><strong>Observación:</strong> <code>base != laboratorio</code> prueba que las referencias a los perfiles son distintas. No prueba por sí solo que sus componentes internos sean independientes. Para comprobarlo hay que modificar una regla de la copia y consultar la regla correspondiente del original.</p>
+<h3>5.8. Resultado de la ejecución</h3>
 <pre><code class="language-text">Base: [temperatura &gt; 28.0, humedad &gt; 70.0]
 Laboratorio: [temperatura &gt; 25.0, humedad &gt; 70.0]
 Mismo perfil: false
 </code></pre>
-<p>El perfil del laboratorio reduce el límite de temperatura a <code>25.0</code>; el original conserva <code>28.0</code>. Ambos mantienen la regla de humedad. La comparación de referencias confirma que son perfiles distintos, pero esa comparación por sí sola no probaría una copia profunda: la evidencia decisiva es cambiar una regla interna y comprobar que la original no cambió.</p>
-<h3>Comprobaciones y límites del ejemplo</h3>
+<p>La copia cambia el límite de temperatura a 25,0; el original conserva 28,0. La regla de humedad conserva el mismo valor en ambos perfiles, pero corresponde a objetos de regla distintos.</p>
+<p>La salida <code>Mismo perfil: false</code> confirma la diferencia de identidad de los objetos exteriores. La conservación del límite original después del cambio aporta evidencia de la copia de sus reglas mutables.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Resultado esperado</th>
+<th>Qué verifica</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Comparar referencias del perfil</td>
+<td>Son distintas</td>
+<td>Nueva identidad del contenedor.</td>
+</tr>
+<tr>
+<td>Cambiar el nombre de la copia</td>
+<td>El nombre original no cambia</td>
+<td>Estado propio del perfil.</td>
+</tr>
+<tr>
+<td>Cambiar un límite de la copia</td>
+<td>El límite original no cambia</td>
+<td>Independencia de las reglas.</td>
+</tr>
+<tr>
+<td>Agregar una regla a la copia</td>
+<td>La lista original mantiene su tamaño</td>
+<td>Independencia de las listas.</td>
+</tr>
+<tr>
+<td>Establecer un límite no finito</td>
+<td><code>IllegalArgumentException</code></td>
+<td>Se conserva la validación del modelo.</td>
+</tr>
+</tbody></table></div>
+<p>Copiar n reglas requiere tiempo O(n) y espacio adicional O(n) en esta implementación. Esa estimación corresponde al recorrido y a los nuevos objetos creados, no a una propiedad universal de todo Prototype.</p>
+<h3>5.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre <code>laboratorio = base</code> y <code>laboratorio = base.copiar()</code>?</li>
+<li>¿Por qué <code>new ArrayList&lt;&gt;(reglas)</code> no cumpliría por sí solo este contrato de independencia?</li>
+<li>¿Qué objetos se crean y qué valores pueden compartirse al copiar el perfil?</li>
+<li>¿Qué aporta <code>Copiable&lt;PerfilSensor&gt;</code> respecto de un método que devuelva <code>Object</code>?</li>
+<li>¿Cómo comprobarías que agregar una regla a la copia no modifica el original?</li>
+<li>¿Qué decisiones habría que tomar si las reglas compartieran objetos mutables o existieran referencias circulares?</li>
+</ol>
+<p><strong>Diferencia con Builder.</strong> Builder reúne opciones antes de crear un producto; Prototype parte del estado de un objeto existente. En este caso la plantilla ya contiene nombre y reglas, y el cliente solo personaliza las diferencias.</p>
+<p><strong>Limitaciones del ejemplo:</strong></p>
 <ul>
-<li>Cambiar una regla de la copia no debe modificar la misma posición del original.</li>
-<li>Agregar otra regla a la copia tampoco debe cambiar el tamaño de la lista original.</li>
-<li>Los límites deben ser finitos. Un índice fuera del rango produce la excepción de la lista.</li>
-<li>El ejemplo copia configuración, no mide sensores ni ejecuta las reglas.</li>
-<li>Esta política está definida para estos campos; un grafo con ciclos o referencias compartidas requeriría una estrategia adicional.</li>
+<li>El perfil y sus reglas son mutables; la copia los independiza, no los vuelve inmutables.</li>
+<li>El grafo es simple y no contiene ciclos ni subobjetos compartidos entre varias reglas.</li>
+<li>No existe un registro de prototipos, persistencia ni copia de recursos externos.</li>
+<li>La regla almacena configuración; no se evalúan mediciones reales contra el umbral.</li>
+<li>Cambiar el modelo obliga a revisar la política de copia, las validaciones y sus comprobaciones.</li>
 </ul>
+<p><strong>Conclusión:</strong> Prototype permite obtener variantes de una configuración existente delegando su copia al tipo que conoce el estado y haciendo explícita la independencia de sus componentes mutables.</p>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="singleton"></a></p>
 <h2>6. Singleton · Compartir una configuración</h2>
 <h3>Definición</h3>
-<p><strong>Singleton</strong> restringe la disponibilidad de una clase a una única instancia dentro de un ámbito y proporciona un punto de acceso a ella. La intención combina control de creación y acceso compartido; no convierte automáticamente el estado en inmutable ni seguro frente a concurrencia [5].</p>
-<h3>Problema: una configuración común</h3>
-<p>Varios servicios necesitan conocer el intervalo predeterminado y la unidad de medida. Si cada servicio crea o modifica una configuración distinta, las decisiones pueden divergir. Se quiere compartir una configuración estable, manteniendo la posibilidad de probar el servicio con otros parámetros.</p>
-<p>Antes de aplicar el patrón hay que distinguir dos necesidades: <strong>compartir un objeto</strong> y <strong>prohibir múltiples instancias de una clase</strong>. La primera suele resolverse creando una instancia al inicio y pasándola por constructor. Singleton añade una restricción más fuerte y un punto de acceso global.</p>
-<h3>Solución y participantes</h3>
-<p><code>Configuracion</code> es un <code>enum</code> con una sola constante, <code>INSTANCIA</code>. Sus datos son inmutables. <code>ServicioMuestreo</code> recibe el contrato <code>Parametros</code>, no consulta internamente el acceso global. El punto de composición, <code>main</code>, decide entregarle la configuración compartida o una implementación de prueba.</p>
+<p><strong>Singleton</strong> es un patrón de diseño creacional que restringe una clase a una única instancia dentro de un ámbito definido y proporciona un punto de acceso a esa instancia [5].</p>
+<p>La intención reúne dos decisiones: controlar cuántas instancias existen y permitir recuperar la referencia compartida. Esa restricción no hace automáticamente inmutable el objeto ni vuelve seguras sus operaciones concurrentes.</p>
+<p><strong>Idea principal:</strong> controlar la disponibilidad de una instancia compartida cuando esa unicidad forma parte del diseño, sin confundirla con el simple hecho de reutilizar un objeto.</p>
+<h3>6.1. ¿Qué problema resuelve?</h3>
+<p>Supongamos que varios servicios deben utilizar una misma configuración predeterminada. Si cada servicio decide crear su propia configuración o utiliza valores diferentes, el comportamiento de la aplicación puede divergir.</p>
+<p>Hay dos problemas posibles y conviene separarlos:</p>
+<ul>
+<li><strong>Compartir una configuración:</strong> crear un objeto al iniciar la aplicación y entregarlo a los servicios puede ser suficiente.</li>
+<li><strong>Restringir una clase a una instancia:</strong> la clase debe impedir que los clientes construyan libremente instancias adicionales y ofrecer acceso a la referencia permitida.</li>
+</ul>
+<p>Singleton aborda la segunda necesidad. No es obligatorio utilizarlo cada vez que dos servicios reciben el mismo objeto.</p>
+<p><strong>Singleton propone:</strong></p>
+<ol>
+<li>Controlar la creación de las instancias del tipo.</li>
+<li>Mantener una referencia a la instancia permitida.</li>
+<li>Proporcionar un punto de acceso conocido.</li>
+<li>Definir el ámbito en el que se aplica la unicidad.</li>
+<li>Diseñar por separado la mutabilidad y la concurrencia de sus operaciones.</li>
+</ol>
+<p>En Java puede implementarse con una clase y acceso controlado o mediante un <code>enum</code> de una sola constante. En esta sección se utiliza la segunda variante para evitar código manual de inicialización diferida y sincronización.</p>
+<h3>6.2. Estructura y participantes</h3>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Rol</th>
-<th>Tipo u operación</th>
+<th>Participante</th>
 <th>Responsabilidad</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Singleton</td>
-<td><code>Configuracion</code></td>
-<td>Exponer su única constante y sus valores</td>
+<td>Restringir la instanciación y conservar el objeto compartido.</td>
+</tr>
+<tr>
+<td>Punto de acceso</td>
+<td>Permitir obtener la referencia de la instancia.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Utilizar las operaciones del objeto compartido.</td>
+</tr>
+<tr>
+<td>Contrato de consumo opcional</td>
+<td>Expresar lo que necesita el cliente y permitir sustitutos.</td>
+</tr>
+</tbody></table></div>
+<p>El contrato opcional no es una condición para reconocer Singleton. Aquí se incorpora <code>Parametros</code> para que el servicio pueda recibir configuraciones alternativas durante las pruebas.</p>
+<p><strong>Unicidad e inyección no se contradicen.</strong> El punto de composición puede obtener <code>Configuracion.INSTANCIA</code> y pasarla al servicio. El servicio sigue recibiendo una dependencia explícita, aunque el objeto elegido se obtenga mediante un acceso global.</p>
+<h3>6.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene considerar Singleton cuando:</p>
+<ul>
+<li>La existencia de una única instancia del tipo es una decisión necesaria del diseño.</li>
+<li>El ámbito y el ciclo de vida de esa instancia están definidos.</li>
+<li>Se comprende el efecto de compartir su estado entre consumidores.</li>
+<li>El punto de acceso global no impide sustituir dependencias donde se necesita aislamiento.</li>
+</ul>
+<p>No conviene introducirlo solamente para evitar pasar parámetros. Eso puede ocultar dependencias y dificultar las pruebas. Si la necesidad es reutilizar un objeto, una instancia creada en la composición y compartida por constructor suele ser una alternativa suficiente.</p>
+<p>La restricción debe justificarse por el comportamiento esperado, no por el nombre de la clase. Una clase llamada Configuración no necesita necesariamente ser un Singleton: diferentes usuarios o pruebas podrían requerir configuraciones distintas.</p>
+<h3>6.4. Caso práctico: configuración predeterminada</h3>
+<p>En <strong>CampusMonitor</strong>, varios servicios necesitan conocer un intervalo predeterminado y una unidad de medida:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Configuración compartida</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Intervalo</td>
+<td>30 segundos</td>
+</tr>
+<tr>
+<td>Unidad</td>
+<td>°C</td>
+</tr>
+<tr>
+<td>Mutabilidad</td>
+<td>Los valores no cambian después de inicializarse.</td>
 </tr>
 <tr>
 <td>Acceso</td>
 <td><code>Configuracion.INSTANCIA</code></td>
-<td>Obtener la referencia compartida</td>
+</tr>
+</tbody></table></div>
+<p><strong>Problema:</strong> se desea una configuración predeterminada única del tipo <code>Configuracion</code>, pero también probar un servicio con otros valores sin modificar estado global.</p>
+<p><strong>Solución mediante Singleton:</strong> <code>Configuracion</code> es un <code>enum</code> con una sola constante. Implementa <code>Parametros</code>, que declara únicamente las operaciones necesarias para el consumidor. <code>ServicioMuestreo</code> recibe <code>Parametros</code> por constructor.</p>
+<p>En la demostración se crea un servicio con el Singleton y otro con un sustituto de prueba que devuelve un segundo y Fahrenheit. El sustituto no es otra instancia de <code>Configuracion</code>; es otra implementación del contrato <code>Parametros</code>.</p>
+<h3>6.5. Estructura UML</h3>
+<p><img src="assets/singleton.svg" alt="Diagrama UML Singleton" class="zoomable-diagram medium"></p>
+<p><a href="assets/singleton.mmd">Fuente editable del diagrama</a>.</p>
+<h4>Identificación de participantes</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol del patrón</th>
+<th>Implementación en CampusMonitor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Singleton</td>
+<td><code>Configuracion</code></td>
 </tr>
 <tr>
-<td>Contrato de consumo</td>
+<td>Instancia y acceso</td>
+<td><code>Configuracion.INSTANCIA</code></td>
+</tr>
+<tr>
+<td>Contrato del consumidor</td>
 <td><code>Parametros</code></td>
-<td>Declarar lo que necesita el servicio</td>
 </tr>
 <tr>
 <td>Cliente</td>
 <td><code>ServicioMuestreo</code></td>
-<td>Utilizar parámetros recibidos explícitamente</td>
+</tr>
+<tr>
+<td>Punto de composición</td>
+<td><code>main()</code> de <code>SingletonDemo</code></td>
+</tr>
+<tr>
+<td>Sustituto de prueba</td>
+<td>Implementación anónima de <code>Parametros</code></td>
 </tr>
 </tbody></table></div>
-<h3>Variante Java y alcance</h3>
-<p>La constante se inicializa al inicializarse su clase. El cliente no puede invocar un constructor de enum con <code>new</code>. La variante evita implementar manualmente un acceso con comprobaciones de <code>null</code> y bloqueos. No necesita un método llamado <code>getInstance()</code> para representar el patrón.</p>
-<p>La unicidad corresponde a esa clase cargada. Otra JVM o una copia de la clase cargada por otro cargador puede tener su propia instancia; no hay coordinación distribuida. Si se añadieran colecciones mutables o contadores, habría que diseñar su sincronización aunque la instancia se inicialice correctamente.</p>
-<h3>Dependencias y pruebas</h3>
-<p>Una llamada a <code>Configuracion.INSTANCIA</code> dentro de cada servicio oculta el origen de los parámetros y dificulta sustituirlos. Recibir <code>Parametros</code> por constructor hace visible la dependencia. El ejemplo usa Singleton en la composición y composición explícita en el consumidor: son decisiones compatibles.</p>
-<p>La implementación alternativa de <code>Parametros</code> no es otra instancia de <code>Configuracion</code>; es un objeto de prueba que cumple el mismo contrato. Así se prueba el servicio con un intervalo de un segundo sin modificar estado global ni afectar otros consumidores.</p>
-<h3>Cuándo utilizarlo</h3>
-<p>Puede servir para un servicio verdaderamente único dentro de una aplicación y con ciclo de vida definido. No debe utilizarse como sustituto general de variables globales. El estado global mutable dificulta aislamiento, orden de pruebas y concurrencia.</p>
-<p>Una conexión JDBC no es un buen reemplazo directo de este ejemplo: una conexión tiene transacciones, cierres y posibles restricciones de concurrencia. Compartir un proveedor o un pool no equivale a mantener una única conexión global. Tampoco Singleton garantiza que un temporizador se ejecute una sola vez en varios servidores.</p>
-<h3>Estructura UML</h3>
-<p><img src="assets/singleton.svg" alt="UML de Singleton · Compartir una configuración" class="zoomable-diagram medium"></p>
-<p><a href="assets/singleton.puml">Fuente editable del diagrama</a>. El dibujo omite los contenedores externos <code>*Demo</code> y algunas operaciones auxiliares.</p>
-<h3>Implementación Java comentada</h3>
-<p><strong>Archivo:</strong> <a href="ejemplos/SingletonDemo.java">SingletonDemo.java</a>.</p>
+<p><code>Configuracion</code> aparece como enumeración y realiza la interfaz <code>Parametros</code>. Su constante <code>INSTANCIA</code> es estática y final. Los campos de configuración también son finales; el diagrama lo aclara en una nota.</p>
+<p>La asociación de <code>ServicioMuestreo</code> apunta a <code>Parametros</code>, porque el servicio conserva ese contrato como atributo. No apunta al tipo concreto <code>Configuracion</code>: el código del consumidor no necesita conocer el acceso al Singleton.</p>
+<h3>6.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código de referencia:</strong> <a href="ejemplos/SingletonDemo.java">SingletonDemo.java</a>.</p>
+<h4>Clases necesarias</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Clase o interfaz</th>
+<th>Tipo</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Parametros</code></td>
+<td>Interfaz</td>
+<td>Proporcionar intervalo y unidad.</td>
+</tr>
+<tr>
+<td><code>Configuracion</code></td>
+<td>Enum con una constante</td>
+<td>Mantener la configuración compartida.</td>
+</tr>
+<tr>
+<td><code>ServicioMuestreo</code></td>
+<td>Clase concreta</td>
+<td>Describir el muestreo usando los parámetros recibidos.</td>
+</tr>
+<tr>
+<td><code>SingletonDemo</code></td>
+<td>Clase ejecutable</td>
+<td>Comparar referencias y utilizar dos configuraciones de consumo.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Consideraciones de implementación:</strong></p>
+<ul>
+<li>El cliente no puede construir un enum con <code>new</code>.</li>
+<li>La constante se crea al inicializarse la clase; no se necesita un método denominado <code>getInstance()</code>.</li>
+<li>Dos accesos a la misma constante recuperan la misma referencia.</li>
+<li><code>Duration</code> y <code>String</code> son inmutables, y los campos de esta configuración son <code>final</code>.</li>
+<li>El constructor de <code>ServicioMuestreo</code> rechaza parámetros nulos.</li>
+<li>El servicio consulta el contrato recibido; no busca internamente el Singleton.</li>
+</ul>
+<p><strong>Ámbito de la unicidad.</strong> La garantía corresponde a esa clase cargada. Otra JVM o una definición de la clase cargada por un cargador diferente puede tener su propia constante. Este diseño no implementa una exclusión distribuida ni garantiza una única instancia en varios servidores.</p>
+<p><strong>Inicialización y concurrencia.</strong> La inicialización de la clase tiene las garantías del lenguaje. Eso no implica que cualquier operación mutable que se agregue después quede sincronizada. En el ejemplo se comparte configuración inmutable; no hay contadores ni colecciones modificables que coordinar.</p>
+<h4>Código completo</h4>
 <pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-
 import java.time.Duration;
 import java.util.Objects;
-
 /** Un único objeto de configuración, accesible a través de un enum. */
 public class SingletonDemo {
     // Contrato pequeño: los servicios no necesitan conocer el Singleton.
@@ -800,40 +1516,32 @@ public class SingletonDemo {
         Duration intervalo();
         String unidad();
     }
-
     enum Configuracion implements Parametros {
         INSTANCIA;
-
         private final Duration intervalo = Duration.ofSeconds(30);
         private final String unidad = &quot;°C&quot;;
-
         @Override
         public Duration intervalo() { return intervalo; }
         @Override
         public String unidad() { return unidad; }
     }
-
     /** Dependencia explícita: también permite recibir una configuración de prueba. */
     static final class ServicioMuestreo {
         private final Parametros parametros;
-
         ServicioMuestreo(Parametros parametros) {
             this.parametros = Objects.requireNonNull(parametros);
         }
-
         String describir(String sensor) {
             return sensor + &quot;: cada &quot; + parametros.intervalo().toSeconds()
                     + &quot; s, unidad &quot; + parametros.unidad();
         }
     }
-
     public static void main(String[] args) {
         Configuracion primera = Configuracion.INSTANCIA;
         Configuracion segunda = Configuracion.INSTANCIA;
         System.out.println(&quot;Misma instancia: &quot; + (primera == segunda));
         ServicioMuestreo servicio = new ServicioMuestreo(primera);
         System.out.println(servicio.describir(&quot;S01&quot;));
-
         // Sustituto de prueba: el servicio no llama al Singleton internamente.
         Parametros prueba = new Parametros() {
             public Duration intervalo() { return Duration.ofSeconds(1); }
@@ -843,20 +1551,85 @@ public class SingletonDemo {
     }
 }
 </code></pre>
-<h3>Salida y lectura de la ejecución</h3>
+<h3>6.7. ¿Cómo se utiliza el patrón?</h3>
+<p>El punto de composición obtiene la configuración y la entrega al consumidor:</p>
+<pre><code class="language-java">Parametros parametros = Configuracion.INSTANCIA;
+ServicioMuestreo servicio = new ServicioMuestreo(parametros);
+System.out.println(servicio.describir(&quot;S01&quot;));
+</code></pre>
+<p>El acceso global queda visible en la composición. La clase <code>ServicioMuestreo</code> conserva la posibilidad de trabajar con otra implementación de <code>Parametros</code>.</p>
+<h4>Flujo de ejecución</h4>
+<ol>
+<li>El primer uso que requiere inicializar <code>Configuracion</code> provoca la creación de su constante.</li>
+<li>Se obtiene <code>Configuracion.INSTANCIA</code> y se guarda su referencia.</li>
+<li>Otro acceso a la misma constante devuelve esa misma referencia.</li>
+<li>Se entrega la configuración a <code>ServicioMuestreo</code> por constructor.</li>
+<li>El servicio consulta <code>intervalo()</code> y <code>unidad()</code> mediante <code>Parametros</code>.</li>
+<li>Para una prueba, se crea otro objeto que implementa <code>Parametros</code> con valores alternativos.</li>
+<li>Un segundo servicio utiliza ese objeto sin modificar el Singleton ni el código del consumidor.</li>
+</ol>
+<p><strong>Observación:</strong> poder crear otras implementaciones de <code>Parametros</code> no viola la unicidad de <code>Configuracion</code>. La restricción se aplica al tipo concreto del Singleton, no a todos los objetos que implementen la misma interfaz.</p>
+<h3>6.8. Resultado de la ejecución</h3>
 <pre><code class="language-text">Misma instancia: true
 S01: cada 30 s, unidad °C
 TEST: cada 1 s, unidad °F
 </code></pre>
-<p>Las dos referencias de configuración son idénticas. El primer servicio utiliza los valores compartidos: treinta segundos y Celsius. El segundo recibe parámetros de prueba: un segundo y Fahrenheit. Esto verifica tanto la identidad del Singleton como la independencia del consumidor respecto a su acceso global.</p>
-<h3>Comprobaciones y límites del ejemplo</h3>
+<p><code>Misma instancia: true</code> comprueba que los dos accesos recuperan la misma constante. El servicio de <code>S01</code> utiliza treinta segundos y Celsius. El servicio de prueba utiliza un segundo y Fahrenheit porque recibió otro proveedor de parámetros.</p>
+<p>La última salida no implica que el Singleton cambió. Demuestra que el consumidor depende de una interfaz y que sus parámetros pueden sustituirse desde la composición.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Resultado esperado</th>
+<th>Qué verifica</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Comparar dos referencias a <code>INSTANCIA</code></td>
+<td><code>true</code></td>
+<td>Identidad compartida del enum.</td>
+</tr>
+<tr>
+<td>Servicio con la configuración predeterminada</td>
+<td>30 segundos y °C</td>
+<td>Consumo de la instancia compartida.</td>
+</tr>
+<tr>
+<td>Servicio con el sustituto</td>
+<td>1 segundo y °F</td>
+<td>Sustitución de la dependencia.</td>
+</tr>
+<tr>
+<td>Constructor con <code>null</code></td>
+<td><code>NullPointerException</code></td>
+<td>Rechazo de una dependencia ausente.</td>
+</tr>
+<tr>
+<td>Consultar el Singleton después de usar el sustituto</td>
+<td>Conserva 30 segundos y °C</td>
+<td>Ausencia de modificación global.</td>
+</tr>
+</tbody></table></div>
+<h3>6.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre compartir una instancia y prohibir que existan otras del mismo tipo?</li>
+<li>¿Por qué el enum representa Singleton aunque no tenga <code>getInstance()</code>?</li>
+<li>¿Qué ventaja aporta recibir <code>Parametros</code> por constructor?</li>
+<li>¿Por qué el objeto de prueba no constituye una segunda instancia de <code>Configuracion</code>?</li>
+<li>¿Qué habría que revisar si se añadiera una lista mutable a la configuración?</li>
+<li>¿Por qué esta solución no garantiza una sola ejecución de una tarea en dos servidores?</li>
+</ol>
+<p><strong>Comparación con una conexión de base de datos.</strong> Una conexión incorpora estado transaccional, operaciones de cierre y condiciones de uso concurrente. Mantener una única conexión global no equivale a compartir una configuración inmutable. Si una aplicación necesita centralizar el acceso a conexiones, debe diseñar el proveedor y su ciclo de vida; Singleton por sí solo no resuelve esas responsabilidades.</p>
+<p><strong>Limitaciones del ejemplo:</strong></p>
 <ul>
-<li><code>primera == segunda</code> debe ser <code>true</code> al acceder a la misma constante.</li>
-<li>Sustituir <code>Parametros</code> debe cambiar el resultado sin modificar <code>ServicioMuestreo</code>.</li>
-<li>Pasar parámetros nulos debe impedir construir el servicio.</li>
-<li>No se abren conexiones ni se inicia un proceso de muestreo: se describe su configuración.</li>
-<li>La prueba no demuestra exclusión mutua, ejecución distribuida ni seguridad de futuros campos mutables.</li>
+<li>El ámbito de unicidad es la clase cargada, no un sistema distribuido.</li>
+<li>La configuración está fijada en el código; no se leen variables de entorno ni archivos.</li>
+<li>El servicio describe un plan de muestreo, pero no inicia tareas ni abre conexiones.</li>
+<li>El resultado no demuestra sincronización de futuros campos mutables.</li>
+<li>Una dependencia global consultada desde todos los servicios dificultaría el aislamiento; aquí se evita en el consumidor mediante el constructor.</li>
 </ul>
+<p><strong>Conclusión:</strong> Singleton controla el acceso a una instancia del tipo dentro de un ámbito definido. Su uso debe distinguirse de la inmutabilidad, de la sincronización y de la manera en que los consumidores reciben sus dependencias.</p>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="comparacion"></a></p>
@@ -897,25 +1670,37 @@ TEST: cada 1 s, unidad °F
 </tbody></table></div>
 <h3>Relaciones y errores frecuentes</h3>
 <ul>
-<li><strong>Factory Method y Abstract Factory:</strong> comparten la creación mediante abstracciones, pero varían una operación y una familia, respectivamente.</li>
-<li><strong>Builder y Prototype:</strong> el primero reúne decisiones para un producto nuevo; el segundo parte del estado de un objeto existente.</li>
-<li><strong>Builder y Singleton:</strong> uno controla cómo se construye; el otro restringe la instancia disponible. Ninguno garantiza inmutabilidad por su nombre.</li>
-<li><strong>Genéricos y patrones:</strong> <code>Copiable&lt;T&gt;</code> conserva el tipo del resultado; el patrón sigue siendo la delegación de la copia al objeto configurado.</li>
-<li><strong><code>new</code> y acoplamiento:</strong> no es necesario eliminar todos los constructores. Lo relevante es que las decisiones cambiantes no se dispersen entre consumidores.</li>
+<li><p><strong>Factory Method y Abstract Factory:</strong> comparten la creación mediante abstracciones, pero varían una operación y una familia, respectivamente.</p>
+</li>
+<li><p><strong>Builder y Prototype:</strong> el primero reúne decisiones para un producto nuevo; el segundo parte del estado de un objeto existente.</p>
+</li>
+<li><p><strong>Builder y Singleton:</strong> uno controla cómo se construye; el otro restringe la instancia disponible. Ninguno garantiza inmutabilidad por su nombre.</p>
+</li>
+<li><p><strong>Genéricos y patrones:</strong> <code>Copiable&lt;T&gt;</code> conserva el tipo del resultado; el patrón sigue siendo la delegación de la copia al objeto configurado.</p>
+</li>
+<li><p><strong><code>new</code> y acoplamiento:</strong> no es necesario eliminar todos los constructores. Lo relevante es que las decisiones cambiantes no se dispersen entre consumidores.</p>
+</li>
 </ul>
 <p>Para seleccionar un patrón, identifica el cambio esperado, el contrato que permanecerá estable y el costo de los tipos adicionales. Si el problema se resuelve claramente con un constructor y una dependencia explícita, no es necesario introducir otra estructura.</p>
 <p><a id="referencias"></a></p>
 <h2>8. Referencias</h2>
 <ol>
-<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/factory-method">Factory Method</a>.</li>
-<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/abstract-factory">Abstract Factory</a>.</li>
-<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/builder">Builder</a>.</li>
-<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/prototype">Prototype</a>.</li>
-<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/singleton">Singleton</a>.</li>
-<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994.</li>
-<li>Java SE 17. <a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API oficial</a>: <code>List</code>, <code>Duration</code>, <code>Objects</code>, <code>Double</code> y <code>Enum</code>.</li>
+<li><p>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/factory-method">Factory Method</a>.</p>
+</li>
+<li><p>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/abstract-factory">Abstract Factory</a>.</p>
+</li>
+<li><p>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/builder">Builder</a>.</p>
+</li>
+<li><p>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/prototype">Prototype</a>.</p>
+</li>
+<li><p>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/singleton">Singleton</a>.</p>
+</li>
+<li><p>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong>. Addison-Wesley, 1994.</p>
+</li>
+<li><p>Java SE 17. <a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API oficial</a>: <code>List</code>, <code>Duration</code>, <code>Objects</code>, <code>Double</code> y <code>Enum</code>.</p>
+</li>
 </ol>
-<p>Las referencias orientan la terminología y la clasificación. Los ejemplos Java, sus datos, el análisis de ejecución y los diagramas de este material son originales. No se reproducen las ilustraciones ni el pseudocódigo del libro <em>Sumérgete en los patrones de diseño</em>.</p>
+<p>Las referencias orientan la terminología y la clasificación. Los ejemplos Java, sus datos, el análisis de ejecución y los diagramas de este material son originales. No se reproducen las ilustraciones ni el pseudocódigo del libro <strong>Sumérgete en los patrones de diseño</strong>.</p>
 
       
   <nav class="article-nav" aria-label="Recursos del contenido">

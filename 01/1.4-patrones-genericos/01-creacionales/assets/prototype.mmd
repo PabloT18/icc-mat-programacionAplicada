@@ -1,0 +1,31 @@
+classDiagram
+    direction TB
+
+    class Copiable~T~ {
+        <<interface>>
+        +copiar() T
+    }
+
+    class PerfilSensor {
+        -String nombre
+        -List~ReglaUmbral~ reglas
+        ~PerfilSensor(nombre)
+        ~renombrar(nuevo) void
+        ~agregarRegla(magnitud, limite) void
+        ~ajustarLimite(indice, limite) void
+        +copiar() PerfilSensor
+        +toString() String
+    }
+
+    class ReglaUmbral {
+        -String magnitud
+        -double limite
+        ~ReglaUmbral(magnitud, limite)
+        ~cambiarLimite(nuevo) void
+        ~copiar() ReglaUmbral
+        +toString() String
+    }
+
+    Copiable <|.. PerfilSensor : T = PerfilSensor
+    PerfilSensor "1" *-- "0..*" ReglaUmbral : contiene
+    PerfilSensor ..> ReglaUmbral : solicita copiar

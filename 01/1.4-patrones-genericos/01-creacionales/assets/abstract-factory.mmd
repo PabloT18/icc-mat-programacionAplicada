@@ -1,0 +1,65 @@
+classDiagram
+    direction TB
+
+    class FabricaEquipo {
+        <<interface>>
+        +crearFuente() FuenteTemperatura
+        +crearConversor() ConversorTemperatura
+    }
+
+    class EquipoCelsius {
+        +crearFuente() FuenteTemperatura
+        +crearConversor() ConversorTemperatura
+    }
+
+    class EquipoFahrenheit {
+        +crearFuente() FuenteTemperatura
+        +crearConversor() ConversorTemperatura
+    }
+
+    class FuenteTemperatura {
+        <<interface>>
+        +leer() double
+    }
+
+    class ConversorTemperatura {
+        <<interface>>
+        +aCelsius(valor) double
+    }
+
+    class FuenteCelsius {
+        +leer() double
+    }
+
+    class FuenteFahrenheit {
+        +leer() double
+    }
+
+    class ConversorCelsius {
+        +aCelsius(valor) double
+    }
+
+    class ConversorFahrenheit {
+        +aCelsius(valor) double
+    }
+
+    class Estacion {
+        -FuenteTemperatura fuente
+        -ConversorTemperatura conversor
+        ~Estacion(fabrica)
+        ~medirCelsius() double
+    }
+
+    FabricaEquipo <|.. EquipoCelsius
+    FabricaEquipo <|.. EquipoFahrenheit
+    FuenteTemperatura <|.. FuenteCelsius
+    FuenteTemperatura <|.. FuenteFahrenheit
+    ConversorTemperatura <|.. ConversorCelsius
+    ConversorTemperatura <|.. ConversorFahrenheit
+    Estacion ..> FabricaEquipo : recibe
+    Estacion --> FuenteTemperatura : utiliza
+    Estacion --> ConversorTemperatura : utiliza
+    EquipoCelsius ..> FuenteCelsius : crea
+    EquipoCelsius ..> ConversorCelsius : crea
+    EquipoFahrenheit ..> FuenteFahrenheit : crea
+    EquipoFahrenheit ..> ConversorFahrenheit : crea

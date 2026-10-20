@@ -1,0 +1,27 @@
+classDiagram
+    direction TB
+
+    class Parametros {
+        <<interface>>
+        +intervalo() Duration
+        +unidad() String
+    }
+
+    class Configuracion {
+        <<enumeration>>
+        +Configuracion INSTANCIA$
+        -Duration intervalo
+        -String unidad
+        +intervalo() Duration
+        +unidad() String
+    }
+
+    class ServicioMuestreo {
+        -Parametros parametros
+        ~ServicioMuestreo(parametros)
+        ~describir(sensor) String
+    }
+
+    Parametros <|.. Configuracion
+    ServicioMuestreo --> Parametros : recibe y conserva
+    note for Configuracion "INSTANCIA es la unica constante del enum. Sus campos son final."
