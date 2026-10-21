@@ -747,7 +747,7 @@ Equipo Fahrenheit: 25.0 °C
 <p><strong>Solución mediante Builder:</strong> el cliente prepara un <code>PlanMuestreo.Builder</code>, aplica <code>cada()</code> y <code>agregarSensor()</code> y solicita <code>construir()</code>. El producto recibe una instantánea independiente de la lista de sensores.</p>
 <p>El caso construye un plan con <code>S01</code>, reutiliza el builder para agregar <code>S02</code> y construye otro. La comparación de sus resúmenes permite observar si el primer producto quedó aislado correctamente.</p>
 <h3>4.5. Estructura UML</h3>
-<p><img src="assets/builder.svg" alt="Diagrama UML Builder" class="zoomable-diagram medium"></p>
+<p><img src="assets/builder-mmd.svg" alt="Diagrama UML Builder" class="zoomable-diagram medium"></p>
 <p><a href="assets/builder.mmd">Fuente editable del diagrama</a>.</p>
 <h4>Identificación de participantes</h4>
 <div class="table-scroll"><table>
@@ -822,79 +822,6 @@ Equipo Fahrenheit: 25.0 °C
 <li>Los campos <code>final</code>, los tipos inmutables utilizados y la ausencia de métodos de modificación permiten que este producto sea inmutable.</li>
 </ul>
 <p><code>final</code> por sí solo no hace inmutable una lista: impide cambiar la referencia del campo, pero no necesariamente modificar el objeto referenciado. Aquí la política de copia también es necesaria.</p>
-<h4>Código completo</h4>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-/** Construye una configuración válida antes de entregarla al servicio. */
-public class BuilderDemo {
-    static final class PlanMuestreo {
-        private final String nombre;
-        private final Duration intervalo;
-        private final List&lt;String&gt; sensores;
-        private PlanMuestreo(Builder builder) {
-            nombre = builder.nombre;
-            intervalo = builder.intervalo;
-            sensores = List.copyOf(builder.sensores); // Copia defensiva.
-        }
-        public String resumen() {
-            return nombre + &quot; | &quot; + intervalo.toSeconds() + &quot; s | &quot; + sensores;
-        }
-        /** Builder mutable: todavía no representa un plan ejecutable. */
-        static final class Builder {
-            private final String nombre;
-            private Duration intervalo = Duration.ofSeconds(30);
-            private final List&lt;String&gt; sensores = new ArrayList&lt;&gt;();
-            Builder(String nombre) {
-                if (nombre == null || nombre.isBlank()) {
-                    throw new IllegalArgumentException(&quot;Nombre obligatorio&quot;);
-                }
-                this.nombre = nombre;
-            }
-            Builder cada(Duration intervalo) {
-                this.intervalo = Objects.requireNonNull(intervalo);
-                return this;
-            }
-            Builder agregarSensor(String id) {
-                if (id == null || id.isBlank()) {
-                    throw new IllegalArgumentException(&quot;Identificador obligatorio&quot;);
-                }
-                if (sensores.contains(id)) {
-                    throw new IllegalArgumentException(&quot;Sensor duplicado: &quot; + id);
-                }
-                sensores.add(id);
-                return this;
-            }
-            PlanMuestreo construir() {
-                // Invariantes del producto: no se entrega un plan incompleto.
-                if (intervalo.compareTo(Duration.ofSeconds(1)) &lt; 0) {
-                    throw new IllegalArgumentException(&quot;Intervalo mínimo: 1 segundo&quot;);
-                }
-                if (sensores.isEmpty()) {
-                    throw new IllegalArgumentException(&quot;Agrega al menos un sensor&quot;);
-                }
-                return new PlanMuestreo(this);
-            }
-        }
-    }
-    public static void main(String[] args) {
-        PlanMuestreo.Builder builder = new PlanMuestreo.Builder(&quot;Laboratorio&quot;)
-                .cada(Duration.ofSeconds(10)).agregarSensor(&quot;S01&quot;);
-        PlanMuestreo primero = builder.construir();
-        PlanMuestreo segundo = builder.agregarSensor(&quot;S02&quot;).construir();
-        // Reutilizar el builder no cambia el producto que ya fue creado.
-        System.out.println(primero.resumen());
-        System.out.println(segundo.resumen());
-        try {
-            new PlanMuestreo.Builder(&quot;Vacío&quot;).construir();
-        } catch (IllegalArgumentException error) {
-            System.out.println(error.getMessage());
-        }
-    }
-}
-</code></pre>
 <h3>4.7. ¿Cómo se utiliza el patrón?</h3>
 <p>El cliente expresa la configuración mediante operaciones con nombres:</p>
 <pre><code class="language-java">PlanMuestreo plan = new PlanMuestreo.Builder(&quot;Laboratorio&quot;)
@@ -1099,7 +1026,7 @@ Agrega al menos un sensor
 </tbody></table></div>
 <p><strong>Copia superficial y profunda.</strong> Una copia superficial conserva referencias a componentes internos. Una copia profunda, respecto del contrato de este modelo, reproduce también las reglas mutables. No se exige duplicar indiscriminadamente todos los objetos alcanzables: las cadenas inmutables pueden compartirse sin provocar cambios cruzados.</p>
 <h3>5.5. Estructura UML</h3>
-<p><img src="assets/prototype.svg" alt="Diagrama UML Prototype" class="zoomable-diagram medium"></p>
+<p><img src="assets/prototype-mmd.svg" alt="Diagrama UML Prototype" class="zoomable-diagram medium"></p>
 <p><a href="assets/prototype.mmd">Fuente editable del diagrama</a>.</p>
 <h4>Identificación de participantes</h4>
 <div class="table-scroll"><table>
@@ -1179,75 +1106,6 @@ Agrega al menos un sensor
 <li><code>ajustarLimite()</code> supone que el índice identifica una regla existente; un índice inválido produce la excepción de la lista.</li>
 </ul>
 <p>La política de copia debe revisarse si se añaden campos. Por ejemplo, un identificador de base de datos podría necesitar regenerarse y una conexión abierta no debería duplicarse como si fuera configuración ordinaria.</p>
-<h4>Código completo</h4>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-import java.util.ArrayList;
-import java.util.List;
-/** Duplica un perfil y sus reglas mutables para configurarlos por separado. */
-public class PrototypeDemo {
-    interface Copiable&lt;T&gt; { T copiar(); }
-    static final class ReglaUmbral {
-        private final String magnitud;
-        private double limite;
-        ReglaUmbral(String magnitud, double limite) {
-            if (magnitud == null || magnitud.isBlank()) {
-                throw new IllegalArgumentException(&quot;Magnitud obligatoria&quot;);
-            }
-            this.magnitud = magnitud;
-            cambiarLimite(limite);
-        }
-        void cambiarLimite(double nuevo) {
-            if (!Double.isFinite(nuevo)) {
-                throw new IllegalArgumentException(&quot;Límite no finito&quot;);
-            }
-            limite = nuevo;
-        }
-        ReglaUmbral copiar() { return new ReglaUmbral(magnitud, limite); }
-        @Override
-        public String toString() { return magnitud + &quot; &gt; &quot; + limite; }
-    }
-    static final class PerfilSensor implements Copiable&lt;PerfilSensor&gt; {
-        private String nombre;
-        private final List&lt;ReglaUmbral&gt; reglas = new ArrayList&lt;&gt;();
-        PerfilSensor(String nombre) { renombrar(nombre); }
-        void renombrar(String nuevo) {
-            if (nuevo == null || nuevo.isBlank()) {
-                throw new IllegalArgumentException(&quot;Nombre obligatorio&quot;);
-            }
-            nombre = nuevo;
-        }
-        void agregarRegla(String magnitud, double limite) {
-            reglas.add(new ReglaUmbral(magnitud, limite));
-        }
-        void ajustarLimite(int indice, double limite) {
-            reglas.get(indice).cambiarLimite(limite);
-        }
-        @Override
-        public PerfilSensor copiar() {
-            PerfilSensor copia = new PerfilSensor(nombre);
-            // No basta new ArrayList&lt;&gt;(reglas): compartiría las reglas mutables.
-            for (ReglaUmbral regla : reglas) {
-                copia.reglas.add(regla.copiar());
-            }
-            return copia;
-        }
-        @Override
-        public String toString() { return nombre + &quot;: &quot; + reglas; }
-    }
-    public static void main(String[] args) {
-        PerfilSensor base = new PerfilSensor(&quot;Base&quot;);
-        base.agregarRegla(&quot;temperatura&quot;, 28.0);
-        base.agregarRegla(&quot;humedad&quot;, 70.0);
-        // El cliente no reconstruye la configuración de cada regla.
-        PerfilSensor laboratorio = base.copiar();
-        laboratorio.renombrar(&quot;Laboratorio&quot;);
-        laboratorio.ajustarLimite(0, 25.0);
-        System.out.println(base);
-        System.out.println(laboratorio);
-        System.out.println(&quot;Mismo perfil: &quot; + (base == laboratorio));
-    }
-}
-</code></pre>
 <h3>5.7. ¿Cómo se utiliza el patrón?</h3>
 <p>El cliente prepara o recibe un perfil existente y solicita su copia:</p>
 <pre><code class="language-java">PerfilSensor base = new PerfilSensor(&quot;Base&quot;);
@@ -1425,7 +1283,7 @@ Mismo perfil: false
 <p><strong>Solución mediante Singleton:</strong> <code>Configuracion</code> es un <code>enum</code> con una sola constante. Implementa <code>Parametros</code>, que declara únicamente las operaciones necesarias para el consumidor. <code>ServicioMuestreo</code> recibe <code>Parametros</code> por constructor.</p>
 <p>En la demostración se crea un servicio con el Singleton y otro con un sustituto de prueba que devuelve un segundo y Fahrenheit. El sustituto no es otra instancia de <code>Configuracion</code>; es otra implementación del contrato <code>Parametros</code>.</p>
 <h3>6.5. Estructura UML</h3>
-<p><img src="assets/singleton.svg" alt="Diagrama UML Singleton" class="zoomable-diagram medium"></p>
+<p><img src="assets/singleton-mmd.svg" alt="Diagrama UML Singleton" class="zoomable-diagram medium"></p>
 <p><a href="assets/singleton.mmd">Fuente editable del diagrama</a>.</p>
 <h4>Identificación de participantes</h4>
 <div class="table-scroll"><table>
@@ -1505,52 +1363,6 @@ Mismo perfil: false
 </ul>
 <p><strong>Ámbito de la unicidad.</strong> La garantía corresponde a esa clase cargada. Otra JVM o una definición de la clase cargada por un cargador diferente puede tener su propia constante. Este diseño no implementa una exclusión distribuida ni garantiza una única instancia en varios servidores.</p>
 <p><strong>Inicialización y concurrencia.</strong> La inicialización de la clase tiene las garantías del lenguaje. Eso no implica que cualquier operación mutable que se agregue después quede sincronizada. En el ejemplo se comparte configuración inmutable; no hay contadores ni colecciones modificables que coordinar.</p>
-<h4>Código completo</h4>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.creacionales;
-import java.time.Duration;
-import java.util.Objects;
-/** Un único objeto de configuración, accesible a través de un enum. */
-public class SingletonDemo {
-    // Contrato pequeño: los servicios no necesitan conocer el Singleton.
-    interface Parametros {
-        Duration intervalo();
-        String unidad();
-    }
-    enum Configuracion implements Parametros {
-        INSTANCIA;
-        private final Duration intervalo = Duration.ofSeconds(30);
-        private final String unidad = &quot;°C&quot;;
-        @Override
-        public Duration intervalo() { return intervalo; }
-        @Override
-        public String unidad() { return unidad; }
-    }
-    /** Dependencia explícita: también permite recibir una configuración de prueba. */
-    static final class ServicioMuestreo {
-        private final Parametros parametros;
-        ServicioMuestreo(Parametros parametros) {
-            this.parametros = Objects.requireNonNull(parametros);
-        }
-        String describir(String sensor) {
-            return sensor + &quot;: cada &quot; + parametros.intervalo().toSeconds()
-                    + &quot; s, unidad &quot; + parametros.unidad();
-        }
-    }
-    public static void main(String[] args) {
-        Configuracion primera = Configuracion.INSTANCIA;
-        Configuracion segunda = Configuracion.INSTANCIA;
-        System.out.println(&quot;Misma instancia: &quot; + (primera == segunda));
-        ServicioMuestreo servicio = new ServicioMuestreo(primera);
-        System.out.println(servicio.describir(&quot;S01&quot;));
-        // Sustituto de prueba: el servicio no llama al Singleton internamente.
-        Parametros prueba = new Parametros() {
-            public Duration intervalo() { return Duration.ofSeconds(1); }
-            public String unidad() { return &quot;°F&quot;; }
-        };
-        System.out.println(new ServicioMuestreo(prueba).describir(&quot;TEST&quot;));
-    }
-}
-</code></pre>
 <h3>6.7. ¿Cómo se utiliza el patrón?</h3>
 <p>El punto de composición obtiene la configuración y la entrega al consumidor:</p>
 <pre><code class="language-java">Parametros parametros = Configuracion.INSTANCIA;
