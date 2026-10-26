@@ -58,7 +58,7 @@ Los genéricos pueden expresar relaciones entre tipos, pero **ninguno de estos p
 
 <a id="adapter"></a>
 
-## 2. Adapter · Integrar un termómetro legado
+## 2. Adapter
 
 ### Definición
 
