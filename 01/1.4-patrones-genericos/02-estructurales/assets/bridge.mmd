@@ -1,0 +1,40 @@
+classDiagram
+    direction TB
+    class Reporte {
+        <<abstract>>
+        #FormatoReporte formato
+        ~Reporte(formato)
+        ~generar(lecturas) String*
+    }
+    class ReporteDetalle {
+        ~ReporteDetalle(formato)
+        ~generar(lecturas) String
+    }
+    class ReporteResumen {
+        ~ReporteResumen(formato)
+        ~generar(lecturas) String
+    }
+    class FormatoReporte {
+        <<interface>>
+        +fila(etiqueta, dato) String
+    }
+    class FormatoTexto {
+        +fila(etiqueta, dato) String
+    }
+    class FormatoCsv {
+        -campo(valor) String
+        +fila(etiqueta, dato) String
+    }
+    class Lectura {
+        <<record>>
+        -String id
+        -double valor
+        +id() String
+        +valor() double
+    }
+    Reporte <|-- ReporteDetalle
+    Reporte <|-- ReporteResumen
+    Reporte --> FormatoReporte : puente
+    FormatoReporte <|.. FormatoTexto
+    FormatoReporte <|.. FormatoCsv
+    Reporte ..> Lectura : recibe lista

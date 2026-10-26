@@ -1,0 +1,28 @@
+classDiagram
+    direction TB
+    class CatalogoSensores {
+        <<interface>>
+        +listar() List~String~
+    }
+    class CatalogoReal {
+        ~CatalogoReal()
+        +listar() List~String~
+    }
+    class CatalogoProtegido {
+        -Usuario usuario
+        -Supplier~CatalogoSensores~ proveedor
+        -CatalogoSensores real
+        ~CatalogoProtegido(usuario, proveedor)
+        +listar() List~String~
+    }
+    class Usuario {
+        <<record>>
+        -String nombre
+        -boolean autorizado
+        +autorizado() boolean
+    }
+    CatalogoSensores <|.. CatalogoReal
+    CatalogoSensores <|.. CatalogoProtegido
+    CatalogoProtegido --> "0..1" CatalogoSensores : servicio real
+    CatalogoProtegido --> Usuario : consulta permiso
+    CatalogoProtegido ..> CatalogoReal : proveedor configurado en main

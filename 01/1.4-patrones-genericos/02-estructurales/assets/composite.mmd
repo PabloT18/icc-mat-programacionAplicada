@@ -1,0 +1,22 @@
+classDiagram
+    direction TB
+    class NodoMonitoreo {
+        <<interface>>
+        +contarActivos() int
+    }
+    class Sensor {
+        <<record>>
+        -String id
+        -boolean activo
+        +contarActivos() int
+    }
+    class Zona {
+        -String nombre
+        -List~NodoMonitoreo~ hijos
+        ~Zona(nombre, hijos)
+        +contarActivos() int
+        ~nombre() String
+    }
+    NodoMonitoreo <|.. Sensor
+    NodoMonitoreo <|.. Zona
+    Zona "0..*" --> "0..*" NodoMonitoreo : hijos

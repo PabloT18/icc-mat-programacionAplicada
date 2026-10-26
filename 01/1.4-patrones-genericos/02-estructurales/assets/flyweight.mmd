@@ -1,0 +1,32 @@
+classDiagram
+    direction TB
+    class ClaveTipo {
+        <<record>>
+        -String modelo
+        -String unidad
+        -double minimo
+        -double maximo
+    }
+    class TipoSensor {
+        -ClaveTipo clave
+        ~TipoSensor(clave)
+        ~admite(valor) boolean
+        ~describir(id, ubicacion) String
+    }
+    class FabricaTipos {
+        -Map~ClaveTipo,TipoSensor~ tipos
+        ~obtener(clave) TipoSensor
+        ~cantidad() int
+    }
+    class Sensor {
+        <<record>>
+        -String id
+        -String ubicacion
+        -TipoSensor tipo
+        +tipo() TipoSensor
+        ~describir() String
+    }
+    Sensor "0..*" --> "1" TipoSensor : comparte
+    TipoSensor --> "1" ClaveTipo : estado intrinseco
+    FabricaTipos --> "0..*" TipoSensor : reutiliza
+    FabricaTipos ..> ClaveTipo : clave por valor

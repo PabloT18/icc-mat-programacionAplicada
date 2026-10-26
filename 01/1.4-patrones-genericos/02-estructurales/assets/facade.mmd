@@ -1,0 +1,32 @@
+classDiagram
+    direction TB
+    class ImportacionLecturas {
+        -ParserLecturas parser
+        -ValidadorTemperatura validador
+        -RepositorioMemoria repositorio
+        ~ImportacionLecturas(parser, validador, repositorio)
+        ~importar(lineas) int
+    }
+    class ParserLecturas {
+        ~interpretar(linea) Lectura
+    }
+    class ValidadorTemperatura {
+        ~validar(lectura) void
+    }
+    class RepositorioMemoria {
+        -List~Lectura~ registros
+        ~guardarLote(lote) void
+        ~cantidad() int
+    }
+    class Lectura {
+        <<record>>
+        -String id
+        -double valor
+        -String unidad
+    }
+    ImportacionLecturas --> ParserLecturas : interpreta
+    ImportacionLecturas --> ValidadorTemperatura : valida
+    ImportacionLecturas --> RepositorioMemoria : guarda lote
+    ParserLecturas ..> Lectura : crea
+    ValidadorTemperatura ..> Lectura : verifica
+    RepositorioMemoria --> "0..*" Lectura : conserva

@@ -39,325 +39,1076 @@
     <a href="../03-comportamiento/index.html">Siguiente</a>
   </nav>
       <h1>Programación Aplicada</h1>
-<h2>1.4b. Patrones estructurales</h2>
 <p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
-<hr>
-<h2>1. Conceptos y ejemplos</h2>
-<h3>1.1. Fundamentos</h3>
-<p>Los patrones <strong>estructurales</strong> organizan la composición de clases y objetos. Permiten adaptar contratos, construir jerarquías o incorporar capas sin que los clientes dependan de todos los detalles internos.</p>
-<p>La <strong>composición</strong> expresa que un objeto utiliza a otro mediante una referencia. La <strong>herencia</strong> establece una relación de tipos. Muchos patrones estructurales favorecen la composición para combinar comportamientos sin multiplicar subclases. Ninguna de las dos técnicas es por sí sola un patrón.</p>
-<p>Este bloque cubre los siete patrones estructurales del catálogo GoF. Distingue especialmente Adapter, que traduce una interfaz; Decorator, que añade comportamiento; y Proxy, que controla el acceso. Una estructura de clases parecida puede responder a intenciones diferentes.</p>
+<h2>1.4b. Patrones estructurales</h2>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica<br><strong>Tema:</strong> 1.4. Patrones de diseño · Patrones estructurales</p>
+<p>Los patrones estructurales organizan las relaciones entre clases y objetos. Permiten integrar componentes, separar dimensiones de cambio, representar jerarquías y distribuir responsabilidades sin concentrarlas en una sola clase. Cada patrón responde a una intención distinta; utilizar composición no significa que todos sean intercambiables.</p>
+<p>Este material presenta siete patrones mediante problemas de sensores, lecturas, reportes y catálogos. Cada apartado integra teoría, estructura, explicación de la implementación y análisis. El código completo y comentado se encuentra exclusivamente en los archivos Java enlazados.</p>
+<p><a id="indice"></a></p>
+<h2>Índice</h2>
+<ol>
+<li><a href="#fundamentos">Fundamentos y uso del material</a></li>
+<li><a href="#adapter">Adapter · Integrar un termómetro legado</a></li>
+<li><a href="#bridge">Bridge · Separar reportes y formatos</a></li>
+<li><a href="#composite">Composite · Organizar sensores por zonas</a></li>
+<li><a href="#decorator">Decorator · Combinar calibración y auditoría</a></li>
+<li><a href="#facade">Facade · Coordinar la importación de lecturas</a></li>
+<li><a href="#flyweight">Flyweight · Compartir metadatos de sensores</a></li>
+<li><a href="#proxy">Proxy · Controlar el acceso a un catálogo</a></li>
+<li><a href="#comparacion">Comparación y criterios de elección</a></li>
+<li><a href="#referencias">Referencias</a></li>
+</ol>
+<p><a id="fundamentos"></a></p>
+<h2>1. Fundamentos y uso del material</h2>
+<p>Un <strong>patrón de diseño</strong> describe una solución recurrente en términos de responsabilidades, relaciones y consecuencias. No es una receta obligatoria ni un nombre que se asigna a cualquier clase con una interfaz. Para justificarlo es necesario identificar qué problema existe, qué variación se desea aislar y qué costo introduce la solución.</p>
+<p>La familia <strong>estructural</strong> estudia cómo se conectan los componentes. La familia creacional se concentra en la provisión de objetos; la de comportamiento, en algoritmos y coordinación de responsabilidades. Estas intenciones pueden coexistir en un diseño. Una fábrica utilizada por un Flyweight no convierte toda la solución en un patrón creacional.</p>
+<h3>1.1. Conceptos necesarios</h3>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>N.º</th>
-<th>Patrón</th>
-<th>Demostración</th>
+<th>Concepto</th>
+<th>Significado técnico</th>
+<th>Consecuencia en el diseño</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>1</td>
-<td>Adapter</td>
-<td><code>AdapterDemo.java</code></td>
+<td>Contrato</td>
+<td>Operaciones y condiciones que un componente ofrece a sus clientes.</td>
+<td>Compartir firmas no basta: también deben respetarse unidades, errores y significado del resultado.</td>
 </tr>
 <tr>
-<td>2</td>
-<td>Bridge</td>
-<td><code>BridgeDemo.java</code></td>
+<td>Composición de objetos</td>
+<td>Construir una funcionalidad mediante referencias a colaboradores.</td>
+<td>Permite combinar objetos sin crear una subclase para cada combinación.</td>
 </tr>
 <tr>
-<td>3</td>
-<td>Composite</td>
-<td><code>CompositeDemo.java</code></td>
+<td>Delegación</td>
+<td>Encargar una operación a otro objeto.</td>
+<td>La responsabilidad se distribuye; el receptor puede traducir, coordinar, ampliar o controlar la llamada.</td>
 </tr>
 <tr>
-<td>4</td>
-<td>Decorator</td>
-<td><code>DecoratorDemo.java</code></td>
+<td>Herencia</td>
+<td>Especializar un tipo mediante una relación de subtipo.</td>
+<td>Debe conservar un comportamiento compatible con el contrato del tipo base.</td>
 </tr>
 <tr>
-<td>5</td>
-<td>Facade</td>
-<td><code>FacadeDemo.java</code></td>
+<td>Acoplamiento</td>
+<td>Dependencia que un componente mantiene respecto de otro.</td>
+<td>Una dependencia estable puede limitar el impacto de los cambios, pero no elimina la dependencia.</td>
 </tr>
 <tr>
-<td>6</td>
-<td>Flyweight</td>
-<td><code>FlyweightDemo.java</code></td>
-</tr>
-<tr>
-<td>7</td>
-<td>Proxy</td>
-<td><code>ProxyDemo.java</code></td>
+<td>Cohesión</td>
+<td>Relación entre las responsabilidades reunidas en un componente.</td>
+<td>Una clase enfocada en una tarea resulta más fácil de explicar, probar y modificar.</td>
 </tr>
 </tbody></table></div>
-<h3>1.2. Adapter</h3>
-<p><strong>Intención.</strong> Hacer compatible una interfaz existente con la que espera un cliente. El adaptador implementa el contrato destino y delega en el objeto adaptado, traduciendo nombres, formatos o unidades cuando corresponde.</p>
-<p>Es útil al integrar una biblioteca antigua o un proveedor externo sin modificar su implementación. Debe conservar la semántica: convertir un nombre de método no basta si las unidades o los errores tienen significados distintos. El ejemplo traduce una API que informa Fahrenheit a un contrato que entrega Celsius. Se utiliza composición, aunque también existen adaptadores basados en herencia. A diferencia de Decorator, su propósito es compatibilidad entre contratos, no añadir capas de comportamiento detrás de la misma interfaz.</p>
-<h3>1.3. Bridge</h3>
-<p><strong>Intención.</strong> Separar una abstracción de su implementación para que ambas puedan variar de manera independiente. La abstracción mantiene una referencia a un implementador y delega en él las operaciones de bajo nivel.</p>
-<p>Por ejemplo, pueden variar tanto el tipo de mensaje como el canal de presentación. Sin el puente aparecerían clases para cada combinación. Bridge permite combinar una notificación normal o urgente con un canal simple o decorado. El precio es una capa adicional de delegación. Adapter suele incorporar compatibilidad a interfaces ya existentes; Bridge diseña de antemano dos dimensiones de variación. En el ejemplo, la jerarquía de mensajes y las implementaciones de canal no dependen de las clases concretas de la otra dimensión.</p>
-<h3>1.4. Composite</h3>
-<p><strong>Intención.</strong> Tratar de manera uniforme objetos individuales y agrupaciones mediante una interfaz común. Las hojas implementan la operación directamente; los compuestos la delegan a sus hijos, formando una estructura de árbol.</p>
-<p>Un archivo puede calcular su tamaño directamente y una carpeta sumar el tamaño de sus componentes. El cliente pide la misma operación sin distinguir sus clases. Es útil en jerarquías parte-todo; no toda colección constituye un Composite. Debe decidirse dónde se permiten agregar hijos y cómo evitar ciclos, porque la recursión supone una estructura válida. El ejemplo reserva <code>agregar</code> a la carpeta y requiere un árbol sin ciclos. No todas las operaciones del compuesto necesitan existir en las hojas.</p>
-<h3>1.5. Decorator</h3>
-<p><strong>Intención.</strong> Añadir responsabilidades envolviendo un objeto detrás de su misma interfaz. Cada decorador conserva una referencia al componente y amplía o transforma su comportamiento antes o después de delegar.</p>
-<p>Esto permite combinar capacidades sin crear una subclase por combinación. Un formato de texto puede recibir un marco y una etiqueta en capas independientes. El orden influye en el resultado y debe quedar claro para quien arma la cadena. Decorator conserva el contrato; Adapter cambia la interfaz esperada y Proxy controla el acceso. Demasiadas capas pueden dificultar el seguimiento de errores. El ejemplo produce cadenas y no modifica el componente interno, por lo que cada combinación es fácil de observar en consola.</p>
-<h3>1.6. Facade</h3>
-<p><strong>Intención.</strong> Ofrecer una entrada simple a un conjunto de operaciones de un subsistema. La fachada coordina colaboradores y evita que el cliente conozca todos los detalles del flujo.</p>
-<p>Una publicación puede requerir validar texto, convertirlo y enviarlo a una salida. El cliente invoca una sola operación, mientras los componentes conservan sus responsabilidades. La fachada no sustituye necesariamente las interfaces internas ni impide utilizarlas directamente. El riesgo es concentrar toda la lógica en una clase demasiado grande. A diferencia de Adapter, aquí no se traduce únicamente una interfaz incompatible: se simplifica el uso de varios componentes. El ejemplo limita la salida a consola; no representa una publicación real ni una transacción.</p>
-<h3>1.7. Flyweight</h3>
-<p><strong>Intención.</strong> Compartir estado común entre muchos objetos para reducir duplicación. El estado intrínseco compartido debe distinguirse del estado extrínseco, que depende de cada uso y se proporciona desde fuera.</p>
-<p>Varios símbolos de un mapa pueden compartir forma y color, pero mantener posiciones distintas. Una fábrica administra la reutilización de la parte común. El ahorro debe justificarse con volumen y costo real; introducir una caché también consume memoria y requiere una política de vida. Los objetos compartidos suelen ser inmutables para evitar efectos cruzados. El ejemplo reutiliza un estilo por color y pasa las coordenadas a cada dibujo. No demuestra una caché concurrente ni una política de expulsión de entradas.</p>
-<h3>1.8. Proxy</h3>
-<p><strong>Intención.</strong> Sustituir un objeto por un representante que controla el acceso y mantiene el mismo contrato. Puede retrasar una creación costosa, verificar permisos o coordinar un acceso remoto.</p>
-<p>En un proxy virtual, el objeto real se crea cuando se usa por primera vez. El cliente no necesita saber cuándo ocurre esa inicialización. Deben definirse los errores y los efectos del acceso: una operación que parece local podría ser lenta o fallar. Proxy se enfoca en el control de acceso; Decorator añade responsabilidades combinables. El ejemplo registra una carga simulada y reutiliza el contenido en la segunda llamada. No realiza lectura de archivos ni implementa seguridad o concurrencia.</p>
-<h3>1.9. Criterios de elección</h3>
-<p>La estructura debe preservar los contratos. Un Adapter que cambia unidades debe convertir valores, no solo nombres. Un Decorator debe seguir siendo utilizable como el componente original. Un Composite necesita una jerarquía válida. Bridge separa dos dimensiones de cambio, mientras Facade reduce lo que el cliente necesita conocer.</p>
+<p>Una interfaz adicional tiene un costo: más tipos, más relaciones y más decisiones de composición. Resulta útil cuando representa una variación real, no únicamente para aumentar el número de capas.</p>
+<p>Los genéricos pueden expresar relaciones entre tipos, pero <strong>ninguno de estos patrones exige genéricos</strong>. En los ejemplos se usan listas, mapas y un proveedor tipado donde ayudan a representar el problema; no se añade un parámetro de tipo artificial a cada clase.</p>
 <hr>
-<h2>2. Demostraciones comentadas</h2>
-<p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/estructurales/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
-<p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
-<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/patrones/estructurales/AdapterDemo.java
+<p><a id="adapter"></a></p>
+<h2>2. Adapter · Integrar un termómetro legado</h2>
+<h3>Definición</h3>
+<p><strong>Adapter</strong> presenta un objeto existente mediante el contrato que necesita otro componente. Traduce operaciones, parámetros, resultados o errores entre interfaces incompatibles, sin exigir que el cliente conozca esa incompatibilidad [1].</p>
+<p><strong>Idea principal:</strong> situar la traducción en una frontera explícita y mantener el cliente ligado a su propio contrato.</p>
+<h3>2.1. ¿Qué problema resuelve?</h3>
+<p>Una estación necesita una temperatura en Celsius. Una biblioteca de un equipo antiguo ofrece una operación con otro nombre y devuelve un entero que representa décimas de Fahrenheit. Además, utiliza un valor especial para señalar un fallo.</p>
+<p>Cambiar cada consumidor para reconocer ese protocolo reparte tres decisiones por la aplicación: cómo solicitar el dato, cómo convertirlo y cómo interpretar el error. Modificar el equipo tampoco siempre es posible: puede ser una biblioteca de terceros o una integración utilizada por otros clientes.</p>
+<p>El adaptador implementa el contrato esperado, conserva una referencia al equipo y traduce la petición. No modifica la biblioteca ni obliga a que la estación dependa de ella.</p>
+<h3>2.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cliente</td>
+<td>Utilizar una operación conforme al contrato que necesita.</td>
+</tr>
+<tr>
+<td>Interfaz objetivo</td>
+<td>Describir la operación esperada por el cliente.</td>
+</tr>
+<tr>
+<td>Adaptado</td>
+<td>Ofrecer una funcionalidad útil mediante una interfaz incompatible.</td>
+</tr>
+<tr>
+<td>Adaptador</td>
+<td>Implementar el contrato objetivo y delegar en el adaptado con las conversiones necesarias.</td>
+</tr>
+</tbody></table></div>
+<p>El ejemplo utiliza <strong>adaptación de objetos</strong>, basada en una referencia al equipo. La adaptación mediante herencia es otra variante, pero no es necesaria aquí. En Java, además, no puede heredarse de dos clases concretas simultáneamente.</p>
+<h3>2.3. ¿Cuándo utilizarlo?</h3>
+<p>Es apropiado para incorporar bibliotecas externas, servicios antiguos o dispositivos cuyo contrato no coincide con el de la aplicación. La adaptación puede involucrar unidades, nombres de campos, formatos o excepciones.</p>
+<p>No se necesita un adaptador si las interfaces ya son compatibles y no hay traducción que realizar. Tampoco corresponde convertirlo en un lugar donde acumular reglas ajenas a la integración, como la política de alertas de toda la estación.</p>
+<h3>2.4. Caso práctico: décimas de Fahrenheit</h3>
+<p>El equipo devuelve <code>770</code>, equivalente a 77,0 °F. La estación debe recibir 25,0 °C. El dato <code>-9999</code> significa que no hay una lectura disponible y no debe convertirse como si fuera una temperatura.</p>
+<p>La conversión tiene dos etapas: dividir entre 10,0 para recuperar Fahrenheit y aplicar <code>C = (F − 32) × 5 / 9</code>. El adaptador comprueba primero el código de error. Esa secuencia evita producir un número aparentemente válido a partir de un fallo del equipo.</p>
+<h3>2.5. Estructura UML</h3>
+<p><a href="assets/adapter.mmd">Diagrama editable de Adapter</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cliente</td>
+<td><code>Estacion</code></td>
+</tr>
+<tr>
+<td>Objetivo</td>
+<td><code>SensorTemperatura</code></td>
+</tr>
+<tr>
+<td>Adaptado</td>
+<td><code>TermometroLegado</code></td>
+</tr>
+<tr>
+<td>Adaptador</td>
+<td><code>AdaptadorFahrenheit</code></td>
+</tr>
+</tbody></table></div>
+<p><code>Estacion</code> mantiene una asociación con <code>SensorTemperatura</code>. <code>AdaptadorFahrenheit</code> realiza esa interfaz y mantiene otra asociación con <code>TermometroLegado</code>. El diagrama no presenta una relación de herencia entre el adaptador y el equipo: la colaboración ocurre por delegación.</p>
+<h3>2.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/AdapterDemo.java">AdapterDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SensorTemperatura</code> · interfaz</td>
+<td>Declarar <code>leerCelsius()</code> como operación consumida por la estación.</td>
+</tr>
+<tr>
+<td><code>TermometroLegado</code> · clase</td>
+<td>Simular el protocolo mediante <code>obtenerDecimasFahrenheit()</code>.</td>
+</tr>
+<tr>
+<td><code>AdaptadorFahrenheit</code> · clase</td>
+<td>Validar la presencia del equipo, traducir el código de error y convertir la unidad.</td>
+</tr>
+<tr>
+<td><code>Estacion</code> · clase</td>
+<td>Solicitar una medición sin conocer Fahrenheit ni el código especial.</td>
+</tr>
+</tbody></table></div>
+<p>El contrato se mantiene en un solo lugar. El método de la estación no contiene una condición para detectar el tipo del dispositivo. El constructor del adaptador rechaza una referencia nula, mientras que el error del protocolo produce una <code>IllegalStateException</code> al solicitar la medición.</p>
+<h3>2.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li><code>main()</code> crea el equipo simulado y lo entrega al adaptador.</li>
+<li>La estación recibe ese adaptador mediante <code>SensorTemperatura</code>.</li>
+<li><code>medir()</code> invoca <code>leerCelsius()</code>.</li>
+<li>El adaptador solicita el entero al equipo, comprueba el error y convierte el resultado.</li>
+<li>La estación recibe un <code>double</code> en Celsius.</li>
+</ol>
+<p>El segundo caso crea un equipo que entrega el código de fallo. La misma ruta termina en una excepción descriptiva, capturada en <code>main()</code> para mostrarla.</p>
+<h3>2.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Temperatura: 25.0 °C
+Error: Equipo sin lectura
 </code></pre>
-<p>Los comentarios identifican los roles y las decisiones del patrón. Las lambdas implementan interfaces funcionales y los <code>record</code> agrupan datos mediante accesores generados; no son requisitos de los patrones. Los ejemplos son secuenciales y se limitan a consola.</p>
-<h3>2.1. Adapter · <code>AdapterDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-/** Adapter: traduce una API de Fahrenheit a un contrato en Celsius. */
-public class AdapterDemo {
-    interface Temperatura { double celsius(); } // Contrato esperado por el cliente.
-    static class ApiAntigua {
-        double leerFahrenheit() { return 86.0; } // API existente que no modificamos.
-    }
-    static class Adaptador implements Temperatura {
-        private final ApiAntigua api;
-        Adaptador(ApiAntigua api) { this.api = api; }
-        public double celsius() {
-            return (api.leerFahrenheit() - 32.0) * 5.0 / 9.0;
-        }
-    }
-    public static void main(String[] args) {
-        Temperatura temperatura = new Adaptador(new ApiAntigua());
-        System.out.println(&quot;Celsius: &quot; + temperatura.celsius());
-    }
-}
+<p>La primera línea confirma que la traducción incluye la escala, no solo el nombre del método. La segunda confirma que el adaptador no presenta un error del equipo como una lectura legítima.</p>
+<h3>2.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Por qué dividir entre 10 en lugar de 10,0 puede perder información para una muestra como <code>775</code>?</li>
+<li>¿Qué tipo debería cambiar si un nuevo equipo entrega centésimas de Celsius?</li>
+<li>¿Por qué una conversión de tipos o casting no sustituye la conversión de unidades?</li>
+</ol>
+<p><strong>Limitaciones:</strong> el equipo está simulado; no hay conexión serie, tiempos de espera ni recuperación ante desconexiones. El código especial pertenece al protocolo del ejemplo. Una integración real debe documentar sus propios códigos y el rango físico de sus mediciones.</p>
+<p><strong>Criterio de diseño:</strong> el cliente conserva su contrato; la traducción queda localizada en el adaptador.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="bridge"></a></p>
+<h2>3. Bridge · Separar reportes y formatos</h2>
+<h3>Definición</h3>
+<p><strong>Bridge</strong> separa una abstracción y su implementación en dos dimensiones que pueden variar de manera independiente. La abstracción mantiene una referencia al implementador y utiliza sus operaciones para realizar una funcionalidad de mayor nivel [2].</p>
+<p><strong>Idea principal:</strong> combinar dos familias de variaciones mediante objetos, evitando crear una subclase por cada combinación.</p>
+<h3>3.1. ¿Qué problema resuelve?</h3>
+<p>Un sistema necesita reportes detallados y reportes de resumen. Ambos pueden presentarse como texto o como CSV. Una jerarquía que represente todas las combinaciones acabaría con clases como detalle-texto, detalle-CSV, resumen-texto y resumen-CSV.</p>
+<p>Si se añade un tercer tipo de reporte, habría que resolverlo para cada formato. Si se añade un formato, habría que resolverlo para cada reporte. Con <code>m</code> variantes de contenido y <code>n</code> formatos, una solución por combinación puede requerir hasta <code>m × n</code> clases concretas.</p>
+<p>Bridge conserva dos familias: una decide qué información presentar y otra cómo representar una fila. No elimina el trabajo de implementar las variaciones, pero evita repetir el contenido por cada formato.</p>
+<h3>3.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Abstracción</td>
+<td>Definir operaciones de alto nivel y conservar el enlace al implementador.</td>
+</tr>
+<tr>
+<td>Abstracción refinada</td>
+<td>Especializar la funcionalidad de alto nivel.</td>
+</tr>
+<tr>
+<td>Implementador</td>
+<td>Declarar las operaciones básicas utilizadas por la abstracción.</td>
+</tr>
+<tr>
+<td>Implementador concreto</td>
+<td>Resolver esas operaciones para una variante de representación.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Elegir y conectar ambas variantes.</td>
+</tr>
+</tbody></table></div>
+<p>“Abstracción” e “implementación” son roles del patrón, no sinónimos obligatorios de <code>abstract class</code> e <code>interface</code>. En este ejemplo se utilizan esas construcciones porque expresan bien los contratos, pero el patrón no depende de esos nombres de lenguaje.</p>
+<h3>3.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene cuando existen dos dimensiones identificables que evolucionan por separado: contenido y salida, control y dispositivo, o funcionalidad y plataforma. La relación entre ellas debe tener un contrato estable.</p>
+<p>Si solo se necesita sustituir una pequeña política de cálculo, Strategy podría describir mejor el problema. Si se intenta conectar una biblioteca existente incompatible, Adapter suele ser una descripción más precisa. La estructura de clases puede parecerse; la intención y los ejes de cambio determinan el patrón.</p>
+<h3>3.4. Caso práctico: detalle y resumen</h3>
+<p>Se reciben dos lecturas numéricas: S01 con 22,5 y S02 con 27,5. El reporte de detalle presenta una fila por sensor. El reporte de resumen calcula el promedio y presenta una sola fila.</p>
+<p><code>FormatoTexto</code> separa etiqueta y dato con dos puntos. <code>FormatoCsv</code> produce dos campos entre comillas, separados por coma; también duplica comillas internas. Los reportes no implementan esas reglas de representación.</p>
+<p>Las lecturas de esta demostración deben corresponder a la misma magnitud y unidad. El promedio de una temperatura y una ocupación carecería de sentido, aunque ambos valores sean <code>double</code>.</p>
+<h3>3.5. Estructura UML</h3>
+<p><a href="assets/bridge.mmd">Diagrama editable de Bridge</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Abstracción</td>
+<td><code>Reporte</code></td>
+</tr>
+<tr>
+<td>Abstracciones refinadas</td>
+<td><code>ReporteDetalle</code>, <code>ReporteResumen</code></td>
+</tr>
+<tr>
+<td>Implementador</td>
+<td><code>FormatoReporte</code></td>
+</tr>
+<tr>
+<td>Implementadores concretos</td>
+<td><code>FormatoTexto</code>, <code>FormatoCsv</code></td>
+</tr>
+<tr>
+<td>Datos de entrada</td>
+<td><code>Lectura</code></td>
+</tr>
+</tbody></table></div>
+<p>La asociación de <code>Reporte</code> hacia <code>FormatoReporte</code> es el puente. No existe herencia entre un reporte y un formato. <code>Lectura</code> es un dato recibido por las operaciones; no pertenece a ninguna de las dos jerarquías de variación.</p>
+<h3>3.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/BridgeDemo.java">BridgeDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Lectura</code> · record</td>
+<td>Rechazar identificadores vacíos y valores no finitos.</td>
+</tr>
+<tr>
+<td><code>Reporte</code> · clase abstracta</td>
+<td>Conservar un formato no nulo y declarar <code>generar()</code>.</td>
+</tr>
+<tr>
+<td><code>ReporteDetalle</code> · clase</td>
+<td>Recorrer las lecturas y delegar la representación de cada fila.</td>
+</tr>
+<tr>
+<td><code>ReporteResumen</code> · clase</td>
+<td>Resolver la colección vacía o calcular el promedio.</td>
+</tr>
+<tr>
+<td><code>FormatoReporte</code> · interfaz</td>
+<td>Establecer la operación <code>fila(etiqueta, dato)</code>.</td>
+</tr>
+<tr>
+<td><code>FormatoTexto</code>, <code>FormatoCsv</code> · clases</td>
+<td>Proporcionar dos representaciones de esa operación.</td>
+</tr>
+</tbody></table></div>
+<p>Las listas se copian con <code>List.copyOf()</code>, que también rechaza elementos nulos. El promedio utiliza <code>Locale.ROOT</code> al formatearse para mantener el punto decimal independientemente de la configuración regional de la computadora. El formato no decide si el dato representa un promedio o una lectura individual.</p>
+<h3>3.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente prepara la lista de lecturas.</li>
+<li>Construye el tipo de reporte y le entrega un formato.</li>
+<li>El reporte selecciona o calcula la información necesaria.</li>
+<li>Cada fila se solicita al implementador de formato.</li>
+<li>El cliente recibe el texto final.</li>
+</ol>
+<p>La demostración combina detalle con texto, resumen con CSV y resumen con texto. La combinación detalle-CSV también queda disponible sin crear otra clase. El formato se fija en el constructor; este ejemplo no incorpora un método para reemplazarlo después.</p>
+<h3>3.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Detalle / texto:
+S01: 22.5
+S02: 27.5
+Resumen / CSV:
+&quot;Promedio&quot;,&quot;25.00&quot;
+Resumen / texto:
+Promedio: 25.00
+Promedio: Sin datos
 </code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Celsius: 30.0
+<p>El promedio permanece en 25,00 en ambas representaciones. Cambia la salida, no el cálculo. La entrada vacía genera un mensaje explícito y evita una división entre cero.</p>
+<h3>3.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué clase nueva permitiría agregar un reporte de máximo sin modificar los formatos?</li>
+<li>¿Qué contrato debe implementar un tercer formato para funcionar con ambos reportes?</li>
+<li>¿Qué reglas necesitaría el modelo para garantizar que las lecturas son comparables entre sí?</li>
+</ol>
+<p><strong>Limitaciones:</strong> se generan cadenas en memoria, no archivos. El CSV representa filas simples de dos campos, sin encabezado. El promedio presupone valores moderados: sumar muchos valores extremos puede desbordar un <code>double</code> aunque cada entrada sea finita. La validación de unidades tendría que expresarse en un modelo más completo.</p>
+<p><strong>Criterio de diseño:</strong> modificar la representación no debe obligar a duplicar las decisiones sobre el contenido.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="composite"></a></p>
+<h2>4. Composite · Organizar sensores por zonas</h2>
+<h3>Definición</h3>
+<p><strong>Composite</strong> representa estructuras de partes y conjuntos mediante un contrato común para elementos individuales y agrupaciones. Un compuesto realiza su operación delegando en sus hijos, que pueden ser hojas u otros compuestos [3].</p>
+<p><strong>Idea principal:</strong> permitir que el cliente solicite una operación sin tener que distinguir el nivel de la jerarquía.</p>
+<h3>4.1. ¿Qué problema resuelve?</h3>
+<p>Un edificio contiene zonas; una zona puede contener sensores o subzonas. Se necesita conocer cuántos sensores activos existen en cualquier nivel.</p>
+<p>Si el cliente inspecciona el tipo concreto de cada elemento, tendrá que decidir cuándo contar un sensor y cuándo recorrer una lista. Esa lógica puede repetirse en informes, pantallas y servicios.</p>
+<p>Composite traslada esa decisión a cada objeto. El sensor resuelve su propio conteo; la zona suma los resultados de sus hijos. El recorrido se obtiene por la colaboración recursiva entre objetos que comparten el mismo contrato.</p>
+<h3>4.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Componente</td>
+<td>Definir una operación común para hojas y compuestos.</td>
+</tr>
+<tr>
+<td>Hoja</td>
+<td>Resolver la operación sin delegar en hijos.</td>
+</tr>
+<tr>
+<td>Compuesto</td>
+<td>Conservar componentes y combinar sus resultados.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Utilizar el componente sin identificar su clase concreta.</td>
+</tr>
+</tbody></table></div>
+<p>No es obligatorio declarar operaciones de agregar o eliminar hijos en el componente. Hacerlo daría una interfaz uniforme, pero obligaría a las hojas a rechazar operaciones que no tienen sentido. Este ejemplo mantiene el contrato reducido al conteo y configura las zonas al construirlas.</p>
+<h3>4.3. ¿Cuándo utilizarlo?</h3>
+<p>Es adecuado para jerarquías de carpetas, elementos gráficos, menús, conjuntos de equipos o zonas anidadas cuando existe una operación común coherente.</p>
+<p>No debe utilizarse únicamente porque hay una lista de objetos. Una colección plana sin relación parte-conjunto ni operación recursiva puede resolverse con una lista normal. Tampoco todas las operaciones de un grupo tienen sentido sobre una hoja: conviene evitar contratos artificiales.</p>
+<h3>4.4. Caso práctico: sensores activos</h3>
+<p>El laboratorio contiene S01 activo y S02 inactivo. El edificio contiene ese laboratorio y S03 activo. Una consulta al laboratorio devuelve 1; una consulta al edificio devuelve 2.</p>
+<p>Una zona sin hijos devuelve 0, que es el elemento neutro de la suma. Un sensor activo devuelve 1 y uno inactivo devuelve 0. Estas decisiones permiten combinar resultados sin condiciones especiales en el cliente.</p>
+<p>La estructura de la demostración se construye desde las hojas hacia la raíz. Los hijos se copian a una lista no modificable y las clases incluidas no permiten cambiar su estructura después de construirse.</p>
+<h3>4.5. Estructura UML</h3>
+<p><a href="assets/composite.mmd">Diagrama editable de Composite</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Componente</td>
+<td><code>NodoMonitoreo</code></td>
+</tr>
+<tr>
+<td>Hoja</td>
+<td><code>Sensor</code></td>
+</tr>
+<tr>
+<td>Compuesto</td>
+<td><code>Zona</code></td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td><code>main()</code> de <code>CompositeDemo</code></td>
+</tr>
+</tbody></table></div>
+<p>La asociación desde <code>Zona</code> apunta al componente común, no solo a <code>Sensor</code>. Por eso una zona puede contener otra zona. Se utiliza una asociación normal: el código permite que una misma hoja aparezca en más de un lugar y no impone propiedad exclusiva.</p>
+<h3>4.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/CompositeDemo.java">CompositeDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NodoMonitoreo</code> · interfaz</td>
+<td>Declarar <code>contarActivos()</code>.</td>
+</tr>
+<tr>
+<td><code>Sensor</code> · record</td>
+<td>Conservar identificador y estado, y devolver 1 o 0.</td>
+</tr>
+<tr>
+<td><code>Zona</code> · clase</td>
+<td>Conservar nombre e hijos y sumar sus conteos.</td>
+</tr>
+</tbody></table></div>
+<p>El método de <code>Zona</code> no utiliza <code>instanceof</code>. Cada llamada a un hijo se resuelve mediante polimorfismo. <code>List.copyOf()</code> protege la estructura de la lista y rechaza hijos nulos; no vuelve inmutable cualquier implementación externa de <code>NodoMonitoreo</code>.</p>
+<p>Los sensores del ejemplo son records con estado fijo. Si se necesitara actualizar su estado, habría que definir explícitamente una política de actualización o construir una nueva estructura, sin asumir que el patrón resuelve esa decisión.</p>
+<h3>4.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente crea las hojas.</li>
+<li>Forma la zona laboratorio con dos sensores.</li>
+<li>Forma el edificio con el laboratorio y un sensor adicional.</li>
+<li>Invoca <code>contarActivos()</code> en la raíz.</li>
+<li>La raíz delega en sus hijos; la zona interna repite el proceso y las hojas producen los valores base.</li>
+</ol>
+<p>Se muestra también una zona que recibe la misma hoja dos veces. El resultado es 2: el algoritmo cuenta apariciones en la estructura, no identificadores únicos. Esta diferencia debe establecerse como una regla del dominio antes de reutilizar el algoritmo.</p>
+<h3>4.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">S01 activos: 1
+Laboratorio activos: 1
+Edificio activos: 2
+Zona vacía activos: 0
+Hoja compartida activos: 2
 </code></pre>
-<p>El cliente utiliza Temperatura; el adaptador conoce la API antigua y realiza la traducción de unidad.</p>
-<h3>2.2. Bridge · <code>BridgeDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-/** Bridge: combina tipos de mensaje con canales independientes. */
-public class BridgeDemo {
-    interface Canal { void mostrar(String texto); } // Implementador.
-    static class CanalSimple implements Canal {
-        public void mostrar(String texto) { System.out.println(texto); }
-    }
-    static class CanalEnmarcado implements Canal {
-        public void mostrar(String texto) { System.out.println(&quot;[&quot; + texto + &quot;]&quot;); }
-    }
-    static abstract class Mensaje {
-        protected final Canal canal;
-        Mensaje(Canal canal) { this.canal = canal; }
-        abstract void enviar(String texto);
-    }
-    static class Normal extends Mensaje {
-        Normal(Canal canal) { super(canal); }
-        void enviar(String texto) { canal.mostrar(texto); }
-    }
-    static class Urgente extends Mensaje {
-        Urgente(Canal canal) { super(canal); }
-        void enviar(String texto) { canal.mostrar(&quot;URGENTE: &quot; + texto); }
-    }
-    public static void main(String[] args) {
-        new Normal(new CanalSimple()).enviar(&quot;Reunión&quot;);
-        new Urgente(new CanalEnmarcado()).enviar(&quot;Reunión&quot;);
-        // Cambiar el canal no exige otra subclase de Mensaje.
-    }
-}
+<p>La tercera línea incluye los resultados de los dos niveles. La última evidencia que compartir una referencia no equivale a deduplicar un sensor.</p>
+<h3>4.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Por qué <code>Zona</code> guarda nodos y no una lista limitada a sensores?</li>
+<li>¿Qué cambiaría si el requisito fuera contar identificadores únicos?</li>
+<li>¿Por qué permitir cambios arbitrarios en los hijos obligaría a considerar ciclos?</li>
+</ol>
+<p><strong>Limitaciones y costo:</strong> para un árbol con <code>n</code> nodos, el recorrido es O(n) y utiliza O(h) de pila, donde <code>h</code> es la altura. Si se comparten subestructuras, se recorren por cada aparición. Una profundidad extrema puede agotar la pila. No se incluye detección de ciclos de implementaciones externas ni deduplicación por identificador.</p>
+<p><strong>Criterio de diseño:</strong> la uniformidad corresponde a una operación válida en todos los niveles, no a obligar a cada hoja a comportarse como un contenedor.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="decorator"></a></p>
+<h2>5. Decorator · Combinar calibración y auditoría</h2>
+<h3>Definición</h3>
+<p><strong>Decorator</strong> añade responsabilidades a un objeto mediante envoltorios que mantienen su contrato y delegan en él. Cada envoltorio puede ejecutar trabajo antes o después de la delegación y combinarse con otros decoradores [4].</p>
+<p><strong>Idea principal:</strong> construir combinaciones de comportamientos alrededor de una instancia sin crear una subclase para cada combinación.</p>
+<h3>5.1. ¿Qué problema resuelve?</h3>
+<p>Una fuente de temperatura entrega una muestra. Algunos usos requieren corregirla mediante un ajuste; otros necesitan registrar el valor consultado; otros requieren ambas operaciones.</p>
+<p>Una jerarquía de fuente-calibrada, fuente-auditada y fuente-calibrada-auditada mezcla responsabilidades y crece al incorporar nuevas combinaciones. También puede obligar a modificar la fuente original para añadir aspectos que no le corresponden.</p>
+<p>Decorator representa cada responsabilidad como un objeto independiente. La fuente, la calibración y la auditoría presentan la operación <code>leer()</code>, por lo que el cliente puede recibir cualquiera de las combinaciones.</p>
+<h3>5.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Componente</td>
+<td>Declarar el contrato compartido por el objeto original y sus envoltorios.</td>
+</tr>
+<tr>
+<td>Componente concreto</td>
+<td>Proporcionar el comportamiento básico.</td>
+</tr>
+<tr>
+<td>Decorador base</td>
+<td>Conservar el componente envuelto y facilitar la delegación.</td>
+</tr>
+<tr>
+<td>Decorador concreto</td>
+<td>Añadir una responsabilidad específica.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Construir la cadena y utilizar el contrato del componente.</td>
+</tr>
+</tbody></table></div>
+<p>El decorador base es una conveniencia, no una obligación del patrón. Aquí evita repetir la validación y el almacenamiento de la referencia. La herencia de los decoradores comparte esa infraestructura; la combinación de funcionalidades se obtiene por composición de instancias.</p>
+<h3>5.3. ¿Cuándo utilizarlo?</h3>
+<p>Es útil cuando las responsabilidades adicionales son combinables y pueden preservar el significado del contrato: trazabilidad, medición de tiempos, transformación de datos o validaciones de una operación.</p>
+<p>No es adecuado envolver un objeto si la nueva operación deja de ser compatible con lo que espera su cliente. Tampoco conviene ocultar una cadena muy profunda sin explicar cómo se configura: depurar el orden de efectos y excepciones puede resultar difícil.</p>
+<h3>5.4. Caso práctico: una muestra, dos responsabilidades</h3>
+<p>La fuente fija entrega 24,0 °C. La calibración añade 0,5 °C. La auditoría imprime la muestra que recibe y devuelve ese mismo valor.</p>
+<p>Se comparan dos composiciones. En la primera, la auditoría envuelve a la calibración: registra 24,5. En la segunda, la calibración envuelve a la auditoría: esta registra 24,0 y luego el valor se ajusta. Ambas devuelven 24,5, pero su evidencia de auditoría es diferente.</p>
+<p>El orden forma parte del comportamiento observable. Compartir una interfaz no implica que dos decoradores puedan intercambiarse sin consecuencias.</p>
+<h3>5.5. Estructura UML</h3>
+<p><a href="assets/decorator.mmd">Diagrama editable de Decorator</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Componente</td>
+<td><code>FuenteTemperatura</code></td>
+</tr>
+<tr>
+<td>Componente concreto</td>
+<td><code>FuenteFija</code></td>
+</tr>
+<tr>
+<td>Decorador base</td>
+<td><code>DecoradorFuente</code></td>
+</tr>
+<tr>
+<td>Decoradores concretos</td>
+<td><code>FuenteCalibrada</code>, <code>FuenteAuditada</code></td>
+</tr>
+</tbody></table></div>
+<p><code>DecoradorFuente</code> implementa el mismo contrato que la fuente original y conserva exactamente una <code>FuenteTemperatura</code>. Esa referencia también puede apuntar a otro decorador. El diagrama representa esa relación con el contrato, no con una clase concreta de fuente.</p>
+<h3>5.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/DecoratorDemo.java">DecoratorDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>FuenteTemperatura</code> · interfaz</td>
+<td>Definir <code>leer()</code>.</td>
+</tr>
+<tr>
+<td><code>FuenteFija</code> · clase</td>
+<td>Proporcionar una muestra finita.</td>
+</tr>
+<tr>
+<td><code>DecoradorFuente</code> · clase abstracta</td>
+<td>Conservar una fuente no nula y delegar.</td>
+</tr>
+<tr>
+<td><code>FuenteCalibrada</code> · clase</td>
+<td>Validar el ajuste, sumarlo y comprobar que el resultado sea finito.</td>
+</tr>
+<tr>
+<td><code>FuenteAuditada</code> · clase</td>
+<td>Obtener una muestra, imprimirla y devolverla.</td>
+</tr>
+</tbody></table></div>
+<p><code>FuenteAuditada</code> llama una sola vez a la fuente. Consultarla de nuevo para devolver el valor podría consumir otra muestra en un dispositivo real. La variable local conserva el resultado de esa única lectura.</p>
+<p><code>FuenteCalibrada</code> verifica tanto el ajuste recibido como el resultado de la suma. Dos números finitos todavía pueden producir infinito por desbordamiento. La auditoría se realiza después de obtener el dato: si la fuente lanza una excepción, este decorador no registra un valor exitoso.</p>
+<h3>5.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>Se crea la fuente base.</li>
+<li>Se construye una cadena con calibración interior y auditoría exterior.</li>
+<li>El cliente invoca <code>leer()</code> sobre la referencia exterior.</li>
+<li>La llamada desciende hasta la fuente y los resultados regresan por los decoradores.</li>
+<li>Se construye la cadena inversa y se compara su auditoría.</li>
+</ol>
+<p>La demostración comparte una fuente fija entre ambas cadenas porque es inmutable. Compartir una fuente que consuma muestras o mantenga una conexión exigiría analizar también su estado y su ciclo de vida.</p>
+<h3>5.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Auditoría exterior:
+Auditoría: 24.5 °C
+Resultado: 24.5 °C
+Auditoría interior:
+Auditoría: 24.0 °C
+Resultado: 24.5 °C
 </code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Reunión
-[URGENTE: Reunión]
+<p>El valor devuelto coincide en ambos casos; el valor auditado cambia. Las responsabilidades se combinaron sin modificar <code>FuenteFija</code> ni crear una clase específica para cada orden.</p>
+<h3>5.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿En qué posición debe estar la auditoría para registrar la muestra original?</li>
+<li>¿Qué ocurriría si un decorador consultara dos veces una fuente que devuelve valores sucesivos?</li>
+<li>¿Qué parte de la cadena debería rechazar un ajuste no finito?</li>
+</ol>
+<p><strong>Limitaciones:</strong> la auditoría escribe en consola, no en un sistema persistente de registros. No incorpora fecha, identidad del sensor ni tratamiento de excepciones. La calibración es un ajuste constante; no modela curvas de calibración ni incertidumbre de medición.</p>
+<p><strong>Criterio de diseño:</strong> preservar el contrato permite envolver; documentar el orden permite comprender el comportamiento resultante.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="facade"></a></p>
+<h2>6. Facade · Coordinar la importación de lecturas</h2>
+<h3>Definición</h3>
+<p><strong>Facade</strong> ofrece un punto de entrada de mayor nivel para un conjunto de componentes. Encapsula la secuencia de colaboración que necesita el cliente y delega las tareas específicas en el subsistema [5].</p>
+<p><strong>Idea principal:</strong> simplificar una operación frecuente sin trasladar todas las responsabilidades del subsistema a una sola clase.</p>
+<h3>6.1. ¿Qué problema resuelve?</h3>
+<p>Importar un lote requiere interpretar las líneas, validar las lecturas y almacenarlas. Si cada cliente organiza esa secuencia, puede repetir reglas, guardar filas antes de terminar las validaciones o manejar los errores de manera inconsistente.</p>
+<p>Una fachada expresa la operación completa desde el punto de vista del cliente. El parser sigue interpretando, el validador sigue comprobando el dominio y el repositorio sigue almacenando. La fachada conoce cómo colaborar con ellos, pero no sustituye sus implementaciones.</p>
+<p>El beneficio principal es reducir lo que debe conocer el consumidor del caso de uso. La complejidad interna continúa existiendo y necesita sus propios contratos y pruebas.</p>
+<h3>6.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cliente</td>
+<td>Solicitar una operación de alto nivel.</td>
+</tr>
+<tr>
+<td>Fachada</td>
+<td>Coordinar colaboradores y ofrecer una entrada simplificada.</td>
+</tr>
+<tr>
+<td>Componentes del subsistema</td>
+<td>Resolver tareas especializadas.</td>
+</tr>
+</tbody></table></div>
+<p>La fachada no tiene que implementar la misma interfaz que el subsistema. Tampoco prohíbe acceder directamente a sus componentes. Si se necesita restringir ese acceso, deben utilizarse decisiones de módulos, paquetes o visibilidad adicionales.</p>
+<h3>6.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene cuando varios pasos forman una operación frecuente, cuando se integra una biblioteca compleja o cuando se quiere reducir el conocimiento del cliente sobre un subsistema.</p>
+<p>No debería convertirse en una clase con todas las funcionalidades de la aplicación. Cuando reúne procesos poco relacionados, conviene dividirla por casos de uso. Tampoco es necesario interponer una fachada para delegar una única llamada trivial si no aporta un contrato de mayor nivel.</p>
+<h3>6.4. Caso práctico: importación validada</h3>
+<p>El proceso acepta líneas con identificador, valor y unidad separados por punto y coma. En este caso de uso solo se admiten temperaturas Celsius entre −50 y 100, ambos límites incluidos.</p>
+<p>Se exige que un error de datos no deje guardadas las primeras filas del mismo lote. La fachada construye una lista temporal, interpreta y valida todas las entradas y solo después solicita el almacenamiento.</p>
+<p>Esta regla se comprueba con un lote válido de dos lecturas y un segundo lote cuya segunda fila contiene 180 °C. La primera fila del segundo lote tampoco se guarda.</p>
+<h3>6.5. Estructura UML</h3>
+<p><a href="assets/facade.mmd">Diagrama editable de Facade</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fachada</td>
+<td><code>ImportacionLecturas</code></td>
+</tr>
+<tr>
+<td>Subsistema de interpretación</td>
+<td><code>ParserLecturas</code></td>
+</tr>
+<tr>
+<td>Subsistema de validación</td>
+<td><code>ValidadorTemperatura</code></td>
+</tr>
+<tr>
+<td>Subsistema de almacenamiento</td>
+<td><code>RepositorioMemoria</code></td>
+</tr>
+<tr>
+<td>Dato intercambiado</td>
+<td><code>Lectura</code></td>
+</tr>
+</tbody></table></div>
+<p>Las asociaciones desde la fachada representan sus tres colaboradores conservados. El parser depende de <code>Lectura</code> porque la construye; el repositorio mantiene una colección de lecturas. Ningún componente necesita conocer a la fachada para realizar su operación.</p>
+<h3>6.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/FacadeDemo.java">FacadeDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Lectura</code> · record</td>
+<td>Exigir identificador y unidad no vacíos, y valor finito.</td>
+</tr>
+<tr>
+<td><code>ParserLecturas</code> · clase</td>
+<td>Separar tres campos, recortar espacios y convertir el número.</td>
+</tr>
+<tr>
+<td><code>ValidadorTemperatura</code> · clase</td>
+<td>Comprobar unidad y rango del proceso.</td>
+</tr>
+<tr>
+<td><code>RepositorioMemoria</code> · clase</td>
+<td>Guardar una copia de las referencias del lote y contar registros.</td>
+</tr>
+<tr>
+<td><code>ImportacionLecturas</code> · clase</td>
+<td>Preparar el lote, coordinar los pasos y agregar contexto a los errores.</td>
+</tr>
+</tbody></table></div>
+<p>La validación básica del record no reemplaza la regla de temperatura del caso de uso. Ambas tienen alcances diferentes. Al capturar un error de una línea, la fachada conserva la causa original y añade su número, contado desde 1.</p>
+<p>El repositorio es una simulación en memoria. Validar antes de escribir evita guardados parciales por errores de datos en esta demostración; <strong>no garantiza atomicidad ante cualquier fallo ni constituye una transacción de base de datos</strong>.</p>
+<h3>6.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente construye los componentes y los entrega a la fachada.</li>
+<li>Invoca <code>importar()</code> con el lote.</li>
+<li>Por cada línea, la fachada solicita interpretación y validación.</li>
+<li>Si todas son válidas, envía el lote al repositorio.</li>
+<li>Devuelve la cantidad importada; ante un error, propaga una excepción contextualizada.</li>
+</ol>
+<p>En el lote inválido, el flujo se interrumpe antes de <code>guardarLote()</code>. El ejemplo consulta luego el contador del repositorio para comprobar que siguen existiendo únicamente los dos registros del primer lote.</p>
+<h3>6.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Importadas: 2
+Error: Línea 2: Temperatura fuera del contrato
+Total almacenado: 2
+Lote vacío: 0
 </code></pre>
-<p>Normal/Urgente y CanalSimple/CanalEnmarcado son dimensiones independientes que se combinan por composición.</p>
-<h3>2.3. Composite · <code>CompositeDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/** Composite: suma tamaños utilizando el mismo contrato para hojas y grupos. */
-public class CompositeDemo {
-    interface Nodo { int tamano(); }
-    record Archivo(int bytes) implements Nodo {
-        public int tamano() { return bytes; } // Hoja: resultado directo.
-    }
-    static class Carpeta implements Nodo {
-        private final List&lt;Nodo&gt; hijos = new ArrayList&lt;&gt;();
-        void agregar(Nodo hijo) { hijos.add(hijo); }
-        public int tamano() {
-            int total = 0;
-            for (Nodo hijo : hijos) total += hijo.tamano(); // Delegación recursiva.
-            return total;
-        }
-    }
-    public static void main(String[] args) {
-        Carpeta interna = new Carpeta();
-        interna.agregar(new Archivo(20));
-        Carpeta raiz = new Carpeta();
-        raiz.agregar(new Archivo(10));
-        raiz.agregar(interna);
-        System.out.println(&quot;Tamaño: &quot; + raiz.tamano());
-    }
-}
+<p>La segunda línea identifica el lugar y la causa del rechazo. La tercera demuestra la política de validación previa. El lote vacío es válido, no agrega registros y devuelve 0.</p>
+<h3>6.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Por qué interpretar y validar cada fila justo antes de guardarla cambiaría la política del lote?</li>
+<li>¿Qué responsabilidades deberían permanecer en el repositorio al incorporar una base de datos?</li>
+<li>¿Por qué una fachada no evita por sí sola que otro cliente use directamente el parser?</li>
+</ol>
+<p><strong>Limitaciones:</strong> el formato no admite delimitadores escapados ni campos entre comillas; las líneas vacías no se omiten, se rechazan. No se comprueban identificadores duplicados. El lote temporal requiere memoria proporcional a la cantidad de lecturas. Una integración JDBC necesitaría límites de transacción, commit y rollback explícitos.</p>
+<p><strong>Criterio de diseño:</strong> una operación simple para el cliente puede coordinar varios especialistas sin absorber su lógica.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="flyweight"></a></p>
+<h2>7. Flyweight · Compartir metadatos de sensores</h2>
+<h3>Definición</h3>
+<p><strong>Flyweight</strong> reduce la duplicación de estado al compartir una parte reutilizable entre muchos objetos o contextos. Separa el estado <strong>intrínseco</strong>, que puede compartirse, del <strong>extrínseco</strong>, que depende de cada uso [6].</p>
+<p><strong>Idea principal:</strong> almacenar una vez la información repetida y conservar por separado la información particular de cada elemento.</p>
+<h3>7.1. ¿Qué problema resuelve?</h3>
+<p>Un catálogo puede contener miles de sensores del mismo modelo. Repetir modelo, unidad y rango en cada sensor produce múltiples representaciones de la misma descripción.</p>
+<p>No se puede compartir todo el sensor: cada uno tiene identificador y ubicación propios. Flyweight extrae los metadatos comunes a un objeto reutilizable y hace que cada contexto mantenga una referencia a él.</p>
+<p>La separación requiere decidir qué información es realmente común. Guardar la última lectura dentro del objeto compartido haría que varios sensores sobrescribieran un estado que debería pertenecer a cada uno.</p>
+<h3>7.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Flyweight</td>
+<td>Conservar estado intrínseco y ofrecer operaciones que puedan recibir contexto externo.</td>
+</tr>
+<tr>
+<td>Contexto</td>
+<td>Conservar estado extrínseco y la referencia compartida.</td>
+</tr>
+<tr>
+<td>Fábrica o catálogo de flyweights</td>
+<td>Encontrar o crear el objeto correspondiente a una clave.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Solicitar el tipo compartido y construir los contextos particulares.</td>
+</tr>
+</tbody></table></div>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Estado del ejemplo</th>
+<th>Clasificación</th>
+<th>Ubicación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Modelo, unidad, mínimo y máximo</td>
+<td>Intrínseco</td>
+<td><code>ClaveTipo</code>, conservada por <code>TipoSensor</code>.</td>
+</tr>
+<tr>
+<td>Identificador y ubicación física</td>
+<td>Extrínseco</td>
+<td><code>Sensor</code>.</td>
+</tr>
+<tr>
+<td>Cantidad de tipos almacenados</td>
+<td>Gestión de reutilización</td>
+<td><code>FabricaTipos</code>.</td>
+</tr>
+</tbody></table></div>
+<p>El estado compartido se mantiene inmutable para evitar que una modificación afecte inesperadamente a todos los contextos. Una referencia <code>final</code> por sí sola no garantizaría esa condición si apuntara a un objeto mutable.</p>
+<h3>7.3. ¿Cuándo utilizarlo?</h3>
+<p>Tiene sentido cuando existen muchos objetos, una porción significativa de estado se repite y esa porción puede compartirse de forma segura. La decisión debe apoyarse en mediciones si el objetivo es reducir memoria.</p>
+<p>Con pocos objetos o muchos tipos distintos, el mapa y las referencias adicionales pueden compensar o superar el ahorro. El patrón no acelera automáticamente el programa ni demuestra una reducción de memoria por el simple hecho de crear una fábrica.</p>
+<h3>7.4. Caso práctico: tipos de sensor</h3>
+<p>S01 y S02 pertenecen al modelo T100, miden Celsius y admiten de −40 a 80. Sus ubicaciones son distintas. S03 corresponde al modelo O200, mide ocupación en personas y admite de 0 a 60.</p>
+<p>Se crean tres contextos <code>Sensor</code>, pero únicamente dos instancias de <code>TipoSensor</code> dentro de la misma fábrica. Las dos solicitudes para T100 emplean claves nuevas con valores iguales; no dependen de reutilizar la misma instancia de clave.</p>
+<p>El tipo compartido puede comprobar un valor contra su rango y producir una descripción si recibe el identificador y la ubicación del contexto.</p>
+<h3>7.5. Estructura UML</h3>
+<p><a href="assets/flyweight.mmd">Diagrama editable de Flyweight</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Flyweight</td>
+<td><code>TipoSensor</code></td>
+</tr>
+<tr>
+<td>Contexto</td>
+<td><code>Sensor</code></td>
+</tr>
+<tr>
+<td>Fábrica</td>
+<td><code>FabricaTipos</code></td>
+</tr>
+<tr>
+<td>Clave inmutable y descripción del tipo</td>
+<td><code>ClaveTipo</code></td>
+</tr>
+</tbody></table></div>
+<p>Muchos sensores pueden apuntar al mismo <code>TipoSensor</code>. La fábrica conserva el mapa de tipos; no conserva los sensores. El vínculo entre tipo y clave representa el estado intrínseco. No se utiliza composición exclusiva entre <code>Sensor</code> y <code>TipoSensor</code>, precisamente porque el tipo se comparte.</p>
+<h3>7.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/FlyweightDemo.java">FlyweightDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ClaveTipo</code> · record</td>
+<td>Validar y comparar por valor todos los atributos que definen un tipo.</td>
+</tr>
+<tr>
+<td><code>TipoSensor</code> · clase</td>
+<td>Conservar la clave, comprobar rangos y describir un contexto recibido.</td>
+</tr>
+<tr>
+<td><code>FabricaTipos</code> · clase</td>
+<td>Usar un mapa y <code>computeIfAbsent()</code> para reutilizar por clave.</td>
+</tr>
+<tr>
+<td><code>Sensor</code> · record</td>
+<td>Conservar id, ubicación y tipo; delegar la descripción.</td>
+</tr>
+</tbody></table></div>
+<p>Los métodos de igualdad y hash generados por el record permiten encontrar claves equivalentes en el mapa. El mínimo y el máximo forman parte de la clave: omitirlos permitiría compartir erróneamente tipos con capacidades diferentes.</p>
+<p>La operación <code>describir()</code> de <code>TipoSensor</code> recibe el estado extrínseco como argumentos y no lo guarda. La fábrica se instancia normalmente; no es Singleton. Dos fábricas independientes pueden producir instancias distintas para una misma descripción.</p>
+<h3>7.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>Se crea una fábrica para el alcance de la demostración.</li>
+<li>Se solicita el tipo T100 al construir S01.</li>
+<li>La solicitud equivalente para S02 recupera el objeto existente.</li>
+<li>Una clave diferente crea el tipo O200 para S03.</li>
+<li>Cada sensor aporta sus datos particulares al describirse.</li>
+</ol>
+<p>La comparación con <code>==</code> comprueba identidad de las referencias al tipo, no igualdad de los sensores. El contador comprueba cuántos tipos retuvo la fábrica. Ninguna de esas dos comprobaciones mide por sí sola los bytes ahorrados.</p>
+<h3>7.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">S01 @ Laboratorio | T100 | °C
+S02 @ Biblioteca | T100 | °C
+S03 @ Aula | O200 | personas
+S01 y S02 comparten tipo: true
+Tipos creados: 2
+Temperatura 90 admitida: false
 </code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Tamaño: 30
+<p>Las ubicaciones permanecen distintas aunque S01 y S02 compartan el tipo. La lectura de 90 no pertenece al rango T100 y se rechaza mediante el contrato de validación del tipo.</p>
+<h3>7.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué error aparecería si la ubicación se almacenara dentro de <code>TipoSensor</code>?</li>
+<li>¿Por qué dos claves creadas por separado pueden recuperar el mismo objeto?</li>
+<li>¿Cómo cambia el posible ahorro cuando casi todos los sensores tienen metadatos diferentes?</li>
+</ol>
+<p><strong>Limitaciones:</strong> el mapa es secuencial, no es seguro para acceso concurrente y no elimina entradas. Un catálogo con claves ilimitadas necesita una política de alcance o retención. Las cadenas se comparan exactamente: no se normalizan mayúsculas ni equivalencias de unidades. El ejemplo utiliza pocos objetos para mostrar la identidad compartida, no para justificar un ahorro de memoria medido.</p>
+<p><strong>Criterio de diseño:</strong> compartir requiere una definición precisa de identidad del tipo y una separación explícita del estado particular.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="proxy"></a></p>
+<h2>8. Proxy · Controlar el acceso a un catálogo</h2>
+<h3>Definición</h3>
+<p><strong>Proxy</strong> representa a otro objeto mediante un contrato compatible y controla cómo se accede a él. Puede verificar permisos, retrasar la creación de un recurso, representar una comunicación remota o administrar una política de acceso [7].</p>
+<p><strong>Idea principal:</strong> interponer un representante que tome decisiones de acceso antes de delegar en el servicio real.</p>
+<h3>8.1. ¿Qué problema resuelve?</h3>
+<p>Un catálogo puede requerir una inicialización costosa y no todos los usuarios están autorizados a consultarlo. Repetir en cada cliente la comprobación de permisos y la creación diferida dispersa esa política.</p>
+<p>Construir siempre el servicio antes de comprobar el permiso también desperdicia recursos para solicitudes que se van a rechazar. Un proxy presenta la operación del catálogo, comprueba el acceso y solo crea el servicio cuando realmente lo necesita.</p>
+<p>El consumidor conoce el contrato <code>CatalogoSensores</code>, no el procedimiento de inicialización. El servicio real puede concentrarse en responder la consulta.</p>
+<h3>8.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sujeto</td>
+<td>Definir la operación común del proxy y del servicio real.</td>
+</tr>
+<tr>
+<td>Sujeto real</td>
+<td>Ejecutar el trabajo solicitado.</td>
+</tr>
+<tr>
+<td>Proxy</td>
+<td>Controlar el acceso y delegar cuando corresponda.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Utilizar el contrato del sujeto.</td>
+</tr>
+</tbody></table></div>
+<p>Entre las variantes habituales están el proxy <strong>virtual</strong>, que difiere la obtención del recurso; el de <strong>protección</strong>, que aplica una regla de acceso; y el <strong>remoto</strong>, que representa un servicio en otro proceso. Son responsabilidades diferentes y ninguna aparece automáticamente por crear una clase con el nombre Proxy.</p>
+<h3>8.3. ¿Cuándo utilizarlo?</h3>
+<p>Es apropiado cuando el cliente debe utilizar el mismo contrato, pero el acceso necesita una política adicional. Puede ayudar a centralizar decisiones de inicialización o permisos.</p>
+<p>No constituye por sí solo una barrera de seguridad completa. Si un cliente puede construir el servicio real y acceder directamente a él, puede eludir el representante. Una aplicación real debe controlar también las vías de acceso, las credenciales y el lugar donde se aplican las autorizaciones.</p>
+<h3>8.4. Caso práctico: catálogo autorizado</h3>
+<p>Un usuario invitado no puede listar sensores. Un operador sí puede hacerlo. El servicio real imprime un mensaje cuando se inicializa y devuelve una lista inmutable con S01 y S02.</p>
+<p>El proxy recibe al usuario y un <code>Supplier&lt;CatalogoSensores&gt;</code>, que es un proveedor capaz de crear el servicio. Recibir el proveedor no equivale a ejecutar su operación: permite posponer la construcción hasta después de comprobar el permiso.</p>
+<p>La primera solicitud autorizada crea el servicio; la segunda reutiliza esa instancia. El ejemplo combina protección y creación diferida dentro de un mismo representante.</p>
+<h3>8.5. Estructura UML</h3>
+<p><a href="assets/proxy.mmd">Diagrama editable de Proxy</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sujeto</td>
+<td><code>CatalogoSensores</code></td>
+</tr>
+<tr>
+<td>Sujeto real</td>
+<td><code>CatalogoReal</code></td>
+</tr>
+<tr>
+<td>Proxy</td>
+<td><code>CatalogoProtegido</code></td>
+</tr>
+<tr>
+<td>Contexto de autorización</td>
+<td><code>Usuario</code></td>
+</tr>
+<tr>
+<td>Proveedor de creación</td>
+<td><code>Supplier&lt;CatalogoSensores&gt;</code>, configurado en <code>main()</code>.</td>
+</tr>
+</tbody></table></div>
+<p>El proxy implementa el contrato del catálogo y conserva una referencia inicialmente ausente al servicio real. La multiplicidad <code>0..1</code> representa esa ausencia antes de la primera consulta autorizada. El tipo del campo es la interfaz; <code>main()</code> configura un proveedor que construye <code>CatalogoReal</code>.</p>
+<h3>8.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/ProxyDemo.java">ProxyDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Usuario</code> · record</td>
+<td>Conservar nombre y permiso simulado.</td>
+</tr>
+<tr>
+<td><code>CatalogoSensores</code> · interfaz</td>
+<td>Declarar <code>listar()</code>.</td>
+</tr>
+<tr>
+<td><code>CatalogoReal</code> · clase</td>
+<td>Anunciar su inicialización y devolver los identificadores.</td>
+</tr>
+<tr>
+<td><code>CatalogoProtegido</code> · clase</td>
+<td>Verificar permiso, inicializar una vez y delegar.</td>
+</tr>
+</tbody></table></div>
+<p>El proxy comprueba el permiso antes de invocar el proveedor. Si este devuelve una referencia nula, se rechaza con un mensaje explícito. La operación normal devuelve la lista proporcionada por el servicio real.</p>
+<p><strong>Conservar el servicio no equivale a cachear sus resultados.</strong> Cada llamada autorizada vuelve a invocar <code>real.listar()</code>. Solo se evita repetir la construcción de ese objeto. Si el catálogo real devolviera datos cambiantes, cada consulta podría observar un resultado diferente.</p>
+<h3>8.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente construye un proxy para el invitado, sin crear el catálogo real.</li>
+<li>Su consulta se rechaza y el proveedor no se ejecuta.</li>
+<li>Se construye otro proxy para el operador.</li>
+<li>Su primera consulta verifica el permiso, invoca el proveedor y delega.</li>
+<li>La segunda consulta verifica nuevamente el permiso y reutiliza el servicio conservado.</li>
+</ol>
+<p>Cada proxy tiene su propio estado. El ejemplo no comparte automáticamente una instancia entre usuarios ni entre procesos. El permiso del record es fijo durante la vida de ese contexto de usuario.</p>
+<h3>8.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Acceso denegado a invitado
+Inicializando catálogo real
+Primera consulta: [S01, S02]
+Segunda consulta: [S01, S02]
 </code></pre>
-<p>El cliente llama tamano() sobre la raíz; cada compuesto delega sin preguntar si el hijo es archivo o carpeta.</p>
-<h3>2.4. Decorator · <code>DecoratorDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-/** Decorator: combina capas que mantienen la interfaz de texto. */
-public class DecoratorDemo {
-    interface Texto { String obtener(); }
-    record Simple(String contenido) implements Texto {
-        public String obtener() { return contenido; }
-    }
-    record Marco(Texto interior) implements Texto {
-        public String obtener() { return &quot;[&quot; + interior.obtener() + &quot;]&quot;; }
-    }
-    record Etiqueta(Texto interior) implements Texto {
-        public String obtener() { return &quot;Dato: &quot; + interior.obtener(); }
-    }
-    public static void main(String[] args) {
-        Texto base = new Simple(&quot;42&quot;);
-        System.out.println(new Marco(new Etiqueta(base)).obtener());
-        System.out.println(new Etiqueta(new Marco(base)).obtener());
-        // El mismo conjunto de decoradores, en distinto orden, produce otra forma.
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">[Dato: 42]
-Dato: [42]
-</code></pre>
-<p>Las capas comparten el contrato Texto; cambiar su orden cambia el resultado visible.</p>
-<h3>2.5. Facade · <code>FacadeDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-/** Facade: presenta una operación pública que coordina tres colaboradores. */
-public class FacadeDemo {
-    static class Validador {
-        void validar(String texto) {
-            if (texto == null || texto.isBlank()) {
-                throw new IllegalArgumentException(&quot;Texto vacío&quot;);
-            }
-        }
-    }
-    static class Formateador {
-        String convertir(String texto) { return &quot;Informe: &quot; + texto.strip(); }
-    }
-    static class Salida {
-        void escribir(String texto) { System.out.println(texto); }
-    }
-    static class Publicador { // Fachada: coordina; no absorbe los tres trabajos.
-        private final Validador validador = new Validador();
-        private final Formateador formato = new Formateador();
-        private final Salida salida = new Salida();
-        void publicar(String texto) {
-            validador.validar(texto);
-            salida.escribir(formato.convertir(texto));
-        }
-    }
-    public static void main(String[] args) {
-        new Publicador().publicar(&quot;  Ventas  &quot;);
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Informe: Ventas
-</code></pre>
-<p>El cliente conoce publicar(); el subsistema conserva validación, formato y salida como responsabilidades distintas.</p>
-<h3>2.6. Flyweight · <code>FlyweightDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-import java.util.HashMap;
-import java.util.Map;
-
-/** Flyweight: comparte estilos, mientras la posición pertenece a cada uso. */
-public class FlyweightDemo {
-    record Estilo(String color) {
-        void dibujar(int x, int y) {
-            System.out.println(color + &quot; en &quot; + x + &quot;,&quot; + y); // Estado extrínseco.
-        }
-    }
-    static class FabricaEstilos {
-        private final Map&lt;String, Estilo&gt; estilos = new HashMap&lt;&gt;();
-        Estilo obtener(String color) {
-            return estilos.computeIfAbsent(color, Estilo::new);
-        }
-    }
-    public static void main(String[] args) {
-        FabricaEstilos fabrica = new FabricaEstilos();
-        Estilo a = fabrica.obtener(&quot;azul&quot;);
-        Estilo b = fabrica.obtener(&quot;azul&quot;);
-        a.dibujar(1, 2);
-        b.dibujar(8, 9);
-        System.out.println(&quot;Estilo compartido: &quot; + (a == b));
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">azul en 1,2
-azul en 8,9
-Estilo compartido: true
-</code></pre>
-<p>El estilo es el objeto compartido; las coordenadas no se almacenan dentro de él.</p>
-<h3>2.7. Proxy · <code>ProxyDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.estructurales;
-
-/** Proxy virtual: crea el documento real únicamente en el primer acceso. */
-public class ProxyDemo {
-    interface Documento { String leer(); }
-    static class DocumentoReal implements Documento {
-        DocumentoReal() { System.out.println(&quot;Cargando documento&quot;); }
-        public String leer() { return &quot;Contenido&quot;; }
-    }
-    static class DocumentoProxy implements Documento {
-        private DocumentoReal real;
-        public String leer() {
-            if (real == null) real = new DocumentoReal(); // Carga diferida.
-            return real.leer();
-        }
-    }
-    public static void main(String[] args) {
-        Documento documento = new DocumentoProxy();
-        System.out.println(&quot;Proxy creado&quot;);
-        System.out.println(documento.leer());
-        System.out.println(documento.leer());
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Proxy creado
-Cargando documento
-Contenido
-Contenido
-</code></pre>
-<p>La carga ocurre una sola vez al leer; construir el proxy no crea todavía el objeto real.</p>
-<h2>Referencias técnicas</h2>
-<ul>
-<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994. Catálogo original de 23 patrones.</li>
-<li><a href="https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-software-9780201633610">Ficha y contenido de la obra — Addison-Wesley / InformIT</a></li>
-<li><a href="https://refactoring.guru/es/design-patterns/catalog">Catálogo complementario — Refactoring.Guru</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API Java</a></li>
-</ul>
+<p>No aparece una inicialización antes del rechazo al invitado. Para el operador aparece una sola inicialización y dos consultas exitosas. Ese orden permite distinguir la comprobación de permisos de la creación del servicio.</p>
+<h3>8.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué ventaja se perdería si el constructor del proxy ejecutara inmediatamente el proveedor?</li>
+<li>¿Por qué reutilizar el servicio no implica que <code>listar()</code> se ejecute una sola vez?</li>
+<li>¿Qué ocurriría si dos hilos encontraran simultáneamente que el campo <code>real</code> está vacío?</li>
+</ol>
+<p><strong>Limitaciones:</strong> la autorización es un dato simulado, no una autenticación segura. El ejemplo es secuencial y la creación diferida no está sincronizada. Un uso concurrente requiere definir publicación segura y exclusión cuando corresponda. Tampoco hay red, expiración de permisos ni cierre de recursos.</p>
+<p><strong>Criterio de diseño:</strong> el representante controla cuándo y para quién se realiza una operación, manteniendo un contrato utilizable por el cliente.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="comparacion"></a></p>
+<h2>9. Comparación y criterios de elección</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Patrón</th>
+<th>Pregunta que ayuda a reconocerlo</th>
+<th>Relación decisiva del ejemplo</th>
+<th>Costo o condición importante</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Adapter</td>
+<td>¿Necesito utilizar un componente con otro contrato?</td>
+<td>La estación usa Celsius y el adaptador traduce el equipo legado.</td>
+<td>Debe traducir también unidades y fallos, no solo firmas.</td>
+</tr>
+<tr>
+<td>Bridge</td>
+<td>¿Necesito combinar dos dimensiones de cambio?</td>
+<td>Un reporte conserva un formato independiente.</td>
+<td>Requiere identificar un contrato estable entre las dos familias.</td>
+</tr>
+<tr>
+<td>Composite</td>
+<td>¿Necesito operar sobre elementos y grupos anidados?</td>
+<td>Las zonas contienen nodos que pueden ser sensores u otras zonas.</td>
+<td>Deben definirse reglas sobre ciclos, referencias compartidas y conteos.</td>
+</tr>
+<tr>
+<td>Decorator</td>
+<td>¿Necesito combinar responsabilidades alrededor de una instancia?</td>
+<td>Cada decorador conserva otra fuente con el mismo contrato.</td>
+<td>El orden puede modificar resultados o efectos laterales.</td>
+</tr>
+<tr>
+<td>Facade</td>
+<td>¿El cliente necesita una operación simple sobre varios componentes?</td>
+<td>La importación coordina parser, validador y repositorio.</td>
+<td>No debe absorber todas las reglas ni prometer transacciones inexistentes.</td>
+</tr>
+<tr>
+<td>Flyweight</td>
+<td>¿Existe suficiente estado repetido que pueda compartirse?</td>
+<td>Varios sensores apuntan a un tipo inmutable reutilizado por clave.</td>
+<td>Debe medirse el beneficio y controlarse la retención de tipos.</td>
+</tr>
+<tr>
+<td>Proxy</td>
+<td>¿Debo controlar el acceso o la obtención de un servicio?</td>
+<td>El catálogo protegido verifica y delega mediante el contrato común.</td>
+<td>Debe evitarse la evasión del control y definirse el comportamiento concurrente.</td>
+</tr>
+</tbody></table></div>
+<h3>9.1. Relaciones y errores frecuentes</h3>
+<p><strong>Adapter, Decorator y Proxy pueden contener un objeto y delegar en él</strong>, pero responden a intenciones distintas. Adapter traduce el contrato; Decorator añade responsabilidades combinables; Proxy representa al servicio para controlar el acceso. Reconocer únicamente un atributo llamado <code>envuelto</code> no permite identificar el patrón.</p>
+<p><strong>Bridge y Adapter no son equivalentes.</strong> En Bridge, los reportes y los formatos son dos dimensiones del diseño. En Adapter, existe una incompatibilidad concreta entre el equipo y el contrato que la estación ya espera.</p>
+<p><strong>Composite y Decorator comparten la uniformidad del contrato</strong>, pero organizan colaboraciones distintas: el compuesto combina resultados de varios hijos; el decorador envuelve un componente y añade una responsabilidad a su operación.</p>
+<p><strong>Facade no implica una única instancia global.</strong> Pueden existir varias fachadas con distintos colaboradores o alcances. Tampoco Flyweight exige Singleton: cada fábrica puede gestionar su propio conjunto de objetos compartidos.</p>
+<p><strong>Un patrón no reemplaza las reglas del dominio.</strong> Una temperatura sigue necesitando unidad y rango; una importación sigue necesitando política de errores; un catálogo sigue necesitando autorización real cuando se despliegue. El patrón organiza responsabilidades, pero no determina automáticamente esas reglas.</p>
+<h3>9.2. Guía de análisis de una solución</h3>
+<p>Antes de aplicar un patrón, identifica el cambio esperado y el contrato que debe permanecer estable. Después asigna responsabilidades a los participantes y comprueba la colaboración con un caso normal y un caso límite.</p>
+<p>Una justificación técnica debe explicar qué componente se evita modificar, qué responsabilidad se localiza y qué costo se acepta. Si no existe una variación real o la alternativa directa resulta más clara, mantener un diseño más pequeño puede ser la mejor decisión.</p>
+<p>Los ejemplos son demostraciones independientes para comparar decisiones. No constituyen siete capas que deban añadirse juntas a una misma aplicación.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="referencias"></a></p>
+<h2>10. Referencias</h2>
+<p>Las definiciones se apoyan en el catálogo de patrones de diseño. Los escenarios, implementaciones Java y diagramas de este material se elaboraron para los ejemplos aquí descritos.</p>
+<ol>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/adapter">Adapter</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/bridge">Bridge</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/composite">Composite</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/decorator">Decorator</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/facade">Facade</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/flyweight">Flyweight</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/proxy">Proxy</a>.</li>
+<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994.</li>
+</ol>
+<p><a href="#indice">Volver al índice</a></p>
 
       
   <nav class="article-nav" aria-label="Recursos del contenido">

@@ -1,12 +1,16 @@
 # Programación Aplicada
 
+![UPS · Carrera de Computación](../../../assets/logos/ups-computacion.png)
+
 ## 1.4a. Patrones creacionales
 
-![UPS · Carrera de Computación](../../../assets/logos/ups-computacion.png)
 
 **Autor:** Ing. Pablo Torres, Mgtr.  
 
 **Unidad:** 1. Programación genérica
+
+**Tema:** 1.4. Patrones de diseño · Patrones creacionales
+
 
 Los patrones creacionales organizan la construcción, selección o reutilización de objetos. Cada patrón resuelve una variación diferente: el tipo concreto que se crea, la familia a la que pertenece, sus etapas de configuración, la copia de un estado existente o el control de una instancia compartida.
 

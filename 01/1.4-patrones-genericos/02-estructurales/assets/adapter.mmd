@@ -1,0 +1,23 @@
+classDiagram
+    direction TB
+    class SensorTemperatura {
+        <<interface>>
+        +leerCelsius() double
+    }
+    class TermometroLegado {
+        -int decimas
+        ~obtenerDecimasFahrenheit() int
+    }
+    class AdaptadorFahrenheit {
+        -TermometroLegado equipo
+        ~AdaptadorFahrenheit(equipo)
+        +leerCelsius() double
+    }
+    class Estacion {
+        -SensorTemperatura sensor
+        ~Estacion(sensor)
+        ~medir() double
+    }
+    SensorTemperatura <|.. AdaptadorFahrenheit
+    AdaptadorFahrenheit --> TermometroLegado : traduce
+    Estacion --> SensorTemperatura : utiliza

@@ -1,0 +1,31 @@
+classDiagram
+    direction TB
+    class FuenteTemperatura {
+        <<interface>>
+        +leer() double
+    }
+    class FuenteFija {
+        -double valor
+        ~FuenteFija(valor)
+        +leer() double
+    }
+    class DecoradorFuente {
+        <<abstract>>
+        #FuenteTemperatura envuelta
+        ~DecoradorFuente(envuelta)
+        +leer() double
+    }
+    class FuenteCalibrada {
+        -double ajuste
+        ~FuenteCalibrada(envuelta, ajuste)
+        +leer() double
+    }
+    class FuenteAuditada {
+        ~FuenteAuditada(envuelta)
+        +leer() double
+    }
+    FuenteTemperatura <|.. FuenteFija
+    FuenteTemperatura <|.. DecoradorFuente
+    DecoradorFuente <|-- FuenteCalibrada
+    DecoradorFuente <|-- FuenteAuditada
+    DecoradorFuente --> "1" FuenteTemperatura : envuelta
