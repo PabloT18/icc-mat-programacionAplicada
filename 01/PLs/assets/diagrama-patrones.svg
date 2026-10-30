@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="890" viewBox="0 0 1480 890" role="img" aria-label="Diagrama de responsabilidades e integración de los patrones Prototype y Decorator de PedidoLab">
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#4B688D"/></marker>
+<marker id="greenArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#25816F"/></marker>
+<style>
+.title{font:700 28px Arial,sans-serif;fill:#173c6d}.subtitle{font:15px Arial,sans-serif;fill:#60748d}
+.heading{font:700 20px Arial,sans-serif;fill:#1a4c85}.headingg{font:700 20px Arial,sans-serif;fill:#186959}
+.boxTitle{font:700 17px Arial,sans-serif;fill:#173e70}.boxTitleG{font:700 17px Arial,sans-serif;fill:#176c59}
+.copy{font:14px Arial,sans-serif;fill:#33485c}.small{font:13px Arial,sans-serif;fill:#687a90}
+.lbl{font:700 12px Arial,sans-serif;fill:#5a7592}.flow{font:700 16px Arial,sans-serif;fill:#213e64}
+</style></defs>
+<rect x="0" y="0" width="1480" height="890" rx="16" fill="#FFFFFF"/>
+<text x="45" y="54" class="title">Arquitectura de PedidoLab</text><text x="45" y="82" class="subtitle">Dos patrones, una operación de negocio: crear un pedido independiente y personalizarlo</text>
+<!-- Prototype -->
+<rect x="34" y="108" width="1412" height="310" rx="14" fill="#F5F9FE" stroke="#B9CFE9" stroke-width="2"/>
+<text x="58" y="148" class="heading">Patrón creacional · Prototype</text>
+<rect x="66" y="181" width="300" height="144" rx="10" fill="#E8F1FC" stroke="#5C91C5" stroke-width="1.5"/>
+<text x="88" y="218" class="boxTitle">RegistroPrototipos</text><text x="88" y="252" class="copy">Map&lt;clave, ProductoBase&gt;</text><text x="88" y="282" class="copy">clonar(clave)</text>
+<rect x="510" y="181" width="310" height="144" rx="10" fill="#FFFFFF" stroke="#5C91C5" stroke-width="1.5"/>
+<text x="536" y="216" class="small">&lt;&lt;contrato&gt;&gt;</text><text x="536" y="245" class="boxTitle">Prototipo&lt;T&gt;</text><text x="536" y="279" class="copy">copiar(nuevoId)</text>
+<rect x="954" y="181" width="420" height="144" rx="10" fill="#E8F1FC" stroke="#5C91C5" stroke-width="1.5"/>
+<text x="981" y="213" class="small">&lt;&lt;abstracta&gt;&gt;</text><text x="981" y="243" class="boxTitle">ProductoBase</text><text x="981" y="273" class="copy">Implementa Pedido y Prototipo</text><text x="981" y="301" class="copy">Café · Ensalada · Pizza</text>
+<path d="M366 254 H502" stroke="#4B688D" stroke-width="2.3" fill="none" marker-end="url(#arrow)"/>
+<text x="382" y="239" class="lbl">busca y copia</text>
+<path d="M820 254 H944" stroke="#4B688D" stroke-width="2.3" fill="none" marker-end="url(#arrow)"/>
+<text x="839" y="239" class="lbl">implementado por</text>
+<rect x="542" y="343" width="390" height="48" rx="10" fill="#D9EAFE" stroke="#5C91C5"/>
+<text x="737" y="374" text-anchor="middle" class="flow">Resultado: un PedidoBase clonado con ID único</text>
+<path d="M1160 325 V346 H940" stroke="#4B688D" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<!-- Decorator -->
+<rect x="34" y="444" width="1412" height="314" rx="14" fill="#F4FBF8" stroke="#B9DDCF" stroke-width="2"/>
+<text x="58" y="484" class="headingg">Patrón estructural · Decorator</text>
+<rect x="68" y="522" width="296" height="148" rx="10" fill="#E5F5EF" stroke="#6BB3A2" stroke-width="1.5"/>
+<text x="95" y="551" class="small">&lt;&lt;interfaz&gt;&gt;</text><text x="95" y="583" class="boxTitleG">Pedido</text><text x="95" y="614" class="copy">descripcion() · precio()</text><text x="95" y="645" class="copy">id() · tipo()</text>
+<rect x="513" y="522" width="350" height="148" rx="10" fill="#FFFFFF" stroke="#6BB3A2" stroke-width="1.5"/>
+<text x="537" y="551" class="small">&lt;&lt;abstracta&gt;&gt;</text><text x="537" y="583" class="boxTitleG">DecoradorIngrediente</text><text x="537" y="615" class="copy">pedido: Pedido</text><text x="537" y="644" class="copy">Delega y agrega precio/descripción</text>
+<rect x="1007" y="522" width="365" height="148" rx="10" fill="#E5F5EF" stroke="#6BB3A2" stroke-width="1.5"/>
+<text x="1033" y="558" class="boxTitleG">Decoradores concretos</text><text x="1033" y="591" class="copy">Azúcar · Crema · Tomate</text><text x="1033" y="623" class="copy">Pollo · Queso · Pepperoni</text>
+<path d="M506 595 H374" stroke="#25816F" stroke-width="2.4" fill="none" marker-end="url(#greenArrow)"/>
+<text x="395" y="580" class="lbl">envuelve Pedido</text>
+<path d="M994 595 H870" stroke="#25816F" stroke-width="2.4" fill="none" marker-end="url(#greenArrow)"/>
+<text x="892" y="578" class="lbl">extienden</text>
+<rect x="406" y="692" width="668" height="42" rx="9" fill="#DAF0E7" stroke="#6BB3A2"/>
+<text x="740" y="719" text-anchor="middle" class="flow">new Crema(new Azucar(pedidoClonado)) → $3.90</text>
+<path d="M691 670 V684" stroke="#25816F" stroke-width="2" marker-end="url(#greenArrow)"/>
+<!-- Integration -->
+<rect x="34" y="783" width="1412" height="80" rx="12" fill="#FFF8E9" stroke="#D2B86C" stroke-width="1.5"/>
+<text x="59" y="816" class="boxTitle">ServicioPedidos</text>
+<text x="59" y="843" class="copy">1. Solicita un clon al registro   →   2. Verifica compatibilidad   →   3. Aplica decoradores   →   4. Actualiza la lista y la ventana Swing</text>
+</svg>

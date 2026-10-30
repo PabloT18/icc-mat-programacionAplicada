@@ -1,0 +1,43 @@
+/* APP1: estructura fiel a la tabla institucional. Mantiene estilos del sitio icc-pap-material. */
+:root { --app1-blue: #003772; --app1-blue-light: #0065B0; --app1-line: #cdd8e8; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:#f5f7fa; color:#30343a; font-family:var(--font-body, Arial, sans-serif); line-height:1.55; }
+.page { margin:30px auto; padding:28px; max-width:1120px; background:#fff; box-sizing:border-box; box-shadow:0 2px 18px rgba(14,36,66,.08); }
+.article-nav { display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; margin:0 0 18px; padding-bottom:14px; border-bottom:1px solid var(--app1-line); }
+.article-nav a { color:var(--app1-blue); font-weight:600; text-decoration:underline; }
+.skip { position:absolute;top:-80px;left:12px;background:white;padding:10px; z-index:50; }
+.skip:focus {top:8px;}
+.table-scroll { width:100%; max-width:100%; overflow-x:auto; }
+table.guide-table { width:100%; border-collapse:collapse; border:1.5px solid #7c8ba0; table-layout:fixed; font-size:15px; background:white; }
+.guide-table td { padding:13px 15px; border:1px solid #9aabbf; vertical-align:top; overflow-wrap:anywhere; }
+.guide-table .guide-logo-cell { text-align:center; vertical-align:middle; padding:10px; width:20%; }
+.guide-table .guide-logo { display:block; margin:auto; width:100%; max-width:210px; height:auto; object-fit:contain; }
+.guide-table .guide-heading { padding:17px 12px; color:var(--app1-blue); text-align:center; font-size:18px; font-weight:800; letter-spacing:.012em; vertical-align:middle; line-height:1.3; }
+.guide-table .guide-blank td { padding:6px; background:#fafcff; }
+.guide-table .section-label { width:20%; color:var(--app1-blue); font-weight:800; background:#f7faff; }
+.guide-table .section-content { background:#fff; }
+.guide-table ul, .guide-table ol { padding-left:23px; margin:8px 0 14px; }
+.guide-table li { margin:4px 0; }
+.guide-table p { margin:8px 0 12px; }
+.guide-table h3 { color:var(--app1-blue); font-size:17px; margin:18px 0 8px; }
+.guide-table h3:first-child { margin-top:2px; }
+.guide-table strong { font-weight:700; }
+.guide-table .full-section-title { display:block; color:var(--app1-blue); font-size:16px; margin:0 0 8px; }
+.guide-table table { border-collapse:collapse; width:100%; margin:12px 0 16px; table-layout:auto; font-size:13px; }
+.guide-table .section-content table { border:1px solid #b4c0d0; }
+.guide-table .section-content table th, .guide-table .section-content table td { border:1px solid #b4c0d0; padding:8px 9px; text-align:left; vertical-align:top; }
+.guide-table .section-content table th { background:#eaf2fc; color:var(--app1-blue); font-weight:700; }
+.guide-table .section-content table tr:last-child td strong { color:var(--app1-blue); }
+.guide-table pre { padding:14px 16px; overflow-x:auto; background:#f4f6f9; border:1px solid #cbd4e0; border-radius:5px; color:#243547; line-height:1.4; }
+.guide-table code { font-family:Consolas, 'DejaVu Sans Mono', monospace; font-size:.91em; }
+.guide-table pre code { font-size:12.5px; }
+.guide-table .section-content img { max-width:100%; height:auto; display:block; margin:14px auto; border:1px solid #dbe4f0; border-radius:7px; }
+.guide-table .section-content img[src*="diagrama-patrones"] {background:#fff;}
+.signature { text-align:center; margin:26px 0 15px; }
+.reference-note { display:flex;justify-content:space-between;gap:20px; font-size:12px;color:#566578; border-top:1px solid #d7e0eb; padding-top:10px; }
+.guide-table a { color:var(--app1-blue-light); }
+@media (max-width:760px) { .page {padding:12px;margin:0;} table.guide-table{min-width:780px;} .article-nav{font-size:13px;} }
+@media print { body{background:white;} .page {max-width:none;margin:0;padding:0;box-shadow:none;} .article-nav,.skip{display:none;} .table-scroll{overflow:visible;} .guide-table td{break-inside:avoid;} .guide-table .section-content table {break-inside:auto;} @page {size:A4; margin:13mm;} }
+
+/* Mantener legible la última columna de puntajes de la rúbrica. */
+.guide-table .section-content table th:last-child { min-width:62px; white-space:nowrap; }

@@ -68,11 +68,9 @@ Los genéricos pueden expresar relaciones entre tipos, pero **ninguno de estos p
 
 ### 2.1. ¿Qué problema resuelve?
 
-Una estación necesita una temperatura en Celsius. Una biblioteca de un equipo antiguo ofrece una operación con otro nombre y devuelve un entero que representa décimas de Fahrenheit. Además, utiliza un valor especial para señalar un fallo.
-
-Cambiar cada consumidor para reconocer ese protocolo reparte tres decisiones por la aplicación: cómo solicitar el dato, cómo convertirlo y cómo interpretar el error. Modificar el equipo tampoco siempre es posible: puede ser una biblioteca de terceros o una integración utilizada por otros clientes.
-
-El adaptador implementa el contrato esperado, conserva una referencia al equipo y traduce la petición. No modifica la biblioteca ni obliga a que la estación dependa de ella.
+Cuando dos clases o componentes tienen interfaces incompatibles, no pueden colaborar directamente, aunque sus funcionalidades sean compatibles.
+Modificar las interfaces existentes puede resultar costoso o imposible, especialmente cuando pertenecen a bibliotecas externas o sistemas que ya están en funcionamiento.
+El patrón Adapter resuelve este problema mediante una clase intermediaria que convierte la interfaz de un componente en otra que el cliente espera, permitiendo su integración sin modificar las implementaciones originales.
 
 ### 2.2. Estructura y participantes
 
@@ -99,7 +97,7 @@ La conversión tiene dos etapas: dividir entre 10,0 para recuperar Fahrenheit y 
 
 ### 2.5. Estructura UML
 
-[Diagrama editable de Adapter](assets/adapter.mmd).
+![Diagrama UML Factory Method | medium](assets/adapter-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -169,6 +167,11 @@ La primera línea confirma que la traducción incluye la escala, no solo el nomb
 **Idea principal:** combinar dos familias de variaciones mediante objetos, evitando crear una subclase por cada combinación.
 
 ### 3.1. ¿Qué problema resuelve?
+
+Cuando una abstracción está directamente vinculada a una implementación concreta, cualquier cambio en una de ellas puede afectar a la otra. Si existen múltiples variantes de ambas, puede producirse una proliferación de clases para representar todas sus combinaciones.
+El patrón Bridge resuelve este problema separando la abstracción de su implementación mediante composición, permitiendo que ambas evolucionen y se extiendan de manera independiente.
+
+
 
 Un sistema necesita reportes detallados y reportes de resumen. Ambos pueden presentarse como texto o como CSV. Una jerarquía que represente todas las combinaciones acabaría con clases como detalle-texto, detalle-CSV, resumen-texto y resumen-CSV.
 
@@ -392,11 +395,8 @@ La tercera línea incluye los resultados de los dos niveles. La última evidenci
 
 ### 5.1. ¿Qué problema resuelve?
 
-Una fuente de temperatura entrega una muestra. Algunos usos requieren corregirla mediante un ajuste; otros necesitan registrar el valor consultado; otros requieren ambas operaciones.
-
-Una jerarquía de fuente-calibrada, fuente-auditada y fuente-calibrada-auditada mezcla responsabilidades y crece al incorporar nuevas combinaciones. También puede obligar a modificar la fuente original para añadir aspectos que no le corresponden.
-
-Decorator representa cada responsabilidad como un objeto independiente. La fuente, la calibración y la auditoría presentan la operación `leer()`, por lo que el cliente puede recibir cualquiera de las combinaciones.
+Cuando se necesita agregar nuevas responsabilidades a un objeto, recurrir exclusivamente a la herencia puede generar numerosas subclases para representar distintas combinaciones de funcionalidades.
+El patrón Decorator resuelve este problema permitiendo incorporar comportamientos adicionales a objetos individuales mediante composición, sin modificar su clase original ni afectar a otros objetos de la misma clase.
 
 ### 5.2. Estructura y participantes
 

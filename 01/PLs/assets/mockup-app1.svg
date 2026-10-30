@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="760" viewBox="0 0 1260 760" role="img" aria-label="Boceto de una ventana Swing para PedidoLab, con selección de productos, ingredientes, listado de pedidos y detalle">
+<defs><style>
+ .tit{font:700 26px Arial,sans-serif;fill:#183E71}.sub{font:14px Arial,sans-serif;fill:#65748B}
+ .h{font:700 16px Arial,sans-serif;fill:#183E71}.tx{font:14px Arial,sans-serif;fill:#243447}.small{font:12px Arial,sans-serif;fill:#66768A}.num{font:700 15px Arial,sans-serif;fill:#163E73}
+ .btn{font:700 13px Arial,sans-serif;fill:white}.btnalt{font:700 13px Arial,sans-serif;fill:#1A4D84}.line{stroke:#E0E8F1;stroke-width:1.5}
+</style></defs>
+<rect width="1260" height="760" rx="18" fill="#EAF0F8"/>
+<rect x="28" y="23" width="1204" height="708" rx="14" fill="white" stroke="#CAD7E8" stroke-width="2"/>
+<rect x="28" y="23" width="1204" height="64" rx="14" fill="#F7FAFE"/><rect x="28" y="73" width="1204" height="14" fill="#F7FAFE"/>
+<circle cx="56" cy="53" r="7" fill="#D3DDEB"/><circle cx="80" cy="53" r="7" fill="#D3DDEB"/><circle cx="104" cy="53" r="7" fill="#D3DDEB"/>
+<text x="138" y="61" class="tit">PedidoLab</text><text x="347" y="60" class="sub">Prototype + Decorator  ·  Java Swing</text>
+<rect x="50" y="109" width="362" height="580" rx="10" fill="#F9FBFF" stroke="#D4E0EE"/>
+<text x="74" y="146" class="h">1. Seleccionar producto base</text>
+<rect x="74" y="162" width="314" height="49" rx="6" fill="white" stroke="#B9C9DD"/>
+<text x="88" y="193" class="tx">Café — $2.20</text><path d="M360 184 l8 8 l8 -8" fill="none" stroke="#697C95" stroke-width="2"/>
+<rect x="74" y="225" width="314" height="44" rx="6" fill="#0755A0"/>
+<text x="231" y="253" text-anchor="middle" class="btn">Clonar producto</text>
+<line x1="74" y1="302" x2="388" y2="302" class="line"/>
+<text x="74" y="333" class="h">2. Agregar ingredientes</text>
+<text x="74" y="360" class="small">Disponibles para el producto seleccionado</text>
+<rect x="74" y="377" width="314" height="49" rx="6" fill="white" stroke="#B9C9DD"/>
+<text x="88" y="407" class="tx">Crema — $1.20</text><path d="M360 395 l8 8 l8 -8" fill="none" stroke="#697C95" stroke-width="2"/>
+<rect x="74" y="441" width="314" height="44" rx="6" fill="#0A6C5B"/>
+<text x="231" y="469" text-anchor="middle" class="btn">Agregar ingrediente</text>
+<rect x="74" y="502" width="314" height="40" rx="6" fill="#E9F0F8" stroke="#CAD7E8"/>
+<text x="231" y="527" text-anchor="middle" class="btnalt">Reiniciar pedidos</text>
+<text x="74" y="580" class="small">Ingredientes compatibles por producto:</text>
+<text x="74" y="603" class="small">Café: Azúcar, Crema</text>
+<text x="74" y="625" class="small">Ensalada: Tomate, Pollo</text>
+<text x="74" y="647" class="small">Pizza: Queso, Pepperoni</text>
+<rect x="430" y="109" width="778" height="294" rx="10" fill="white" stroke="#D4E0EE"/>
+<text x="454" y="144" class="h">3. Pedidos creados</text>
+<rect x="454" y="161" width="730" height="43" fill="#EFF4FB"/>
+<text x="468" y="188" class="num">ID</text><text x="550" y="188" class="num">Producto</text><text x="750" y="188" class="num">Composición</text><text x="1109" y="188" class="num">Total</text>
+<rect x="454" y="204" width="730" height="55" fill="#E7F1FC" stroke="#B8D1EE"/>
+<text x="468" y="237" class="tx">P-001</text><text x="550" y="237" class="tx">Café</text><text x="750" y="237" class="tx">Café + Azúcar + Crema</text><text x="1112" y="237" class="num">$3.90</text>
+<rect x="454" y="259" width="730" height="53" fill="white"/>
+<text x="468" y="292" class="tx">P-002</text><text x="550" y="292" class="tx">Café</text><text x="750" y="292" class="tx">Café</text><text x="1112" y="292" class="num">$2.20</text>
+<line x1="454" y1="312" x2="1184" y2="312" class="line"/>
+<text x="468" y="350" class="small">Selecciona un pedido de la tabla para personalizarlo.</text>
+<rect x="430" y="422" width="778" height="267" rx="10" fill="#FFFFFF" stroke="#D4E0EE"/>
+<text x="454" y="458" class="h">4. Detalle del pedido seleccionado</text>
+<text x="454" y="496" class="small">ID de pedido</text><text x="610" y="496" class="tx">P-001</text>
+<text x="454" y="527" class="small">Producto</text><text x="610" y="527" class="tx">Café</text>
+<text x="454" y="558" class="small">Ingredientes</text><text x="610" y="558" class="tx">Azúcar ($0.50), Crema ($1.20)</text>
+<line x1="454" y1="582" x2="1184" y2="582" class="line"/>
+<text x="454" y="619" class="num">Total del pedido</text><text x="1140" y="622" class="tit" text-anchor="end">$3.90</text>
+<text x="454" y="663" class="small">Los datos se calculan mediante la composición de objetos, no en la vista.</text>
+<text x="55" y="713" class="small">Mockup orientativo · Una sola ventana · No se requiere replicar el diseño exacto</text>
+</svg>

@@ -1,0 +1,55 @@
+classDiagram
+    class Pedido {
+      <<interface>>
+      +descripcion() String
+      +precio() BigDecimal
+      +id() String
+      +tipo() TipoProducto
+    }
+    class Prototipo~T~ {
+      <<interface>>
+      +copiar(nuevoId) T
+    }
+    class ProductoBase {
+      <<abstract>>
+      -id: String
+      -tipo: TipoProducto
+      +copiar(nuevoId) ProductoBase
+    }
+    class Cafe
+    class Ensalada
+    class Pizza
+    class RegistroPrototipos {
+      -prototipos: Map
+      +clonar(clave) ProductoBase
+    }
+    class DecoradorIngrediente {
+      <<abstract>>
+      #pedido: Pedido
+    }
+    class Azucar
+    class Crema
+    class Tomate
+    class Pollo
+    class Queso
+    class Pepperoni
+    class ServicioPedidos {
+      +crearProducto(clave) Pedido
+      +agregarIngrediente(id, ingrediente) Pedido
+    }
+    Pedido <|.. ProductoBase
+    Prototipo <|.. ProductoBase
+    ProductoBase <|-- Cafe
+    ProductoBase <|-- Ensalada
+    ProductoBase <|-- Pizza
+    RegistroPrototipos o-- ProductoBase : prototipos
+    Pedido <|.. DecoradorIngrediente
+    DecoradorIngrediente o-- Pedido : envuelve
+    DecoradorIngrediente <|-- Azucar
+    DecoradorIngrediente <|-- Crema
+    DecoradorIngrediente <|-- Tomate
+    DecoradorIngrediente <|-- Pollo
+    DecoradorIngrediente <|-- Queso
+    DecoradorIngrediente <|-- Pepperoni
+    ServicioPedidos --> RegistroPrototipos : clona
+    ServicioPedidos --> Pedido : compone

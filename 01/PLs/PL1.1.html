@@ -1,22 +1,29 @@
-
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-  <title>PL1.1 · Catálogo genérico de dispositivos y lecturas · Programación Aplicada</title>
-
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <meta
+    name="description"
+    content="APP1: práctica Java de patrones Prototype y Decorator integrados en PedidoLab"
+  >
+  <title>APP1 · Prototype y Decorator · Programación Aplicada</title>
   <link
     rel="stylesheet"
     href="../../assets/css/styles.css"
   >
-
+  <link
+    rel="stylesheet"
+    href="assets/practica-app1.css"
+  >
   <script
     defer
     src="../../assets/js/vendor/mermaid.min.js"
   ></script>
-
   <script
     defer
     src="../../assets/js/mermaid-init.js"
@@ -25,4 +32,705 @@
     defer
     src="../../assets/js/diagram-viewer.js"
   ></script>
-</head><body><a class="skip" href="#practice-content">Ir a la práctica</a><main class="page" id="practice-content" data-protected="true"><nav class="article-nav"><a href="../../index.html" target="_top">Índice del curso</a><a href="PL1.1.pptx" download>Presentación de la práctica</a></nav><div class="table-scroll"><table class="guide-table"><tr><td><img class="guide-logo" src="../../assets/logos/ups.png" alt="Universidad Politécnica Salesiana"></td><td colspan="3" class="guide-heading">GUÍA DE PRÁCTICA DE LABORATORIO / TALLERES / CENTROS DE SIMULACIÓN</td></tr><tr><td colspan="2"><strong>CARRERA:</strong> Computación</td><td colspan="2"><strong>ASIGNATURA:</strong> Programación Aplicada</td></tr><tr><td><strong>NRO. PRÁCTICA:</strong> PL1.1</td><td colspan="3"><strong>TÍTULO:</strong> Catálogo genérico de dispositivos y lecturas</td></tr><tr><td class="label">OBJETIVO</td><td colspan="3"><ul><li>Diseñar contratos genéricos para identidad, almacenamiento y consulta.</li><li>Aplicar criterios intercambiables mediante Comparator y Predicate.</li><li>Justificar dónde Factory o Repository simplifica una variación concreta.</li></ul></td></tr><tr><td class="label">CONTEXTO</td><td colspan="3"><p>Una facultad administra dispositivos de temperatura y ocupación. Necesita un catálogo reutilizable que permita registrar, consultar y seleccionar elementos de varios tipos sin duplicar algoritmos ni usar conversiones no comprobadas.</p></td></tr><tr><td class="label">RECURSOS</td><td colspan="3"><p>PC con JDK 25, editor o IDE y Git. No se requiere hardware externo.</p><p>Tiempo orientativo de desarrollo: 6 horas. La fecha y modalidad de entrega se establecen en el aula.</p></td></tr><tr><td class="label">INSTRUCCIONES</td><td colspan="3"><ol><li>Trabaja sobre CampusMonitor y conserva las PC de la unidad. Implementa Sensor y Lectura&lt;T&gt;, y un Repositorio&lt;ID,T&gt; en memoria con al menos dos tipos de entidad.</li><li>Incluye alta, búsqueda por ID, listado y rechazo de duplicados. Toda operación pública debe definir el tratamiento de null y de colecciones vacías.</li><li>Implementa una selección genérica y un máximo con Comparator. Aplica dos criterios diferentes sin duplicar el algoritmo de recorrido.</li><li>Utiliza comodines según PECS en al menos una operación de transferencia. Incluye dos casos comentados que no compilan y explica la incompatibilidad.</li><li>Crea un registro permitido de fuentes mediante Supplier. Compara en la memoria una construcción controlada con reflexión, sin cargar clases arbitrarias de entrada externa.</li><li>Genera al menos 12 sensores y 30 lecturas deterministas. Separa magnitudes y unidades al calcular resúmenes. Implementa un menú o comandos de consola.</li></ol></td></tr><tr><td class="label">ACTIVIDADES POR DESARROLLAR</td><td colspan="3"><h3>1. Modelo y contratos</h3><p>Define identidad, reglas de nulos y política de duplicados antes de crear la implementación.</p><p><strong>Commit de fase:</strong> <code>feat(pl1.1): fase 1</code>, acompañado de una descripción concreta del cambio.</p><h3>2. Repositorio y consultas</h3><p>Implementa operaciones, estrategias y copias de resultados. Conserva los datos previos tras un rechazo.</p><p><strong>Commit de fase:</strong> <code>feat(pl1.1): fase 2</code>, acompañado de una descripción concreta del cambio.</p><h3>3. Escenarios y defensa</h3><p>Ejecuta los casos, registra decisiones y demuestra un nuevo criterio pedido durante la defensa.</p><p><strong>Commit de fase:</strong> <code>feat(pl1.1): fase 3</code>, acompañado de una descripción concreta del cambio.</p></td></tr><tr><td class="label">CASOS DE ACEPTACIÓN</td><td colspan="3"><table><thead><tr><th>Escenario</th><th>Criterio de aceptación</th></tr></thead><tbody><tr><td>ID repetido</td><td>Se rechaza sin modificar el registro existente</td></tr><tr><td>Repositorio vacío</td><td>Listado vacío y búsqueda ausente</td></tr><tr><td>Dos tipos de entidad</td><td>El mismo repositorio genérico opera con ambos</td></tr><tr><td>Criterio alternativo</td><td>Cambia el orden sin reescribir el algoritmo</td></tr><tr><td>Colección retornada</td><td>No permite cambiar la estructura interna</td></tr></tbody></table></td></tr><tr><td class="label">ENTREGABLES</td><td colspan="3"><ul><li>Repositorio personal con fuentes Java y comandos de ejecución.</li><li>evidencias/PL1.1.md con casos, resultados reales, enlaces a commits y decisiones de diseño.</li><li>Presentación del estudiante de 5 a 7 diapositivas: problema, contratos, demostración, casos y conclusiones.</li></ul></td></tr><tr><td class="label">RÚBRICA</td><td colspan="3"><div class="table-scroll"><table class="rubric"><thead><tr><th>Criterio</th><th>Completo · 100 %</th><th>Parcial · 50 %</th><th>No logrado · 0 %</th><th>Máximo</th></tr></thead><tbody><tr><td>Contratos genéricos</td><td>Relaciona ID y T correctamente, sin tipos crudos ni casts unchecked.</td><td>Funciona para un tipo y contiene una generalización incompleta.</td><td>No expresa contratos genéricos utilizables.</td><td>2</td></tr><tr><td>Repositorio y validación</td><td>Cumple alta, búsqueda, listado, nulos y duplicados conservando invariantes.</td><td>Presenta una operación o validación incompleta.</td><td>No mantiene la consistencia del catálogo.</td><td>2</td></tr><tr><td>Algoritmos y PECS</td><td>Reutiliza selección y máximo y justifica productores y consumidores.</td><td>Reutiliza parcialmente o no justifica el comodín.</td><td>Duplica recorridos sin aplicar los conceptos.</td><td>2</td></tr><tr><td>Pruebas reproducibles</td><td>Incluye datos deterministas y verifica todos los casos exigidos.</td><td>Faltan casos de borde o evidencia de algún resultado.</td><td>No hay pruebas verificables.</td><td>2</td></tr><tr><td>Git y defensa</td><td>Commits por fase, evidencia vinculada y modificación explicada en vivo.</td><td>Historial poco claro o explicación parcial.</td><td>No puede relacionar el código con su comportamiento.</td><td>2</td></tr><tr class="total"><td colspan="4">TOTAL</td><td>10</td></tr></tbody></table></div><p>Asigna el puntaje completo, la mitad o cero en cada criterio según la evidencia. No se aplican penalizaciones adicionales no indicadas en esta rúbrica.</p></td></tr><tr><td class="label">RESULTADOS OBTENIDOS</td><td colspan="3"><p>Presenta una tabla propia con escenario, entrada, resultado esperado, resultado real y evidencia. Los datos deben proceder de tu ejecución. Identifica las limitaciones y cualquier caso que no hayas completado.</p></td></tr><tr><td class="label">DEFENSA</td><td colspan="3"><p>Sustituye el criterio de máximo por uno que priorice otra propiedad y explica qué archivos cambian y cuáles conservan su contrato.</p><p>Explica el código del commit entregado y realiza la modificación solicitada. Declara herramientas externas utilizadas y comprueba personalmente cada resultado.</p></td></tr><tr><td class="label">CONCLUSIONES</td><td colspan="3"><p>Redacta al menos tres conclusiones basadas en resultados reales. Relaciona cada conclusión con un caso ejecutado y una decisión del diseño.</p></td></tr><tr><td class="label">RECOMENDACIONES</td><td colspan="3"><p>Conserva datos de prueba reproducibles, valida casos de error y registra los cambios por fase. Revisa las instrucciones de cada contenido antes de integrar componentes.</p></td></tr></table></div><div class="signature"><p>Docente / Técnico Docente: Ing. Pablo Torres, Mgtr.</p><p>Firma: _______________________________</p></div><p class="reference-note">Guía adaptada del formato proporcionado para Programación Aplicada. Rúbrica: 10 puntos.</p></main><script src="../../assets/js/protection.js"></script></body></html>
+</head>
+
+<body>
+  <a
+    class="skip"
+    href="#practice-content"
+  >Ir a la práctica</a>
+  <main
+    class="page"
+    id="practice-content"
+    data-protected="true"
+  >
+    <nav
+      class="article-nav"
+      aria-label="Navegación de prácticas"
+    ><a
+        href="../../index.html"
+        target="_top"
+      >Índice del curso</a><a
+        href="assets/mockup-app1.svg"
+        target="_blank"
+        rel="noopener"
+      >Ver mockup</a><a
+        href="assets/diagrama-patrones.svg"
+        target="_blank"
+        rel="noopener"
+      >Ver diagrama</a></nav>
+    <div class="table-scroll">
+      <table class="guide-table">
+        <colgroup>
+          <col style="width:20%">
+          <col style="width:12%">
+          <col style="width:19%">
+          <col style="width:24%">
+          <col style="width:25%">
+        </colgroup>
+        <tbody>
+          <tr>
+            <td class="guide-logo-cell"><img
+                class="guide-logo"
+                src="../../assets/logos/ups.png"
+                onerror="this.onerror=null;this.src='assets/ups-logo.png'"
+                alt="Universidad Politécnica Salesiana"
+              ></td>
+            <td
+              colspan="4"
+              class="guide-heading"
+            >GUÍA DE PRÁCTICA DE LABORATORIO / TALLERES / CENTROS DE SIMULACIÓN — PARA DOCENTES</td>
+          </tr>
+          <tr class="guide-blank">
+            <td
+              colspan="5"
+              aria-hidden="true"
+            >&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="2"><strong>CARRERA:</strong> Computación</td>
+            <td colspan="3"><strong>ASIGNATURA:</strong> Programación Aplicada</td>
+          </tr>
+          <tr>
+            <td><strong>NRO. PRÁCTICA:</strong></td>
+            <td>APP1</td>
+            <td colspan="3"><strong>TÍTULO PRÁCTICA:</strong> Personalizador de pedidos con Prototype y Decorator</td>
+          </tr>
+          <tr>
+            <td
+              colspan="5"
+              class="section-content"
+            ><strong class="full-section-title">OBJETIVO</strong>
+              <ul>
+                <li>Implementar el patrón <strong>Prototype</strong> para generar pedidos independientes a partir de un
+                  registro de productos base.</li>
+                <li>Implementar el patrón <strong>Decorator</strong> para incorporar ingredientes sin modificar las
+                  clases de los productos originales.</li>
+                <li>Integrar ambos patrones en una aplicación Java con una única ventana Swing, validaciones y
+                  resultados comprobables.</li>
+                <li>Identificar en el código los participantes y las responsabilidades de cada patrón.</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">CONTEXTO</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Una cafetería universitaria ofrece productos base que pueden personalizarse. Es habitual crear varios
+                pedidos de un mismo producto y agregar ingredientes diferentes a cada uno. La aplicación debe reutilizar
+                las configuraciones originales y evitar clases combinatorias como <code>CafeConAzucarYCrema</code>.</p>
+              <p><strong>Problema de diseño:</strong> obtener copias independientes de productos configurados y
+                añadirles funcionalidades mediante composición. La interfaz gráfica debe ser sencilla; lo que se evalúa
+                son los patrones y su integración.</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">RECURSOS</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <ul>
+                <li>JDK 25 y un IDE o editor compatible con Java; Git.</li>
+                <li>Interfaz <strong>Java Swing</strong>, construida en <strong>un solo <code>JFrame</code></strong>,
+                  con controles estándar. No se requiere JavaFX, base de datos ni acceso a red.</li>
+                <li>Tiempo de referencia: <strong>6 horas de laboratorio</strong>. La fecha, modalidad de trabajo y
+                  entrega se comunicarán en el AVAC.</li>
+
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">INSTRUCCIONES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <h3>1. Aplicación que se debe construir</h3>
+              <p>Desarrollar <strong>PedidoLab</strong>, una aplicación Java Swing que permita clonar productos de un
+                catálogo, personalizar individualmente cada pedido y visualizar el resultado en tiempo real. Se admite
+                <code>JPanel</code>, <code>JButton</code>, <code>JComboBox</code>, <code>JTable</code> y
+                <code>JTextArea</code>. <strong>No se exige el diseñador visual de un IDE</strong> ni se evalúa la
+                sofisticación estética.
+              </p>
+              <p>La aplicación debe ofrecer las siguientes operaciones:</p>
+              <ol>
+                <li><strong>Clonar producto:</strong> seleccionar Café, Ensalada o Pizza y crear un pedido nuevo desde
+                  un prototipo registrado. Cada pedido debe tener un ID diferente, por ejemplo <code>P-001</code>.</li>
+                <li><strong>Seleccionar pedido:</strong> mostrar su ID, producto, descripción completa, ingredientes
+                  agregados y total acumulado.</li>
+                <li><strong>Agregar ingrediente:</strong> envolver el pedido seleccionado con un decorador compatible y
+                  actualizar su presentación y total.</li>
+                <li><strong>Conservar pedidos:</strong> permitir al menos dos pedidos de un mismo producto con
+                  ingredientes distintos y sin modificaciones cruzadas.</li>
+                <li><strong>Validar operaciones:</strong> impedir un ingrediente incompatible, la operación sin pedido
+                  seleccionado y una clave inexistente en el registro. Los errores no deben modificar el pedido.</li>
+                <li><strong>Reiniciar pedidos:</strong> limpiar la lista de pedidos creados sin destruir ni modificar
+                  los prototipos.</li>
+              </ol>
+              <h3>2. Catálogo obligatorio</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Producto base</th>
+                    <th style="text-align:right">Precio</th>
+                    <th>Ingredientes permitidos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Café</td>
+                    <td style="text-align:right">$2.20</td>
+                    <td>Azúcar $0.50, Crema $1.20</td>
+                  </tr>
+                  <tr>
+                    <td>Ensalada sencilla</td>
+                    <td style="text-align:right">$3.00</td>
+                    <td>Tomate $1.10, Pollo $1.50</td>
+                  </tr>
+                  <tr>
+                    <td>Pizza sencilla</td>
+                    <td style="text-align:right">$5.00</td>
+                    <td>Queso $1.00, Pepperoni $1.10</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p><strong>Reglas:</strong> trabajar con <code>BigDecimal</code> y mostrar importes con dos decimales. Se
+                permite repetir un ingrediente compatible; cada aplicación agrega su costo. No se calculan impuestos ni
+                descuentos. Un pedido empieza con el precio de su producto base.</p>
+              <h3>3. Prototype: creación por clonación</h3>
+              <p>Implementar los participantes siguientes:</p>
+              <ul>
+                <li><code>Prototipo&lt;T&gt;</code>: contrato con la operación <code>T copiar(String nuevoId)</code>.
+                </li>
+                <li><code>ProductoBase</code>: clase abstracta que implementa <code>Pedido</code> y
+                  <code>Prototipo&lt;ProductoBase&gt;</code>; conserva ID, tipo, descripción y precio base.
+                </li>
+                <li><code>Cafe</code>, <code>Ensalada</code> y <code>Pizza</code>: productos concretos. Cada uno
+                  implementa la copia de su propia configuración.</li>
+                <li><code>RegistroPrototipos</code>: almacena un prototipo de cada producto y entrega <strong>una copia
+                    nueva</strong>, nunca la instancia registrada.</li>
+              </ul>
+              <p><strong>Obligatorio:</strong> la interfaz y el controlador obtienen los productos nuevos mediante el
+                registro. No pueden sustituir la clonación con la construcción directa de productos en el controlador.
+                Un nuevo pedido recibe ID distinto y su estado no comparte referencias mutables con otro pedido o con el
+                prototipo.</p>
+              <p>La solución no debe limitarse a usar <code>Cloneable</code> o a escribir un método <code>clone()</code>
+                sin utilizarlo. Se verificará el recorrido real desde el botón hasta la copia del prototipo.</p>
+              <h3>4. Decorator: personalización por composición</h3>
+              <p>Implementar los participantes siguientes:</p>
+              <ul>
+                <li><code>Pedido</code>: interfaz con <code>descripcion()</code>, <code>precio()</code>,
+                  <code>id()</code> y <code>tipo()</code>.
+                </li>
+                <li><code>DecoradorIngrediente</code>: clase abstracta que implementa <code>Pedido</code> y
+                  <strong>contiene una referencia <code>Pedido</code></strong>.
+                </li>
+                <li><code>Azucar</code>, <code>Crema</code>, <code>Tomate</code>, <code>Pollo</code>, <code>Queso</code>
+                  y <code>Pepperoni</code>: decoradores concretos que delegan al pedido envuelto y añaden su descripción
+                  y precio.</li>
+              </ul>
+              <p><strong>Obligatorio:</strong> cada ingrediente envuelve el pedido existente. No se permite implementar
+                la personalización con un único <code>switch</code> que calcule todo el precio, modificar el precio base
+                al presionar un botón ni crear una subclase por combinación de ingredientes.</p>
+              <p>La siguiente composición es <strong>referencial</strong>, no la implementación completa:</p>
+              <pre><code class="language-java">Pedido base = registro.clonar(&quot;cafe&quot;);
+Pedido conAzucar = new Azucar(base);
+Pedido personalizado = new Crema(conAzucar);
+// precio esperado: 2.20 + 0.50 + 1.20 = 3.90
+</code></pre>
+              <p>La validación de compatibilidad debe estar en una clase de dominio o servicio, <strong>no solamente en
+                  los controles gráficos</strong>. El código no debe crear un decorador incompatible si la validación
+                falla.</p>
+              <h3>5. Arquitectura y ventana</h3>
+              <p>Separar modelo, patrones, reglas de negocio y vista. Organizar las clases de forma equivalente a esta
+                estructura:</p>
+              <pre><code class="language-text">src/main/java/app1/
+├── App.java
+├── modelo/
+│   ├── Pedido.java
+│   └── TipoProducto.java
+├── prototype/
+│   ├── Prototipo.java
+│   ├── ProductoBase.java
+│   ├── Cafe.java
+│   ├── Ensalada.java
+│   ├── Pizza.java
+│   └── RegistroPrototipos.java
+├── decorator/
+│   ├── DecoradorIngrediente.java
+│   ├── Azucar.java
+│   ├── Crema.java
+│   ├── Tomate.java
+│   ├── Pollo.java
+│   ├── Queso.java
+│   └── Pepperoni.java
+├── servicio/
+│   └── ServicioPedidos.java
+└── vista/
+    └── VentanaPedidos.java
+</code></pre>
+              <p>La ubicación de paquetes puede variar si se mantienen la separación de responsabilidades y las
+                relaciones entre patrones. <code>ServicioPedidos</code> administra la lista, el ID, las compatibilidades
+                y la sustitución de un pedido por su versión decorada. <code>VentanaPedidos</code> captura eventos y
+                actualiza componentes, sin asumir responsabilidades del modelo.</p>
+              <p><strong>Mockup de referencia.</strong> La siguiente imagen describe la distribución de controles y no
+                impone dimensiones ni un estilo gráfico específico.</p>
+              <p><img
+                  src="assets/mockup-app1.svg"
+                  alt="Mockup de la interfaz PedidoLab: productos, ingredientes, pedidos y detalle"
+                /></p>
+              <p><strong>Diagrama de responsabilidades.</strong> Identificar las clases concretas equivalentes en el
+                código final.</p>
+              <p><img
+                  src="assets/diagrama-patrones.svg"
+                  alt="Arquitectura de Prototype y Decorator integrados"
+                /></p>
+              <h3>6. Condiciones para validar ambos patrones</h3>
+              <p><strong>Prototype se considera implementado cuando:</strong> existe un registro de objetos base; los
+                pedidos se obtienen invocando la operación de copia de un prototipo; dos clones presentan identidad
+                independiente; modificar o decorar uno no altera el otro ni el prototipo.</p>
+              <p><strong>Decorator se considera implementado cuando:</strong> existe un componente común
+                <code>Pedido</code>; el decorador abstracto lo implementa y referencia otro <code>Pedido</code>; al
+                menos dos decoradores concretos agregan comportamiento delegando al componente envuelto; las
+                combinaciones se realizan anidando objetos.
+              </p>
+              <p><strong>Integración se considera demostrada cuando:</strong> la aplicación parte de un clon real del
+                registro, aplica dos decoradores al mismo pedido, conserva la identidad del pedido y presenta el
+                resultado correcto sin tocar el registro.</p>
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan="5"
+              class="section-content"
+            ><strong class="full-section-title">ACTIVIDADES POR DESARROLLAR</strong>
+              <h3>Fase 1. Modelo y Prototype</h3>
+              <ol>
+                <li>Crear el contrato <code>Pedido</code>, la clase abstracta <code>ProductoBase</code>, los tres
+                  productos y el registro.</li>
+                <li>Registrar los tres prototipos y clonar dos veces el mismo producto. Mostrar que sus IDs son
+                  diferentes.</li>
+                <li>Verificar que un pedido creado no es la misma referencia del prototipo.</li>
+                <li>Registrar un commit de fase, por ejemplo <code>feat(app1): prototipos y registro</code>.</li>
+              </ol>
+              <h3>Fase 2. Decorator y reglas</h3>
+              <ol>
+                <li>Crear <code>DecoradorIngrediente</code> y los seis decoradores concretos.</li>
+                <li>Implementar la compatibilidad entre tipo de producto e ingrediente en <code>ServicioPedidos</code>.
+                </li>
+                <li>Ejecutar en código una composición con dos decoradores y comprobar descripción y suma.</li>
+                <li>Registrar un commit de fase, por ejemplo <code>feat(app1): decoradores y validaciones</code>.</li>
+              </ol>
+              <h3>Fase 3. Integración gráfica y pruebas</h3>
+              <ol>
+                <li>Implementar una única ventana Swing con selector de producto, selector de ingrediente, tabla o
+                  listado de pedidos y panel de detalle.</li>
+                <li>Asociar los eventos a los métodos de servicio. No duplicar lógica de creación ni cálculo en
+                  listeners.</li>
+                <li>Ejecutar todos los casos de aceptación y registrar resultados reales.</li>
+                <li>Registrar un commit final, por ejemplo <code>feat(app1): interfaz y pruebas</code>.</li>
+              </ol>
+              <p><strong>Defensa breve:</strong> mostrar el código donde se crea el clon y donde se anida un decorador.
+                Crear en vivo un pedido nuevo con dos ingredientes, y explicar qué clases serían necesarias para añadir
+                un ingrediente adicional.</p>
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan="5"
+              class="section-content"
+            ><strong class="full-section-title">CASOS DE ACEPTACIÓN</strong>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Operación / entrada</th>
+                    <th>Resultado esperado</th>
+                    <th>Patrón validado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>CA01</td>
+                    <td>Clonar Café dos veces</td>
+                    <td>IDs diferentes; ambos empiezan en $2.20</td>
+                    <td>Prototype</td>
+                  </tr>
+                  <tr>
+                    <td>CA02</td>
+                    <td>Comparar clon y objeto del registro</td>
+                    <td>Referencias distintas; el prototipo conserva su configuración</td>
+                    <td>Prototype</td>
+                  </tr>
+                  <tr>
+                    <td>CA03</td>
+                    <td>Al primer Café agregar Azúcar y Crema</td>
+                    <td>Descripción incluye los dos ingredientes; total <strong>$3.90</strong></td>
+                    <td>Integración</td>
+                  </tr>
+                  <tr>
+                    <td>CA04</td>
+                    <td>Consultar el segundo Café sin ingredientes</td>
+                    <td>Mantiene <strong>$2.20</strong>, sin ingredientes</td>
+                    <td>Prototype</td>
+                  </tr>
+                  <tr>
+                    <td>CA05</td>
+                    <td>Clonar Ensalada y agregar Tomate y Pollo</td>
+                    <td>Total <strong>$5.60</strong></td>
+                    <td>Integración</td>
+                  </tr>
+                  <tr>
+                    <td>CA06</td>
+                    <td>Clonar Pizza y agregar Queso y Pepperoni</td>
+                    <td>Total <strong>$7.10</strong></td>
+                    <td>Integración</td>
+                  </tr>
+                  <tr>
+                    <td>CA07</td>
+                    <td>Intentar agregar Queso a Café</td>
+                    <td>Operación rechazada; total y descripción no cambian</td>
+                    <td>Validación</td>
+                  </tr>
+                  <tr>
+                    <td>CA08</td>
+                    <td>Agregar ingrediente sin pedido seleccionado</td>
+                    <td>Mensaje claro y ningún cambio de estado</td>
+                    <td>Validación</td>
+                  </tr>
+                  <tr>
+                    <td>CA09</td>
+                    <td>Solicitar clon de clave inexistente</td>
+                    <td>Fallo controlado; no se crea pedido</td>
+                    <td>Prototype</td>
+                  </tr>
+                  <tr>
+                    <td>CA10</td>
+                    <td>Agregar dos veces Azúcar a un Café</td>
+                    <td>Total <strong>$3.20</strong> y dos aplicaciones del decorador</td>
+                    <td>Decorator</td>
+                  </tr>
+                  <tr>
+                    <td>CA11</td>
+                    <td>Reiniciar y volver a clonar Café</td>
+                    <td>Nuevos pedidos parten nuevamente del valor base <strong>$2.20</strong></td>
+                    <td>Prototype</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p><strong>Evidencia:</strong> para cada caso, registrar entrada, resultado esperado, resultado real y
+                referencia de captura o prueba. Los importes deben proceder de la ejecución, no de valores escritos
+                únicamente en la GUI.</p>
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan="5"
+              class="section-content"
+            ><strong class="full-section-title">RÚBRICA</strong>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Criterio</th>
+                    <th>Completo · 100 %</th>
+                    <th>Parcial · 50 %</th>
+                    <th>No logrado · 0 %</th>
+                    <th style="text-align:right">Máximo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Prototype</td>
+                    <td>Registro funcional y clones independientes con IDs únicos; no retorna prototipos.</td>
+                    <td>Hay clonación, pero falla independencia, identificación o uso del registro.</td>
+                    <td>No existe una clonación utilizada por la aplicación.</td>
+                    <td style="text-align:right"><strong>2.0</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Decorator</td>
+                    <td>Contrato, decorador abstracto y concretos; delegación y composición real.</td>
+                    <td>La estructura es reconocible pero una delegación o combinación falla.</td>
+                    <td>Solo calcula por condiciones o modifica directamente el producto.</td>
+                    <td style="text-align:right"><strong>2.0</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Integración</td>
+                    <td>Crea un clon, agrega dos decoradores, conserva ID y calcula correctamente.</td>
+                    <td>Integra ambos, pero falla una composición, descripción o cálculo.</td>
+                    <td>No existe flujo que use ambos patrones.</td>
+                    <td style="text-align:right"><strong>2.0</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Reglas y aplicación</td>
+                    <td>Una ventana funcional, 3 productos, 6 ingredientes y rechazos sin mutación.</td>
+                    <td>Interfaz funcional con alguna operación o regla incompleta.</td>
+                    <td>No permite operar o vulnera las reglas principales.</td>
+                    <td style="text-align:right"><strong>1.5</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Pruebas y evidencias</td>
+                    <td>Archivo de evidencias completo: CA01–CA11 verificables, resultados reales y registro de fallos,
+                      conclusiones y demas parametrso de plantilla</td>
+                    <td>Evidencias parciales o faltan casos de aceptación.</td>
+                    <td>No hay resultados reproducibles.</td>
+                    <td style="text-align:right"><strong>1.5</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Código, Git</td>
+                    <td>Paquetes separados, commits por fases, explicación en mensaje de commits y modifica el diseño.
+                    </td>
+                    <td>Organización, historial o sin mensaje de commit adecuados.</td>
+                    <td>No identifica patrones ni demuestra el código entregado.</td>
+                    <td style="text-align:right"><strong>1.0</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>TOTAL</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align:right"><strong>10.0</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>Cada criterio se califica con su valor completo, su mitad o cero, según el descriptor correspondiente.
+                <strong>Una interfaz que funcione no reemplaza la implementación del patrón</strong>: no se asignan
+                puntos de Prototype o Decorator a simulaciones con condiciones o duplicación de código. No se añaden
+                penalizaciones adicionales a la rúbrica.
+              </p>
+
+
+              <h3>Condiciones de evaluación</h3>
+
+              <p>
+                La calificación de cada criterio se determinará considerando
+                dos componentes:
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Implementación (50 %):</strong>
+                  funcionamiento, estructura del código, cumplimiento de
+                  requisitos y evidencias presentadas.
+                </li>
+                <li>
+                  <strong>Defensa (50 %):</strong>
+                  capacidad para identificar, explicar, justificar y demostrar
+                  la implementación realizada.
+                </li>
+              </ul>
+
+              <p>
+                <strong>Cálculo de la calificación:</strong>
+              </p>
+
+              <pre class="code-line">Puntaje = Máximo del criterio ×
+          (0.75 × Implementación + 0.25 × Defensa)</pre>
+
+              <p>
+                Los niveles de implementación y defensa se expresan
+                mediante valores entre 0 y 1.
+              </p>
+
+              <p>
+                Un proyecto funcional no garantiza la calificación máxima.
+                Si el estudiante no demuestra conocimiento de su implementación,
+                perderá los puntos correspondientes al componente de defensa.
+              </p>
+
+              <p>
+                <strong>Importante:</strong>
+                La defensa se evaluará individualmente, incluso cuando
+                el proyecto se desarrolle en equipo.
+              </p>
+
+              <h4>Niveles de valoración de la defensa</h4>
+
+              <div class="table-scroll">
+                <table class="rubric">
+                  <thead>
+                    <tr>
+                      <th>Nivel</th>
+                      <th>Porcentaje</th>
+                      <th>Descriptor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Completo</td>
+                      <td>100 %</td>
+                      <td>
+                        Identifica, explica y demuestra correctamente
+                        la implementación.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Satisfactorio</td>
+                      <td>75 %</td>
+                      <td>
+                        Explica la implementación con imprecisiones menores.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Parcial</td>
+                      <td>50 %</td>
+                      <td>
+                        Identifica las clases, pero presenta dificultades
+                        para explicar su funcionamiento.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Insuficiente</td>
+                      <td>25 %</td>
+                      <td>
+                        Reconoce elementos aislados sin explicar
+                        su relación con el patrón.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>No logrado</td>
+                      <td>0 %</td>
+                      <td>
+                        No identifica ni explica la implementación presentada.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">ENTREGABLES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <ol>
+                <li><strong>Repositorio Git</strong> con fuentes Java, instrucciones de ejecución y al menos tres
+                  commits de fase.</li>
+                <li>Archivo <code>evidencias/APP1.md</code> con tabla CA01–CA11, resultados, capturas vinculadas y
+                  explicación de dónde se implementa cada patrón.</li>
+                <li><a
+                    href="plantilla-evidencias.md"
+                    download
+                  >Archivo de plantilla de evidencias</a></li>
+                <li><code>README.md</code> con un diagrama sencillo de las relaciones entre clases y dos decisiones de
+                  diseño justificadas.</li>
+
+              </ol>
+              <p>La entrega se realizará mediante el enlace del repositorio en el AVAC. <strong>No se requiere
+                  reproducir exactamente el mockup</strong>, ni crear varias ventanas. El código presentado debe
+                corresponder con la evidencia y poder ejecutarse durante la defensa.</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">RESULTADOS OBTENIDOS</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Documentar los resultados obtenidos en el equipo de trabajo, utilizando una tabla con <strong>caso,
+                  entrada, esperado, real, evidencia y estado</strong>. Registrar explícitamente cualquier caso fallido.
+                Adjuntar una captura de la aplicación con dos clones del mismo producto y distinta personalización, y
+                otra con una composición de dos decoradores.</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">DEFENSA</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+
+              <h3>Defensa de la práctica</h3>
+
+              <p>
+                Cada estudiante deberá presentar y defender su implementación
+                de los patrones <strong>Prototype</strong> y
+                <strong>Decorator</strong>.
+              </p>
+
+              <p>Durante la defensa, el docente podrá solicitar:</p>
+
+              <ol>
+                <li>
+                  <strong>Identificación:</strong>
+                  señalar las clases y métodos donde se implementa cada patrón.
+                </li>
+                <li>
+                  <strong>Explicación:</strong>
+                  describir cómo funciona cada patrón y qué problema resuelve
+                  dentro de la aplicación.
+                </li>
+                <li>
+                  <strong>Ejecución:</strong>
+                  demostrar el comportamiento de los patrones mediante
+                  casos prácticos.
+                </li>
+                <li>
+                  <strong>Justificación:</strong>
+                  explicar las decisiones de diseño y las relaciones
+                  entre las clases.
+                </li>
+                <li>
+                  <strong>Modificación:</strong>
+                  realizar un cambio puntual solicitado por el docente
+                  y explicar su efecto en la aplicación.
+                </li>
+              </ol>
+
+              <p>
+                La defensa representará el <strong>50 % de la puntuación
+                  máxima de cada criterio</strong> de la rúbrica.
+              </p>
+
+              <p>
+                <strong>Importante:</strong>
+                No será suficiente ejecutar la aplicación o describir
+                únicamente su interfaz gráfica. El estudiante deberá
+                demostrar conocimiento del código presentado.
+              </p>
+
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">CONCLUSIONES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Redactar al menos <strong>tres conclusiones propias</strong>, vinculadas a resultados reales. Comparar
+                la creación por clonación con la creación directa, explicar cómo la composición evita clases por
+                combinación y describir una limitación de la solución. Las conclusiones deben basarse en la ejecución y
+                el código entregados.</p>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-label">RECOMENDACIONES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Antes de implementar la ventana, probar los dos patrones en consola o con pruebas unitarias. Mantener
+                el precio en <code>BigDecimal</code>, la validación en el servicio y la presentación separada del
+                dominio. Revisar los ejemplos de <strong>Prototype</strong> y <strong>Decorator</strong> trabajados en
+                clase y comprobar las referencias de los objetos, no solo su apariencia en pantalla.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="signature">
+      <p><strong>Docente / Técnico Docente:</strong> Ing. Pablo Torres, Mgtr.</p>
+      <p>Firma: _______________________________</p>
+    </div>
+    <div class="reference-note"><span>Formato aprobado con Res. C.S. N° 076-04-2016-04-20</span><span>Programación
+        Aplicada · APP1 · Rúbrica: 10 puntos</span></div>
+  </main>
+  <script src="../../assets/js/protection.js"></script>
+</body>
+
+</html>

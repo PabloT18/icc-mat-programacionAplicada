@@ -1,0 +1,24 @@
+digraph UML {
+  graph [rankdir=LR, bgcolor="transparent", pad="0.27", nodesep="0.38", ranksep="0.7", splines=polyline, fontname="Arial"];
+  node [shape=record, style="rounded,filled", fillcolor="#F8FBFF", color="#92A8C3", penwidth=1.2, fontname="Arial", fontsize=11, margin="0.10,0.08"];
+  edge [color="#4A6384", penwidth=1.15, arrowsize=0.7, fontname="Arial", fontsize=9];
+  Pedido [label="{«interface» Pedido|descripcion() · precio()\lid() · tipo()\l}", fillcolor="#E4EFFB", color="#1663A8"];
+  Prototipo [label="{«interface» Prototipo<T>|copiar(nuevoId)\l}", fillcolor="#E4EFFB", color="#1663A8"];
+  ProductoBase [label="{«abstract» ProductoBase|id · tipo · precioBase\l}", fillcolor="#F3F7FD"];
+  Cafe [label="Café"]; Ensalada [label="Ensalada"]; Pizza [label="Pizza"];
+  Registro [label="{RegistroPrototipos|prototipos: Map\lclonar(clave)\l}", fillcolor="#FFF6DE", color="#B78820"];
+  Decorador [label="{«abstract» DecoradorIngrediente|pedido: Pedido\l}", fillcolor="#E7F5F0", color="#26826C"];
+  Azucar [label="Azúcar"]; Crema [label="Crema"]; Otros [label="Tomate · Pollo\lQueso · Pepperoni"];
+  Servicio [label="{ServicioPedidos|crearPedido()\lagregarIngrediente()\lvalidarCompatibilidad()\l}", fillcolor="#FFF6DE", color="#B78820"];
+  Vista [label="{VentanaPedidos|JFrame · eventos Swing}",fillcolor="#F2F2F8", color="#777E9E"];
+  ProductoBase -> Pedido [arrowhead=empty, style=dashed];
+  ProductoBase -> Prototipo [arrowhead=empty, style=dashed];
+  Cafe -> ProductoBase [arrowhead=empty]; Ensalada -> ProductoBase [arrowhead=empty]; Pizza -> ProductoBase [arrowhead=empty];
+  Registro -> ProductoBase [label="guarda", arrowhead=diamond, dir=both, arrowtail=none];
+  Decorador -> Pedido [arrowhead=empty, style=dashed];
+  Decorador -> Pedido [label="envuelve", style=bold, color="#26826C", constraint=false];
+  Azucar -> Decorador [arrowhead=empty]; Crema -> Decorador [arrowhead=empty]; Otros -> Decorador [arrowhead=empty];
+  Vista -> Servicio [label="solicita"];
+  Servicio -> Registro [label="clona"];
+  Servicio -> Pedido [label="compone"];
+}

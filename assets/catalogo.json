@@ -2103,101 +2103,137 @@
     {
       "unit": 1,
       "id": "PL1.1",
-      "title": "Catálogo genérico de dispositivos y lecturas",
+      "title": "PedidoLab — Prototype y Decorator",
       "hours": 6,
-      "problem": "Una facultad administra dispositivos de temperatura y ocupación. Necesita un catálogo reutilizable que permita registrar, consultar y seleccionar elementos de varios tipos sin duplicar algoritmos ni usar conversiones no comprobadas.",
+      "problem": "Una cafetería necesita una aplicación de escritorio que permita crear pedidos a partir de productos predefinidos y personalizarlos con ingredientes adicionales. Cada pedido debe ser independiente, conservar los datos originales del producto y calcular automáticamente su descripción y precio final. La solución debe implementar los patrones Prototype y Decorator mediante Java Swing.",
       "objectives": [
-        "Diseñar contratos genéricos para identidad, almacenamiento y consulta.",
-        "Aplicar criterios intercambiables mediante Comparator y Predicate.",
-        "Justificar dónde Factory o Repository simplifica una variación concreta."
+        "Implementar el patrón creacional Prototype para crear pedidos mediante la clonación de productos registrados.",
+        "Aplicar el patrón estructural Decorator para incorporar ingredientes y modificar dinámicamente la descripción y el precio.",
+        "Integrar ambos patrones en una aplicación Java Swing, verificando la independencia de los pedidos y la composición de decoradores."
       ],
       "requirements": [
-        "Trabaja sobre CampusMonitor y conserva las PC de la unidad. Implementa Sensor y Lectura<T>, y un Repositorio<ID,T> en memoria con al menos dos tipos de entidad.",
-        "Incluye alta, búsqueda por ID, listado y rechazo de duplicados. Toda operación pública debe definir el tratamiento de null y de colecciones vacías.",
-        "Implementa una selección genérica y un máximo con Comparator. Aplica dos criterios diferentes sin duplicar el algoritmo de recorrido.",
-        "Utiliza comodines según PECS en al menos una operación de transferencia. Incluye dos casos comentados que no compilan y explica la incompatibilidad.",
-        "Crea un registro permitido de fuentes mediante Supplier. Compara en la memoria una construcción controlada con reflexión, sin cargar clases arbitrarias de entrada externa.",
-        "Genera al menos 12 sensores y 30 lecturas deterministas. Separa magnitudes y unidades al calcular resúmenes. Implementa un menú o comandos de consola."
+        "Desarrolla PedidoLab en Java utilizando Swing. La aplicación debe disponer de una ventana principal con selección de productos, ingredientes, listado de pedidos y detalle del pedido seleccionado.",
+        "Implementa Prototype mediante un contrato de clonación, productos concretos y un registro de prototipos. Los pedidos nuevos deben crearse clonando los productos registrados, sin construir directamente el producto concreto desde la interfaz.",
+        "Registra al menos tres productos base: café ($2.20), ensalada ($3.00) y pizza ($5.00). Cada producto debe conservar su descripción y precio originales.",
+        "Implementa Decorator mediante un componente común, un decorador abstracto y decoradores concretos para los ingredientes. Cada decorador debe envolver otro componente y actualizar su descripción y precio.",
+        "Los ingredientes disponibles son: café con azúcar ($0.50) o crema ($1.20); ensalada con tomate ($1.10), vinagreta ($0.50) o pollo ($1.50); pizza con queso ($1.00), salami ($3.00) o pepperoni ($1.10).",
+        "Permite crear varios pedidos independientes, seleccionar un pedido y agregarle ingredientes compatibles. Debe ser posible aplicar dos o más decoradores sobre el mismo producto.",
+        "Cuando se seleccione un ingrediente incompatible con el producto, muestra un mensaje de error y conserva el pedido sin modificaciones.",
+        "Actualiza automáticamente la descripción, los ingredientes, el subtotal y el total del pedido después de cada operación válida. Presenta los importes con dos decimales.",
+        "Organiza el código en paquetes separados para Prototype, Decorator, modelo, lógica de aplicación y vista. La interfaz Swing no debe contener la implementación interna de los patrones.",
+        "Incluye un botón para reiniciar o limpiar la selección sin modificar los prototipos ni los demás pedidos. Documenta las decisiones de diseño y verifica los casos de aceptación."
       ],
       "phases": [
         [
-          "Modelo y contratos",
-          "Define identidad, reglas de nulos y política de duplicados antes de crear la implementación."
+          "Modelo y Prototype",
+          "Define los productos, el contrato de clonación y el registro de prototipos. Implementa la creación de pedidos independientes y verifica que los productos originales no cambien."
         ],
         [
-          "Repositorio y consultas",
-          "Implementa operaciones, estrategias y copias de resultados. Conserva los datos previos tras un rechazo."
+          "Decorator e integración",
+          "Implementa el componente común, el decorador abstracto y los ingredientes concretos. Integra la composición de decoradores con los productos clonados y valida las restricciones de compatibilidad."
         ],
         [
-          "Escenarios y defensa",
-          "Ejecuta los casos, registra decisiones y demuestra un nuevo criterio pedido durante la defensa."
+          "Interfaz Swing y validación",
+          "Construye la ventana, conecta las acciones con los patrones, ejecuta los casos de aceptación y documenta resultados, conclusiones y evidencias para la defensa."
         ]
       ],
       "tests": [
         [
-          "ID repetido",
-          "Se rechaza sin modificar el registro existente"
+          "Crear producto desde prototipo",
+          "El pedido se obtiene mediante clonación desde el registro de prototipos."
         ],
         [
-          "Repositorio vacío",
-          "Listado vacío y búsqueda ausente"
+          "Clonar varias veces",
+          "Se generan pedidos independientes con identificadores diferentes."
         ],
         [
-          "Dos tipos de entidad",
-          "El mismo repositorio genérico opera con ambos"
+          "Modificar un pedido clonado",
+          "Los demás pedidos y el prototipo original permanecen sin modificaciones."
         ],
         [
-          "Criterio alternativo",
-          "Cambia el orden sin reescribir el algoritmo"
+          "Producto sin ingredientes",
+          "Se presenta la descripción y el precio original del producto."
         ],
         [
-          "Colección retornada",
-          "No permite cambiar la estructura interna"
+          "Café con azúcar",
+          "El pedido muestra el ingrediente agregado y un total de $2.70."
+        ],
+        [
+          "Café con azúcar y crema",
+          "Se aplican dos decoradores y el total es $3.90."
+        ],
+        [
+          "Ensalada con tomate y pollo",
+          "La composición de decoradores produce un total de $5.60."
+        ],
+        [
+          "Pizza con queso y pepperoni",
+          "La descripción incluye ambos ingredientes y el total es $7.10."
+        ],
+        [
+          "Ingrediente incompatible",
+          "Se muestra un mensaje de error y el pedido conserva su estado anterior."
+        ],
+        [
+          "Seleccionar pedidos diferentes",
+          "La interfaz muestra correctamente los datos y el total del pedido seleccionado."
+        ],
+        [
+          "Reiniciar selección",
+          "Se limpia la selección actual sin alterar los prototipos ni los pedidos registrados."
         ]
       ],
       "rubric": [
         [
-          "Contratos genéricos",
+          "Patrón Prototype",
           2,
-          "Relaciona ID y T correctamente, sin tipos crudos ni casts unchecked.",
-          "Funciona para un tipo y contiene una generalización incompleta.",
-          "No expresa contratos genéricos utilizables."
+          "Implementa correctamente el contrato de clonación, el registro de prototipos y la creación de pedidos independientes.",
+          "La clonación funciona, pero presenta problemas de independencia, registro o estructura del patrón.",
+          "No implementa Prototype o crea los pedidos sin utilizar la clonación requerida."
         ],
         [
-          "Repositorio y validación",
+          "Patrón Decorator",
           2,
-          "Cumple alta, búsqueda, listado, nulos y duplicados conservando invariantes.",
-          "Presenta una operación o validación incompleta.",
-          "No mantiene la consistencia del catálogo."
+          "Implementa el componente común, el decorador abstracto y los decoradores concretos. Permite composiciones múltiples con descripción y precio correctos.",
+          "Implementa parcialmente la estructura o presenta errores en la composición, descripción o cálculo de precios.",
+          "No implementa Decorator o agrega ingredientes mediante lógica que no utiliza el patrón."
         ],
         [
-          "Algoritmos y PECS",
+          "Integración de patrones",
           2,
-          "Reutiliza selección y máximo y justifica productores y consumidores.",
-          "Reutiliza parcialmente o no justifica el comodín.",
-          "Duplica recorridos sin aplicar los conceptos."
+          "Integra Prototype y Decorator en el mismo flujo, conservando la independencia de los pedidos y la composición de ingredientes.",
+          "Ambos patrones están presentes, pero su integración o independencia es incompleta.",
+          "Los patrones no trabajan conjuntamente o la aplicación no demuestra su integración."
         ],
         [
-          "Pruebas reproducibles",
-          2,
-          "Incluye datos deterministas y verifica todos los casos exigidos.",
-          "Faltan casos de borde o evidencia de algún resultado.",
-          "No hay pruebas verificables."
+          "Reglas y aplicación Swing",
+          1.5,
+          "La interfaz permite crear, seleccionar y personalizar pedidos, actualiza los importes y controla ingredientes incompatibles.",
+          "La interfaz funciona parcialmente o presenta errores de actualización y validación.",
+          "No permite ejecutar las operaciones principales o incumple las reglas del pedido."
         ],
         [
-          "Git y defensa",
-          2,
-          "Commits por fase, evidencia vinculada y modificación explicada en vivo.",
-          "Historial poco claro o explicación parcial.",
-          "No puede relacionar el código con su comportamiento."
+          "Pruebas y evidencias",
+          1.5,
+          "Documenta los 11 casos de aceptación con resultados reales, capturas, análisis y al menos tres conclusiones fundamentadas.",
+          "Presenta evidencias incompletas, omite casos o no relaciona las conclusiones con los resultados.",
+          "No presenta pruebas verificables ni documentación de resultados."
+        ],
+        [
+          "Calidad del código y Git",
+          1,
+          "Código organizado en paquetes, commits por fases con mensajes descriptivos y modificación del diseño durante la defensa.",
+          "Organización incompleta, commits sin mensajes descriptivos o dificultades para modificar el diseño.",
+          "Código sin organización verificable, sin historial de desarrollo y sin capacidad de explicar o modificar la implementación."
         ]
       ],
       "deliverables": [
-        "Repositorio personal con fuentes Java y comandos de ejecución.",
-        "evidencias/PL1.1.md con casos, resultados reales, enlaces a commits y decisiones de diseño.",
-        "Presentación del estudiante de 5 a 7 diapositivas: problema, contratos, demostración, casos y conclusiones."
+        "Repositorio Git con el proyecto Java completo, organizado por paquetes, instrucciones de ejecución y al menos tres commits correspondientes a las fases de desarrollo.",
+        "Archivo README.md con descripción del proyecto, instrucciones de ejecución, diagrama de clases y justificación de al menos dos decisiones de diseño.",
+        "Archivo evidencias/PL1.1.md con los 11 casos de aceptación, resultados reales, capturas de ejecución, identificación de ambos patrones, análisis y al menos tres conclusiones propias.",
+        "Presentación de 5 a 7 diapositivas: problema, estructura de Prototype y Decorator, integración, demostración de la aplicación, resultados y conclusiones."
       ],
-      "defense": "Sustituye el criterio de máximo por uno que priorice otra propiedad y explica qué archivos cambian y cuáles conservan su contrato."
+      "defense": "Cada estudiante deberá identificar las clases y métodos de Prototype y Decorator, explicar cómo funcionan, demostrar su integración y justificar las decisiones de diseño. El docente podrá solicitar la modificación de un ingrediente, su precio o una regla de compatibilidad, verificando que el estudiante identifique las clases afectadas y explique los cambios. La evaluación será individual. Cada criterio de la rúbrica se calificará considerando 75 % de implementación y 25 % de defensa. Un proyecto funcional no garantiza la calificación máxima si el estudiante no demuestra conocimiento del código presentado."
     },
     {
       "unit": 2,

@@ -106,14 +106,14 @@
 <p>Los genéricos pueden expresar relaciones entre tipos, pero <strong>ninguno de estos patrones exige genéricos</strong>. En los ejemplos se usan listas, mapas y un proveedor tipado donde ayudan a representar el problema; no se añade un parámetro de tipo artificial a cada clase.</p>
 <hr>
 <p><a id="adapter"></a></p>
-<h2>2. Adapter · Integrar un termómetro legado</h2>
+<h2>2. Adapter</h2>
 <h3>Definición</h3>
 <p><strong>Adapter</strong> presenta un objeto existente mediante el contrato que necesita otro componente. Traduce operaciones, parámetros, resultados o errores entre interfaces incompatibles, sin exigir que el cliente conozca esa incompatibilidad [1].</p>
 <p><strong>Idea principal:</strong> situar la traducción en una frontera explícita y mantener el cliente ligado a su propio contrato.</p>
 <h3>2.1. ¿Qué problema resuelve?</h3>
-<p>Una estación necesita una temperatura en Celsius. Una biblioteca de un equipo antiguo ofrece una operación con otro nombre y devuelve un entero que representa décimas de Fahrenheit. Además, utiliza un valor especial para señalar un fallo.</p>
-<p>Cambiar cada consumidor para reconocer ese protocolo reparte tres decisiones por la aplicación: cómo solicitar el dato, cómo convertirlo y cómo interpretar el error. Modificar el equipo tampoco siempre es posible: puede ser una biblioteca de terceros o una integración utilizada por otros clientes.</p>
-<p>El adaptador implementa el contrato esperado, conserva una referencia al equipo y traduce la petición. No modifica la biblioteca ni obliga a que la estación dependa de ella.</p>
+<p>Cuando dos clases o componentes tienen interfaces incompatibles, no pueden colaborar directamente, aunque sus funcionalidades sean compatibles.
+Modificar las interfaces existentes puede resultar costoso o imposible, especialmente cuando pertenecen a bibliotecas externas o sistemas que ya están en funcionamiento.
+El patrón Adapter resuelve este problema mediante una clase intermediaria que convierte la interfaz de un componente en otra que el cliente espera, permitiendo su integración sin modificar las implementaciones originales.</p>
 <h3>2.2. Estructura y participantes</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -147,7 +147,7 @@
 <p>El equipo devuelve <code>770</code>, equivalente a 77,0 °F. La estación debe recibir 25,0 °C. El dato <code>-9999</code> significa que no hay una lectura disponible y no debe convertirse como si fuera una temperatura.</p>
 <p>La conversión tiene dos etapas: dividir entre 10,0 para recuperar Fahrenheit y aplicar <code>C = (F − 32) × 5 / 9</code>. El adaptador comprueba primero el código de error. Esa secuencia evita producir un número aparentemente válido a partir de un fallo del equipo.</p>
 <h3>2.5. Estructura UML</h3>
-<p><a href="assets/adapter.mmd">Diagrama editable de Adapter</a>.</p>
+<p><img src="assets/adapter-mmd.svg" alt="Diagrama UML Factory Method" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -231,6 +231,8 @@ Error: Equipo sin lectura
 <p><strong>Bridge</strong> separa una abstracción y su implementación en dos dimensiones que pueden variar de manera independiente. La abstracción mantiene una referencia al implementador y utiliza sus operaciones para realizar una funcionalidad de mayor nivel [2].</p>
 <p><strong>Idea principal:</strong> combinar dos familias de variaciones mediante objetos, evitando crear una subclase por cada combinación.</p>
 <h3>3.1. ¿Qué problema resuelve?</h3>
+<p>Cuando una abstracción está directamente vinculada a una implementación concreta, cualquier cambio en una de ellas puede afectar a la otra. Si existen múltiples variantes de ambas, puede producirse una proliferación de clases para representar todas sus combinaciones.
+El patrón Bridge resuelve este problema separando la abstracción de su implementación mediante composición, permitiendo que ambas evolucionen y se extiendan de manera independiente.</p>
 <p>Un sistema necesita reportes detallados y reportes de resumen. Ambos pueden presentarse como texto o como CSV. Una jerarquía que represente todas las combinaciones acabaría con clases como detalle-texto, detalle-CSV, resumen-texto y resumen-CSV.</p>
 <p>Si se añade un tercer tipo de reporte, habría que resolverlo para cada formato. Si se añade un formato, habría que resolverlo para cada reporte. Con <code>m</code> variantes de contenido y <code>n</code> formatos, una solución por combinación puede requerir hasta <code>m × n</code> clases concretas.</p>
 <p>Bridge conserva dos familias: una decide qué información presentar y otra cómo representar una fila. No elimina el trabajo de implementar las variaciones, pero evita repetir el contenido por cada formato.</p>
@@ -495,9 +497,8 @@ Hoja compartida activos: 2
 <p><strong>Decorator</strong> añade responsabilidades a un objeto mediante envoltorios que mantienen su contrato y delegan en él. Cada envoltorio puede ejecutar trabajo antes o después de la delegación y combinarse con otros decoradores [4].</p>
 <p><strong>Idea principal:</strong> construir combinaciones de comportamientos alrededor de una instancia sin crear una subclase para cada combinación.</p>
 <h3>5.1. ¿Qué problema resuelve?</h3>
-<p>Una fuente de temperatura entrega una muestra. Algunos usos requieren corregirla mediante un ajuste; otros necesitan registrar el valor consultado; otros requieren ambas operaciones.</p>
-<p>Una jerarquía de fuente-calibrada, fuente-auditada y fuente-calibrada-auditada mezcla responsabilidades y crece al incorporar nuevas combinaciones. También puede obligar a modificar la fuente original para añadir aspectos que no le corresponden.</p>
-<p>Decorator representa cada responsabilidad como un objeto independiente. La fuente, la calibración y la auditoría presentan la operación <code>leer()</code>, por lo que el cliente puede recibir cualquiera de las combinaciones.</p>
+<p>Cuando se necesita agregar nuevas responsabilidades a un objeto, recurrir exclusivamente a la herencia puede generar numerosas subclases para representar distintas combinaciones de funcionalidades.
+El patrón Decorator resuelve este problema permitiendo incorporar comportamientos adicionales a objetos individuales mediante composición, sin modificar su clase original ni afectar a otros objetos de la misma clase.</p>
 <h3>5.2. Estructura y participantes</h3>
 <div class="table-scroll"><table>
 <thead>
