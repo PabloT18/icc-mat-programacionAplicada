@@ -1,0 +1,38 @@
+classDiagram
+    direction TB
+    class Sensor {
+        <<interface>>
+        +aceptar(visitante) String
+    }
+    class SensorTemperatura {
+        <<record>>
+        -String id
+        -double celsius
+        +aceptar(visitante) String
+    }
+    class SensorOcupacion {
+        <<record>>
+        -String id
+        -int personas
+        +aceptar(visitante) String
+    }
+    class VisitanteSensor {
+        <<interface>>
+        +visitar(SensorTemperatura) String
+        +visitar(SensorOcupacion) String
+    }
+    class Descripcion {
+        +visitar(SensorTemperatura) String
+        +visitar(SensorOcupacion) String
+    }
+    class Diagnostico {
+        +visitar(SensorTemperatura) String
+        +visitar(SensorOcupacion) String
+    }
+    Sensor <|.. SensorTemperatura
+    Sensor <|.. SensorOcupacion
+    VisitanteSensor <|.. Descripcion
+    VisitanteSensor <|.. Diagnostico
+    Sensor ..> VisitanteSensor : acepta
+    VisitanteSensor ..> SensorTemperatura : visita
+    VisitanteSensor ..> SensorOcupacion : visita

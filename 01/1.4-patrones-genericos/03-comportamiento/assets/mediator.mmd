@@ -1,0 +1,35 @@
+classDiagram
+    direction TB
+    class MediadorClima {
+        <<interface>>
+        +temperaturaCambiada(temperatura) void
+        +ventanaCambiada(abierta) void
+    }
+    class ControlClima {
+        -SensorTemperatura sensor
+        -Ventana ventana
+        -Ventilador ventilador
+        -Double temperatura
+        -boolean ventanaAbierta
+        +temperaturaCambiada(temperatura) void
+        +ventanaCambiada(abierta) void
+        -coordinar() void
+    }
+    class SensorTemperatura {
+        -MediadorClima mediador
+        ~publicar(temperatura) void
+    }
+    class Ventana {
+        -MediadorClima mediador
+        ~cambiar(abierta) void
+    }
+    class Ventilador {
+        -boolean encendido
+        ~establecer(nuevoEstado) void
+    }
+    MediadorClima <|.. ControlClima
+    SensorTemperatura --> MediadorClima : notifica
+    Ventana --> MediadorClima : notifica
+    ControlClima --> SensorTemperatura : conserva
+    ControlClima --> Ventana : conserva
+    ControlClima --> Ventilador : coordina

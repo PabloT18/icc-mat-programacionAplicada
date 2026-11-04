@@ -40,642 +40,1660 @@
   </nav>
       <h1>Programación Aplicada</h1>
 <h2>1.4c. Patrones de comportamiento</h2>
-<p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica</p>
-<hr>
-<h2>1. Conceptos y ejemplos</h2>
-<h3>1.1. Fundamentos</h3>
-<p>Los patrones <strong>de comportamiento</strong> distribuyen algoritmos, decisiones y comunicación entre objetos. Definen quién conoce una regla, quién coordina una interacción y qué partes pueden reemplazarse o evolucionar de forma independiente.</p>
-<p>Este bloque cubre los once patrones de comportamiento del catálogo GoF, incluido Interpreter. No es necesario aplicar todos a una aplicación. Elige según la variación real: algoritmos intercambiables, estados, peticiones, recorridos, eventos o nuevas operaciones sobre una estructura.</p>
-<p>Una interfaz genérica puede relacionar el tipo de dato entre colaboradores, como <code>Regla&lt;T&gt;</code>, <code>Observador&lt;E&gt;</code> o <code>Iterator&lt;E&gt;</code>. El patrón organiza las responsabilidades; el genérico comprueba la compatibilidad de datos. Una lambda implementa una interfaz funcional, pero su sola presencia no demuestra que exista un patrón.</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>N.º</th>
-<th>Patrón</th>
-<th>Demostración</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>Chain of Responsibility</td>
-<td><code>ChainOfResponsibilityDemo.java</code></td>
-</tr>
-<tr>
-<td>2</td>
-<td>Command</td>
-<td><code>CommandDemo.java</code></td>
-</tr>
-<tr>
-<td>3</td>
-<td>Interpreter</td>
-<td><code>InterpreterDemo.java</code></td>
-</tr>
-<tr>
-<td>4</td>
-<td>Iterator</td>
-<td><code>IteratorDemo.java</code></td>
-</tr>
-<tr>
-<td>5</td>
-<td>Mediator</td>
-<td><code>MediatorDemo.java</code></td>
-</tr>
-<tr>
-<td>6</td>
-<td>Memento</td>
-<td><code>MementoDemo.java</code></td>
-</tr>
-<tr>
-<td>7</td>
-<td>Observer</td>
-<td><code>ObserverDemo.java</code></td>
-</tr>
-<tr>
-<td>8</td>
-<td>State</td>
-<td><code>StateDemo.java</code></td>
-</tr>
-<tr>
-<td>9</td>
-<td>Strategy</td>
-<td><code>StrategyDemo.java</code></td>
-</tr>
-<tr>
-<td>10</td>
-<td>Template Method</td>
-<td><code>TemplateMethodDemo.java</code></td>
-</tr>
-<tr>
-<td>11</td>
-<td>Visitor</td>
-<td><code>VisitorDemo.java</code></td>
-</tr>
-</tbody></table></div>
-<h3>1.2. Chain of Responsibility</h3>
-<p><strong>Intención.</strong> Pasar una petición por una cadena de manejadores, permitiendo que cada uno la atienda o la delegue. El emisor conoce el inicio de la cadena, no todos los posibles receptores.</p>
-<p>Es útil para escalamiento de solicitudes o procesamiento configurable. Debe definirse si la cadena termina al atender una petición o si todos los manejadores participan. El orden afecta al resultado, y una petición podría quedar sin atender. En el ejemplo, cada nivel aprueba hasta cierto monto; si ninguno puede hacerlo, se rechaza. Los montos son enteros para aislar la decisión del manejo monetario. No se deben esconder errores bajo una delegación indefinida ni crear ciclos entre manejadores.</p>
-<h3>1.3. Command</h3>
-<p><strong>Intención.</strong> Representar una petición como un objeto, separando quien la solicita de quien realiza el trabajo. Los participantes son comando, receptor, invocador y cliente que conecta los objetos.</p>
-<p>Un botón puede ejecutar diferentes acciones mediante el mismo contrato. Convertir acciones en objetos permite encolarlas o registrar un historial, pero esas capacidades requieren implementación adicional. Deshacer no surge automáticamente: el comando debe conservar el estado o la operación inversa necesaria. El ejemplo guarda el estado previo de una luz para restaurarlo. Está diseñado para una ejecución seguida de una restauración; un historial general requeriría administrar varias instancias y su orden de ejecución.</p>
-<h3>1.4. Interpreter</h3>
-<p><strong>Intención.</strong> Representar una gramática sencilla mediante objetos y evaluar expresiones construidas con ella. Los terminales representan valores o variables; los no terminales combinan otras expresiones; el contexto aporta los datos de evaluación.</p>
-<p>Una regla como «activo Y NO bloqueado» puede representarse mediante un árbol de expresiones. Interpreter resulta útil para lenguajes pequeños y estables; una gramática compleja suele requerir herramientas de análisis más apropiadas. El ejemplo construye el árbol directamente en Java y no incluye un parser de texto. Esa diferencia es importante: interpretar un árbol ya construido no equivale a reconocer cualquier cadena escrita por un usuario. Este patrón completa los once patrones de comportamiento del catálogo clásico.</p>
-<h3>1.5. Iterator</h3>
-<p><strong>Intención.</strong> Recorrer una estructura sin exponer su representación interna. Un iterador mantiene la posición de recorrido y proporciona operaciones para comprobar si quedan elementos y obtener el siguiente.</p>
-<p><code>Iterator&lt;E&gt;</code> conserva mediante genéricos el tipo de cada elemento. <code>Iterable&lt;E&gt;</code> permite solicitar iteradores y habilita el <code>for-each</code>. Son contratos relacionados, pero distintos: el contenedor produce un iterador y el iterador representa un recorrido concreto. El ejemplo usa una copia estable de una lista y produce un iterador nuevo para cada recorrido. Debe lanzar <code>NoSuchElementException</code> cuando ya no quedan valores. No incorpora eliminación ni detección de modificaciones concurrentes porque la colección interna no se modifica.</p>
-<h3>1.6. Mediator</h3>
-<p><strong>Intención.</strong> Centralizar reglas de colaboración entre varios objetos para que no necesiten mantener referencias directas entre todos ellos. Los colegas se comunican con el mediador, y este coordina quién recibe cada interacción.</p>
-<p>Una sala de conversación puede distribuir mensajes entre participantes registrados sin que cada participante conozca a los demás. El beneficio es reducir conexiones directas; el riesgo es convertir al mediador en una clase que concentra demasiadas reglas. El ejemplo muestra una sala en memoria que entrega mensajes de forma síncrona y excluye al emisor. No representa un servicio de mensajería real. A diferencia de Observer, la intención principal es coordinar colaboración, no únicamente informar que ocurrió un evento.</p>
-<h3>1.7. Memento</h3>
-<p><strong>Intención.</strong> Capturar y restaurar el estado de un objeto sin exponer sus detalles internos a quien guarda el historial. El originador crea la instantánea, el memento la conserva y el cuidador administra cuándo almacenarla o restaurarla.</p>
-<p>Puede utilizarse para deshacer cambios en un editor. La instantánea debe contener lo necesario y respetar el aislamiento del estado mutable; guardar solo referencias no garantiza una restauración independiente. El costo crece con la cantidad y tamaño de las instantáneas. En el ejemplo el estado es una cadena inmutable y el cuidador solo conserva el memento. Se muestra una restauración; una pila de historial sería una ampliación del mismo mecanismo.</p>
-<h3>1.8. Observer</h3>
-<p><strong>Intención.</strong> Permitir que varios interesados se suscriban a los eventos de un emisor. El emisor notifica mediante una interfaz y no depende de las clases concretas de sus observadores.</p>
-<p>Es útil para actualizar vistas, registrar sucesos o reaccionar a cambios. El contrato debe definir suscripción, cancelación, orden y política frente a errores. Notificar observadores no significa ejecutar en paralelo: en el ejemplo las llamadas son síncronas y una excepción detendría la publicación actual. Se recorre una copia de suscriptores para que una modificación del registro no altere ese recorrido. El parámetro genérico <code>E</code> relaciona el tipo de evento del emisor con el que recibe cada observador.</p>
-<h3>1.9. State</h3>
-<p><strong>Intención.</strong> Cambiar el comportamiento de un objeto según su estado interno, delegando operaciones a objetos que representan cada estado. El contexto conserva el estado actual y las transiciones determinan qué comportamiento se utiliza después.</p>
-<p>Un pedido puede aceptar pago antes del envío, pero rechazar un envío prematuro. Concentrar esas reglas en estados evita repetir condiciones en cada operación del contexto. Debe quedar claro quién controla las transiciones y cuáles son válidas. State se parece estructuralmente a Strategy, pero representa etapas del ciclo de vida, no alternativas elegidas libremente para un cálculo. El ejemplo implementa solo pago y envío; no pretende cubrir un sistema completo de pedidos.</p>
-<h3>1.10. Strategy</h3>
-<p><strong>Intención.</strong> Encapsular alternativas de un algoritmo detrás de una interfaz común. El contexto recibe una estrategia y delega la decisión variable; el cliente selecciona la implementación adecuada.</p>
-<p>Por ejemplo, un clasificador puede aceptar por longitud mínima o por un prefijo. El recorrido o el procedimiento que usa la regla permanece estable. El patrón es útil si existen criterios intercambiables; puede ser excesivo cuando solo hay una operación simple que no cambia. Una interfaz funcional puede implementarse mediante lambdas, pero clases con nombre facilitan configuración y validación. En el ejemplo, <code>Regla&lt;T&gt;</code> conserva el tipo procesado y <code>Clasificador&lt;T&gt;</code> no inspecciona las clases de las estrategias.</p>
-<h3>1.11. Template Method</h3>
-<p><strong>Intención.</strong> Definir el orden estable de un algoritmo en una clase base y permitir que las subclases completen o especialicen ciertos pasos. El método plantilla controla la secuencia; las operaciones primitivas o los hooks aportan las variaciones.</p>
-<p>Es útil para procesos que comparten etapas y difieren en detalles. La reutilización se basa en herencia, por lo que las subclases quedan vinculadas al diseño de la clase base. Strategy suele ser más apropiado cuando se necesita sustituir una colaboración por composición. El ejemplo limpia una entrada, la convierte y muestra el resultado siempre en ese orden. El método plantilla es <code>final</code> para evitar que una subclase omita esas etapas.</p>
-<h3>1.12. Visitor</h3>
-<p><strong>Intención.</strong> Agregar operaciones sobre una estructura de objetos separando esas operaciones de las clases de los elementos. Cada elemento acepta un visitante y llama a la operación correspondiente a su propio tipo.</p>
-<p>La selección combina el tipo del elemento y la implementación del visitante, mecanismo conocido como doble despacho. Es útil cuando las clases de elementos cambian poco y se añaden operaciones con frecuencia. Agregar un nuevo tipo de elemento obliga a actualizar los visitantes, por lo que no conviene en jerarquías muy variables. El ejemplo aplica un exportador a párrafos e imágenes sin colocar la lógica de exportación en cada elemento. No utiliza <code>instanceof</code> para elegir la operación.</p>
-<h3>1.13. Criterios de elección</h3>
-<p>Strategy y State pueden tener clases parecidas: la diferencia es que Strategy selecciona una política y State expresa el estado del contexto y sus transiciones. Observer notifica suscriptores, mientras Mediator coordina colaboraciones. Command representa una petición y Memento conserva estado para restaurarlo; pueden combinarse, pero no son equivalentes.</p>
-<hr>
-<h2>2. Demostraciones comentadas</h2>
-<p>Ubica los siguientes archivos en <code>app/src/main/java/edu/ups/pap/u01/patrones/comportamiento/</code>. Cada archivo contiene su propia clase principal y sus colaboradores internos; es independiente de los demás demos.</p>
-<p>Con JDK 17 o superior, desde la raíz del proyecto Java, ejecuta un archivo así; sustituye el nombre para probar los demás:</p>
-<pre><code class="language-bash">java app/src/main/java/edu/ups/pap/u01/patrones/comportamiento/ChainOfResponsibilityDemo.java
-</code></pre>
-<p>Los comentarios identifican los roles y las decisiones del patrón. Las lambdas implementan interfaces funcionales y los <code>record</code> agrupan datos mediante accesores generados; no son requisitos de los patrones. Los ejemplos son secuenciales y se limitan a consola.</p>
-<h3>2.1. Chain of Responsibility · <code>ChainOfResponsibilityDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-/** Cadena de aprobación: cada nivel atiende o delega la solicitud. */
-public class ChainOfResponsibilityDemo {
-    static class Aprobador {
-        private final String nombre;
-        private final int limite;
-        private final Aprobador siguiente;
-        Aprobador(String nombre, int limite, Aprobador siguiente) {
-            this.nombre = nombre;
-            this.limite = limite;
-            this.siguiente = siguiente;
-        }
-        String aprobar(int monto) {
-            if (monto &lt; 0) throw new IllegalArgumentException(&quot;Monto negativo&quot;);
-            if (monto &lt;= limite) return nombre;
-            return siguiente == null ? &quot;Rechazado&quot; : siguiente.aprobar(monto);
-        }
-    }
-    public static void main(String[] args) {
-        Aprobador direccion = new Aprobador(&quot;Dirección&quot;, 1000, null);
-        Aprobador equipo = new Aprobador(&quot;Equipo&quot;, 100, direccion);
-        System.out.println(&quot;80: &quot; + equipo.aprobar(80));
-        System.out.println(&quot;500: &quot; + equipo.aprobar(500));
-        System.out.println(&quot;1500: &quot; + equipo.aprobar(1500));
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">80: Equipo
-500: Dirección
-1500: Rechazado
-</code></pre>
-<p>El cliente invoca el primer nivel; cada manejador decide si resuelve o continúa.</p>
-<h3>2.2. Command · <code>CommandDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-/** Command: un botón ejecuta una petición sin conocer los detalles de la luz. */
-public class CommandDemo {
-    static class Luz { boolean encendida; } // Receptor.
-    interface Comando { void ejecutar(); void deshacer(); }
-    static class Encender implements Comando {
-        private final Luz luz;
-        private boolean anterior;
-        Encender(Luz luz) { this.luz = luz; }
-        public void ejecutar() {
-            anterior = luz.encendida; // Captura lo necesario para restaurar.
-            luz.encendida = true;
-        }
-        public void deshacer() { luz.encendida = anterior; }
-    }
-    record Boton(Comando comando) { // Invocador.
-        void pulsar() { comando.ejecutar(); }
-    }
-    public static void main(String[] args) {
-        Luz luz = new Luz();
-        Comando accion = new Encender(luz);
-        new Boton(accion).pulsar();
-        System.out.println(&quot;Encendida: &quot; + luz.encendida);
-        accion.deshacer();
-        System.out.println(&quot;Restaurada: &quot; + luz.encendida);
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Encendida: true
-Restaurada: false
-</code></pre>
-<p>El invocador conoce Comando; el comando conoce al receptor y conserva el estado necesario para deshacer.</p>
-<h3>2.3. Interpreter · <code>InterpreterDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.Map;
-
-/** Interpreter: evalúa una gramática booleana construida como árbol. */
-public class InterpreterDemo {
-    interface Expresion { boolean evaluar(Map&lt;String, Boolean&gt; contexto); }
-    record Variable(String nombre) implements Expresion { // Terminal.
-        public boolean evaluar(Map&lt;String, Boolean&gt; contexto) {
-            Boolean valor = contexto.get(nombre);
-            if (valor == null) throw new IllegalArgumentException(&quot;Variable ausente&quot;);
-            return valor;
-        }
-    }
-    record Y(Expresion izquierda, Expresion derecha) implements Expresion {
-        public boolean evaluar(Map&lt;String, Boolean&gt; contexto) {
-            return izquierda.evaluar(contexto) &amp;&amp; derecha.evaluar(contexto);
-        }
-    }
-    record No(Expresion expresion) implements Expresion {
-        public boolean evaluar(Map&lt;String, Boolean&gt; contexto) {
-            return !expresion.evaluar(contexto);
-        }
-    }
-    public static void main(String[] args) {
-        Expresion regla = new Y(new Variable(&quot;activo&quot;), new No(new Variable(&quot;bloqueado&quot;)));
-        System.out.println(regla.evaluar(Map.of(&quot;activo&quot;, true, &quot;bloqueado&quot;, false)));
-        System.out.println(regla.evaluar(Map.of(&quot;activo&quot;, true, &quot;bloqueado&quot;, true)));
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">true
-false
-</code></pre>
-<p>Los objetos Y y No forman el árbol; el mapa aporta valores y no contiene el algoritmo de interpretación.</p>
-<h3>2.4. Iterator · <code>IteratorDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-/** Iterator genérico: cada recorrido conserva su propio índice. */
-public class IteratorDemo {
-    static class Catalogo&lt;T&gt; implements Iterable&lt;T&gt; {
-        private final List&lt;T&gt; elementos;
-        Catalogo(List&lt;T&gt; elementos) { this.elementos = List.copyOf(elementos); }
-        public Iterator&lt;T&gt; iterator() {
-            return new Iterator&lt;T&gt;() {
-                private int indice;
-                public boolean hasNext() { return indice &lt; elementos.size(); }
-                public T next() {
-                    if (!hasNext()) throw new NoSuchElementException();
-                    return elementos.get(indice++);
-                }
-            };
-        }
-    }
-    public static void main(String[] args) {
-        Catalogo&lt;String&gt; catalogo = new Catalogo&lt;&gt;(List.of(&quot;A&quot;, &quot;B&quot;));
-        for (String elemento : catalogo) System.out.println(elemento);
-        System.out.println(&quot;Otro recorrido: &quot; + catalogo.iterator().next());
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">A
-B
-Otro recorrido: A
-</code></pre>
-<p>La nueva llamada a iterator() empieza desde el inicio; el estado del recorrido pertenece a cada iterador.</p>
-<h3>2.5. Mediator · <code>MediatorDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/** Mediator: la sala coordina la entrega entre participantes. */
-public class MediatorDemo {
-    static class Sala {
-        private final List&lt;Usuario&gt; usuarios = new ArrayList&lt;&gt;();
-        void registrar(Usuario usuario) { usuarios.add(usuario); }
-        void distribuir(Usuario emisor, String texto) {
-            for (Usuario usuario : usuarios) {
-                if (usuario != emisor) usuario.recibir(texto);
-            }
-        }
-    }
-    static class Usuario {
-        private final String nombre;
-        private final Sala sala;
-        Usuario(String nombre, Sala sala) {
-            this.nombre = nombre;
-            this.sala = sala;
-            sala.registrar(this);
-        }
-        void enviar(String texto) { sala.distribuir(this, texto); }
-        void recibir(String texto) { System.out.println(nombre + &quot; recibe: &quot; + texto); }
-    }
-    public static void main(String[] args) {
-        Sala sala = new Sala();
-        Usuario ana = new Usuario(&quot;Ana&quot;, sala);
-        new Usuario(&quot;Luis&quot;, sala);
-        new Usuario(&quot;Eva&quot;, sala);
-        ana.enviar(&quot;Hola&quot;);
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Luis recibe: Hola
-Eva recibe: Hola
-</code></pre>
-<p>Ana no conserva referencias a Luis o Eva; todos colaboran a través de la sala.</p>
-<h3>2.6. Memento · <code>MementoDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-/** Memento: restaura texto sin revelar el contenido de la instantánea al cuidador. */
-public class MementoDemo {
-    static class Editor {
-        private String texto = &quot;&quot;;
-        static final class Recuerdo {
-            private final String texto;
-            private Recuerdo(String texto) { this.texto = texto; }
-        }
-        void escribir(String valor) { texto = valor; }
-        String leer() { return texto; }
-        Recuerdo guardar() { return new Recuerdo(texto); }
-        void restaurar(Recuerdo recuerdo) { texto = recuerdo.texto; }
-    }
-    public static void main(String[] args) {
-        Editor editor = new Editor();
-        editor.escribir(&quot;Borrador&quot;);
-        Editor.Recuerdo anterior = editor.guardar(); // Cuidador: conserva, no interpreta.
-        editor.escribir(&quot;Versión modificada&quot;);
-        System.out.println(editor.leer());
-        editor.restaurar(anterior);
-        System.out.println(editor.leer());
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Versión modificada
-Borrador
-</code></pre>
-<p>El editor crea e interpreta su recuerdo; el cliente lo utiliza únicamente como una instantánea opaca.</p>
-<h3>2.7. Observer · <code>ObserverDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/** Observer: publicación tipada con suscripción y cancelación explícitas. */
-public class ObserverDemo {
-    interface Observador&lt;E&gt; { void recibir(E evento); }
-    static class Emisor&lt;E&gt; {
-        private final List&lt;Observador&lt;E&gt;&gt; observadores = new ArrayList&lt;&gt;();
-        void suscribir(Observador&lt;E&gt; observador) { observadores.add(observador); }
-        void quitar(Observador&lt;E&gt; observador) { observadores.remove(observador); }
-        void publicar(E evento) {
-            for (Observador&lt;E&gt; o : List.copyOf(observadores)) o.recibir(evento);
-        }
-    }
-    public static void main(String[] args) {
-        Emisor&lt;String&gt; emisor = new Emisor&lt;&gt;();
-        Observador&lt;String&gt; consola = e -&gt; System.out.println(&quot;Consola: &quot; + e);
-        Observador&lt;String&gt; registro = e -&gt; System.out.println(&quot;Registro: &quot; + e);
-        emisor.suscribir(consola);
-        emisor.suscribir(registro);
-        emisor.publicar(&quot;Inicio&quot;);
-        emisor.quitar(registro);
-        emisor.publicar(&quot;Fin&quot;);
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Consola: Inicio
-Registro: Inicio
-Consola: Fin
-</code></pre>
-<p>La segunda publicación ya no llega al observador retirado; las notificaciones suceden en el mismo hilo.</p>
-<h3>2.8. State · <code>StateDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-/** State: cada estado define las operaciones válidas de un pedido. */
-public class StateDemo {
-    interface Estado {
-        void pagar(Pedido pedido);
-        void enviar(Pedido pedido);
-    }
-    static class Nuevo implements Estado {
-        public void pagar(Pedido p) { p.estado = new Pagado(); System.out.println(&quot;Pagado&quot;); }
-        public void enviar(Pedido p) { throw new IllegalStateException(&quot;Falta pagar&quot;); }
-    }
-    static class Pagado implements Estado {
-        public void pagar(Pedido p) { throw new IllegalStateException(&quot;Ya pagado&quot;); }
-        public void enviar(Pedido p) { p.estado = new Enviado(); System.out.println(&quot;Enviado&quot;); }
-    }
-    static class Enviado implements Estado {
-        public void pagar(Pedido p) { throw new IllegalStateException(&quot;Pedido enviado&quot;); }
-        public void enviar(Pedido p) { throw new IllegalStateException(&quot;Ya enviado&quot;); }
-    }
-    static class Pedido {
-        private Estado estado = new Nuevo();
-        void pagar() { estado.pagar(this); }
-        void enviar() { estado.enviar(this); }
-    }
-    public static void main(String[] args) {
-        Pedido pedido = new Pedido();
-        try { pedido.enviar(); }
-        catch (IllegalStateException e) { System.out.println(e.getMessage()); }
-        pedido.pagar();
-        pedido.enviar();
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Falta pagar
-Pagado
-Enviado
-</code></pre>
-<p>Pedido delega; Nuevo, Pagado y Enviado deciden tanto el comportamiento como la transición permitida.</p>
-<h3>2.9. Strategy · <code>StrategyDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.Objects;
-
-/** Strategy genérico: el contexto delega en una regla intercambiable. */
-public class StrategyDemo {
-    interface Regla&lt;T&gt; { boolean cumple(T valor); }
-    record LongitudMinima(int minimo) implements Regla&lt;String&gt; {
-        public boolean cumple(String texto) { return texto.length() &gt;= minimo; }
-    }
-    record EmpiezaCon(String prefijo) implements Regla&lt;String&gt; {
-        public boolean cumple(String texto) { return texto.startsWith(prefijo); }
-    }
-    static class Clasificador&lt;T&gt; {
-        private final Regla&lt;T&gt; regla;
-        Clasificador(Regla&lt;T&gt; regla) { this.regla = Objects.requireNonNull(regla); }
-        boolean aceptar(T valor) { return regla.cumple(Objects.requireNonNull(valor)); }
-    }
-    public static void main(String[] args) {
-        Clasificador&lt;String&gt; longitud = new Clasificador&lt;&gt;(new LongitudMinima(5));
-        Clasificador&lt;String&gt; prefijo = new Clasificador&lt;&gt;(new EmpiezaCon(&quot;J&quot;));
-        System.out.println(&quot;Longitud: &quot; + longitud.aceptar(&quot;Java&quot;));
-        System.out.println(&quot;Prefijo: &quot; + prefijo.aceptar(&quot;Java&quot;));
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Longitud: false
-Prefijo: true
-</code></pre>
-<p>Ambos clasificadores procesan String; cambia la regla recibida, sin modificar aceptar().</p>
-<h3>2.10. Template Method · <code>TemplateMethodDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.Locale;
-
-/** Template Method: conserva la secuencia y especializa un paso. */
-public class TemplateMethodDemo {
-    static abstract class Proceso {
-        final void ejecutar(String entrada) {
-            String limpia = entrada.strip();
-            String resultado = convertir(limpia); // Paso variable.
-            System.out.println(resultado);
-        }
-        protected abstract String convertir(String entrada);
-    }
-    static class Mayusculas extends Proceso {
-        protected String convertir(String entrada) {
-            return entrada.toUpperCase(Locale.ROOT);
-        }
-    }
-    static class EntreCorchetes extends Proceso {
-        protected String convertir(String entrada) { return &quot;[&quot; + entrada + &quot;]&quot;; }
-    }
-    public static void main(String[] args) {
-        new Mayusculas().ejecutar(&quot;  Hola  &quot;);
-        new EntreCorchetes().ejecutar(&quot;  Hola  &quot;);
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">HOLA
-[Hola]
-</code></pre>
-<p>Las subclases cambian convertir(); ejecutar() mantiene limpieza, conversión y salida en el mismo orden.</p>
-<h3>2.11. Visitor · <code>VisitorDemo.java</code></h3>
-<pre><code class="language-java">package edu.ups.pap.u01.patrones.comportamiento;
-
-import java.util.List;
-
-/** Visitor: agrega una operación de exportación a distintos elementos. */
-public class VisitorDemo {
-    interface Visitante {
-        String visitar(Parrafo parrafo);
-        String visitar(Imagen imagen);
-    }
-    interface Elemento { String aceptar(Visitante visitante); }
-    record Parrafo(String texto) implements Elemento {
-        public String aceptar(Visitante v) { return v.visitar(this); }
-    }
-    record Imagen(String nombre) implements Elemento {
-        public String aceptar(Visitante v) { return v.visitar(this); }
-    }
-    static class Exportador implements Visitante {
-        public String visitar(Parrafo p) { return &quot;Texto: &quot; + p.texto(); }
-        public String visitar(Imagen i) { return &quot;Imagen: &quot; + i.nombre(); }
-    }
-    public static void main(String[] args) {
-        List&lt;Elemento&gt; elementos = List.of(new Parrafo(&quot;Hola&quot;), new Imagen(&quot;logo.png&quot;));
-        Visitante exportador = new Exportador();
-        for (Elemento e : elementos) System.out.println(e.aceptar(exportador));
-    }
-}
-</code></pre>
-<p><strong>Salida esperada:</strong></p>
-<pre><code class="language-text">Texto: Hola
-Imagen: logo.png
-</code></pre>
-<p>Cada aceptar() selecciona la sobrecarga para su tipo; la implementación de Visitante aporta la operación concreta.</p>
-<hr>
-<h2>3. PC1.4 · Integración de Adapter y Strategy</h2>
-<p>Continúa sobre el proyecto de PC1.2. CampusMonitor recibirá temperaturas desde una API simulada en Fahrenheit y evaluará alertas con criterios intercambiables. Se aplicarán <strong>Adapter</strong> para integrar el origen y <strong>Strategy</strong> para seleccionar la regla de alerta.</p>
-<h3>3.1. Clases e interfaces que debes incorporar</h3>
-<p>Conserva <code>Lectura&lt;T&gt;</code>, su método <code>transformar</code> y <code>ReporteLecturas</code>. Implementa los siguientes elementos públicos, cada uno en su archivo:</p>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Paquete y elemento</th>
-<th>Tipo y contrato</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>integracion.FuenteLectura&lt;T&gt;</code></td>
-<td>Interfaz con <code>Lectura&lt;T&gt; leer()</code>; contrato de acceso a una lectura</td>
-</tr>
-<tr>
-<td><code>integracion.TermometroExterno</code></td>
-<td>Clase simulada con constructor <code>TermometroExterno(String codigo, double valorF)</code>, y métodos <code>String codigo()</code> y <code>double tomarMuestraF()</code> que devuelven esos datos</td>
-</tr>
-<tr>
-<td><code>integracion.AdaptadorTermometro</code></td>
-<td>Clase que implementa <code>FuenteLectura&lt;Double&gt;</code>; recibe <code>TermometroExterno</code> por constructor y entrega una lectura en <code>°C</code></td>
-</tr>
-<tr>
-<td><code>alertas.ReglaAlerta&lt;T&gt;</code></td>
-<td>Interfaz con <code>boolean evaluar(T valor)</code>; <code>true</code> representa una alerta</td>
-</tr>
-<tr>
-<td><code>alertas.SobreUmbral</code></td>
-<td>Clase que implementa <code>ReglaAlerta&lt;Double&gt;</code>; recibe <code>double umbral</code> y alerta cuando el valor es estrictamente mayor</td>
-</tr>
-<tr>
-<td><code>alertas.FueraDeRango</code></td>
-<td>Clase que implementa <code>ReglaAlerta&lt;Double&gt;</code>; recibe <code>double minimo, double maximo</code> y alerta fuera del intervalo inclusivo</td>
-</tr>
-<tr>
-<td><code>servicio.Monitor&lt;T&gt;</code></td>
-<td>Clase genérica con constructor <code>Monitor(FuenteLectura&lt;T&gt; fuente, ReglaAlerta&lt;T&gt; regla)</code> y método <code>String revisar()</code></td>
-</tr>
-</tbody></table></div>
-<p>Todos los paquetes tienen el prefijo <code>edu.ups.pap</code>. <code>Monitor.revisar()</code> debe leer una vez, evaluar el valor y devolver identificador, valor, unidad y estado <code>NORMAL</code> o <code>ALERTA</code>. El monitor utiliza las interfaces; no debe distinguir estrategias u orígenes mediante <code>instanceof</code> ni casts.</p>
-<p>En el adaptador, representa primero la muestra externa como <code>Lectura&lt;Double&gt;</code> en <code>°F</code> y reutiliza <strong><code>Lectura.transformar</code></strong> para convertirla con <code>C = (F − 32) × 5.0 / 9.0</code>. Así se conserva el identificador y se aprovecha el avance de PC1.1b y PC1.2.</p>
-<p>Rechaza dependencias nulas, temperaturas o límites no finitos y rangos con mínimo mayor que máximo mediante <code>IllegalArgumentException</code> descriptiva. Conserva las validaciones del modelo para identificadores y unidades. La fuente simulada permite probar la integración sin hardware.</p>
-<h3>3.2. Actividades en App.java</h3>
-<p>Crea <code>private static void runPatrones()</code> e invócalo desde <code>main</code>, conservando los métodos y funcionalidades anteriores.</p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica<br><strong>Tema:</strong> 1.4. Patrones de diseño · Patrones de comportamiento</p>
+<p>Los patrones de comportamiento organizan algoritmos, solicitudes, cambios de estado y colaboraciones entre objetos. Su propósito es asignar responsabilidades para que una variación del comportamiento no obligue a modificar todos los componentes que participan en una operación.</p>
+<p>Este material desarrolla los once patrones de comportamiento del catálogo clásico GoF. Cada apartado integra definición, problema, participantes, caso práctico, explicación del Java, flujo de ejecución y análisis. Los archivos Java contienen el código completo y comentado; el material enlaza esos archivos sin duplicar sus implementaciones.</p>
+<p><a id="indice"></a></p>
+<h2>Índice</h2>
 <ol>
-<li>Crea tres termómetros simulados: <code>S01</code> con <code>68.0 °F</code>, <code>S02</code> con <code>77.0 °F</code> y <code>S03</code> con <code>86.0 °F</code>. Conecta cada uno mediante su adaptador.</li>
-<li>Evalúa las lecturas con <code>SobreUmbral(28.0)</code> y muestra el resultado.</li>
-<li>Evalúa las mismas fuentes con <code>FueraDeRango(18.0, 24.0)</code>. Cambia el objeto de estrategia suministrado al monitor, sin modificar su implementación.</li>
-<li>Comprueba un rango invertido y una fuente nula, capturando las excepciones para mostrar ambos mensajes.</li>
+<li><a href="#fundamentos">Fundamentos y uso del material</a></li>
+<li><a href="#chain-of-responsibility">Chain of Responsibility · Validar lecturas por etapas</a></li>
+<li><a href="#command">Command · Ejecutar y deshacer cambios</a></li>
+<li><a href="#interpreter">Interpreter · Evaluar reglas de medición</a></li>
+<li><a href="#iterator">Iterator · Recorrer un inventario</a></li>
+<li><a href="#mediator">Mediator · Coordinar un sistema de ventilación</a></li>
+<li><a href="#memento">Memento · Restaurar un plan de muestreo</a></li>
+<li><a href="#observer">Observer · Notificar nuevas lecturas</a></li>
+<li><a href="#state">State · Controlar una sesión de muestreo</a></li>
+<li><a href="#strategy">Strategy · Seleccionar un cálculo estadístico</a></li>
+<li><a href="#template-method">Template Method · Especializar un proceso de importación</a></li>
+<li><a href="#visitor">Visitor · Aplicar operaciones a distintos sensores</a></li>
+<li><a href="#comparacion">Comparación y criterios de elección</a></li>
+<li><a href="#referencias">Referencias</a></li>
 </ol>
-<p>La consola debe permitir contrastar estos resultados:</p>
+<p><a id="fundamentos"></a></p>
+<h2>1. Fundamentos y uso del material</h2>
+<p>Un <strong>patrón de diseño</strong> define una organización de responsabilidades para resolver un problema recurrente. No es una biblioteca, una plantilla de código obligatoria ni una justificación para añadir interfaces sin una variación concreta que aislar.</p>
+<p>Los patrones creacionales organizan cómo se proporcionan objetos; los estructurales, cómo se relacionan; los de comportamiento, cómo se distribuyen y ejecutan sus operaciones. Una solución puede combinar varias intenciones. Por ejemplo, Command puede utilizar Memento para conservar el estado necesario para deshacer una acción.</p>
+<h3>1.1. Conceptos necesarios</h3>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Sensor</th>
-<th>Lectura adaptada</th>
-<th>Umbral mayor que 28</th>
-<th>Fuera del rango 18–24</th>
+<th>Concepto</th>
+<th>Significado</th>
+<th>Decisión que exige</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>S01</td>
-<td><code>20.0 °C</code></td>
-<td>NORMAL</td>
-<td>NORMAL</td>
+<td>Responsabilidad</td>
+<td>Información u operación que corresponde a un componente.</td>
+<td>Determinar quién conoce la regla y quién solo coordina.</td>
 </tr>
 <tr>
-<td>S02</td>
-<td><code>25.0 °C</code></td>
-<td>NORMAL</td>
-<td>ALERTA</td>
+<td>Colaboración</td>
+<td>Interacción entre objetos para resolver una operación.</td>
+<td>Definir contratos, orden y tratamiento de fallos.</td>
 </tr>
 <tr>
-<td>S03</td>
-<td><code>30.0 °C</code></td>
-<td>ALERTA</td>
-<td>ALERTA</td>
+<td>Polimorfismo</td>
+<td>Selección de una implementación según el tipo concreto del receptor.</td>
+<td>Mantener un contrato común y respetar su significado.</td>
+</tr>
+<tr>
+<td>Estado</td>
+<td>Información que condiciona el comportamiento de un objeto.</td>
+<td>Establecer valores válidos y transiciones permitidas.</td>
+</tr>
+<tr>
+<td>Evento</td>
+<td>Hecho comunicado a componentes interesados.</td>
+<td>Precisar destinatarios, contenido y política de entrega.</td>
+</tr>
+<tr>
+<td>Algoritmo intercambiable</td>
+<td>Una de varias formas de resolver una operación.</td>
+<td>Distinguir qué parte cambia y qué contrato permanece.</td>
+</tr>
+<tr>
+<td>Instantánea</td>
+<td>Representación de un estado en un momento determinado.</td>
+<td>Definir qué se copia, quién puede leerlo y cuánto tiempo se conserva.</td>
 </tr>
 </tbody></table></div>
-<p>También comprueba los límites: <code>28.0</code> no activa <code>SobreUmbral(28.0)</code>; <code>18.0</code> y <code>24.0</code> no activan <code>FueraDeRango(18.0, 24.0)</code>.</p>
-<h3>3.3. Estructura resultante</h3>
-<p>Archivos relevantes acumulados. Las carpetas de demos contienen los archivos presentados en los tres bloques de patrones; no sustituyen las clases del proyecto.</p>
-<pre><code class="language-text">icc-pap-campusmonitor-apellido/
-├── app/src/main/java/edu/ups/pap/
-│   ├── App.java
-│   ├── modelo/
-│   │   └── Lectura.java
-│   ├── integracion/
-│   │   ├── FuenteLectura.java
-│   │   ├── TermometroExterno.java
-│   │   └── AdaptadorTermometro.java
-│   ├── alertas/
-│   │   ├── ReglaAlerta.java
-│   │   ├── SobreUmbral.java
-│   │   └── FueraDeRango.java
-│   ├── servicio/
-│   │   ├── ReporteLecturas.java
-│   │   └── Monitor.java
-│   └── u01/
-│       ├── TiposDemo.java
-│       ├── MetodosDemo.java
-│       ├── ConversionesDemo.java
-│       ├── ComodinesDemo.java
-│       └── patrones/
-│           ├── creacionales/
-│           ├── estructurales/
-│           └── comportamiento/
-└── evidencias/
-    ├── PC1.1a.md
-    ├── PC1.1b.md
-    ├── PC1.2.md
-    └── PC1.4.md
+<p><strong>Compartir una interfaz no garantiza compartir el mismo contrato.</strong> Dos estrategias pueden devolver un número, pero deben acordar qué sucede con una colección vacía. Dos observadores pueden recibir el mismo evento, pero la fuente debe definir si un fallo de uno detiene a los demás.</p>
+<p>Estos patrones no requieren genéricos. Se utilizan tipos parametrizados donde expresan relaciones útiles, como <code>Iterator&lt;Sensor&gt;</code> o <code>Deque&lt;Comando&gt;</code>. La presencia de un parámetro de tipo no identifica por sí sola un patrón.</p>
+<h3>1.2. Organización y ejecución</h3>
+<p>La carpeta contiene <code>material.md</code>, once demostraciones en <code>ejemplos/</code> y once diagramas Mermaid en <code>assets/</code>. Cada demostración es independiente, no declara un paquete y agrupa sus tipos dentro de una clase ejecutable. Los nombres compartidos entre archivos representan modelos locales a cada ejemplo y no obligan a fusionarlos.</p>
+<p>Desde <code>01/1.4-patrones-genericos/03-comportamiento</code>, ejecuta <code>java ejemplos/StrategyDemo.java</code>. Sustituye ese nombre por el archivo enlazado en el patrón que quieras estudiar. Los ejemplos utilizan características disponibles desde Java 17, no necesitan bibliotecas externas y pueden ejecutarse con el JDK 25 utilizado en la asignatura. La compilación y las salidas incluidas se verificaron con Java 17.</p>
+<p>Los <code>.mmd</code> son fuentes editables, no imágenes. Los enlaces permiten abrirlos en un editor compatible con Mermaid. Para mostrarlos como diagramas dentro del sitio, el generador debe procesar su contenido o se deben exportar a SVG. El paquete no incluye exportaciones gráficas ni páginas generadas.</p>
+<h3>1.3. Lectura de UML y alcance de los ejemplos</h3>
+<p>Una línea discontinua con triángulo representa la realización de una interfaz; una continua con triángulo, la herencia. Las asociaciones representan referencias conservadas y las dependencias, usos puntuales de tipos u operaciones. Los símbolos <code>+</code>, <code>-</code>, <code>#</code> y <code>~</code> indican visibilidad pública, privada, protegida y de paquete.</p>
+<p>Los diagramas se concentran en los participantes del patrón. Omiten la clase ejecutable exterior y algunos constructores o accesores. En Iterator aparecen también los contratos de la biblioteca estándar de Java, identificados como tales.</p>
+<p>Las demostraciones son secuenciales y utilizan datos simulados. Una aplicación concurrente, persistente o conectada a dispositivos reales requiere decisiones adicionales. El patrón no proporciona automáticamente seguridad entre hilos, transacciones ni recuperación ante fallos externos.</p>
+<hr>
+<p><a id="chain-of-responsibility"></a></p>
+<h2>2. Chain of Responsibility · Validar lecturas por etapas</h2>
+<h3>Definición</h3>
+<p><strong>Chain of Responsibility</strong> organiza una solicitud a través de manejadores enlazados. Cada manejador decide qué trabajo realizar y si debe continuar la solicitud hacia el siguiente [1].</p>
+<p><strong>Idea principal:</strong> separar decisiones de procesamiento en componentes que puedan ordenarse sin que el emisor conozca todos los participantes.</p>
+<h3>2.1. ¿Qué problema resuelve?</h3>
+<p>Una lectura necesita identificador, unidad admitida y valor dentro de rango. Concentrar todas las reglas en un método puede resultar suficiente inicialmente, pero dificulta reorganizarlas o reutilizar solo una parte cuando aparecen diferentes procesos de recepción.</p>
+<p>Una cadena asigna una regla a cada manejador. El cliente entrega la lectura al primero; no invoca manualmente cada filtro. Cada componente puede continuar o detener la solicitud según el resultado.</p>
+<p>Existen cadenas en las que el primer manejador capaz de resolver la petición la consume. La demostración utiliza otra variante: <strong>todos los filtros deben aceptar y cualquiera puede detener el proceso</strong>. No se debe confundir esta política con la búsqueda de un único responsable.</p>
+<h3>2.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Manejador base</td>
+<td>Establecer el contrato y conservar el siguiente manejador.</td>
+</tr>
+<tr>
+<td>Manejador concreto</td>
+<td>Resolver una comprobación y determinar si existe un error.</td>
+</tr>
+<tr>
+<td>Solicitud</td>
+<td>Transportar los datos que recorren la cadena.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Configurar el orden y entregar la solicitud al primer manejador.</td>
+</tr>
+</tbody></table></div>
+<p>En esta implementación, la clase base concentra la decisión de continuar. Las subclases devuelven el resultado de su comprobación, evitando repetir la lógica de encadenamiento.</p>
+<h3>2.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene para validaciones ordenadas, procesamiento de solicitudes o selección de responsables cuando la secuencia puede variar. Es útil si interesa cambiar el orden o retirar una comprobación sin modificar el emisor.</p>
+<p>Si las reglas son pocas, estables y solo se utilizan juntas, un método de validación puede ser más directo. Una cadena también introduce preguntas: qué significa llegar al final, qué ocurre si nadie resuelve la solicitud y cuál error se informa cuando hay varios.</p>
+<h3>2.4. Caso práctico: recepción de temperaturas</h3>
+<p>Se admiten lecturas con identificador no vacío, unidad <code>°C</code> y valor finito entre −50 y 100. Los límites están incluidos. El orden es identidad, unidad y rango.</p>
+<p>La entrada llega como un record <code>Lectura</code> todavía no validado. Se permite representar datos defectuosos para que la cadena los examine. Esto es una decisión del ejemplo: no significa que todos los modelos del dominio deban permitir estados inválidos.</p>
+<p>Una lectura con varios errores produce únicamente el primero. Llegar al final sin errores significa aceptación. No existe un almacenamiento posterior dentro de esta demostración.</p>
+<h3>2.5. Estructura UML</h3>
+<p><a href="assets/chain-of-responsibility.mmd">Diagrama editable de Chain of Responsibility</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Manejador base</td>
+<td><code>Filtro</code></td>
+</tr>
+<tr>
+<td>Manejadores concretos</td>
+<td><code>FiltroIdentidad</code>, <code>FiltroUnidad</code>, <code>FiltroRango</code></td>
+</tr>
+<tr>
+<td>Solicitud</td>
+<td><code>Lectura</code></td>
+</tr>
+<tr>
+<td>Resultado</td>
+<td><code>Resultado</code></td>
+</tr>
+</tbody></table></div>
+<p><code>Filtro</code> conserva una referencia opcional a otro <code>Filtro</code>. La multiplicidad <code>0..1</code> permite que el último no tenga sucesor. Las tres clases concretas heredan el procedimiento de propagación.</p>
+<h3>2.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/ChainOfResponsibilityDemo.java">ChainOfResponsibilityDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Lectura</code> · record</td>
+<td>Transportar id, valor y unidad sin validar la solicitud anticipadamente.</td>
+</tr>
+<tr>
+<td><code>Resultado</code> · record</td>
+<td>Comunicar aceptación y motivo de forma explícita.</td>
+</tr>
+<tr>
+<td><code>Filtro</code> · clase abstracta</td>
+<td>Rechazar una solicitud nula, invocar la comprobación y continuar si corresponde.</td>
+</tr>
+<tr>
+<td>Filtros concretos · clases</td>
+<td>Revisar identidad, unidad o rango.</td>
+</tr>
+</tbody></table></div>
+<p><code>procesar()</code> es <code>final</code>: las subclases especializan <code>comprobar()</code>, pero no reemplazan el protocolo. En el contrato protegido, una cadena de texto representa un error y <code>null</code> significa que no lo hay. Ese detalle interno no se expone al cliente, que recibe siempre un <code>Resultado</code> para solicitudes no nulas.</p>
+<h3>2.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>Se construye el filtro de rango sin sucesor.</li>
+<li>Se lo entrega al filtro de unidad, que a su vez queda detrás del de identidad.</li>
+<li>El cliente llama a <code>procesar()</code> sobre el primer filtro.</li>
+<li>La clase base ejecuta la comprobación concreta y devuelve un rechazo o continúa.</li>
+<li>Si el último filtro acepta, se devuelve un resultado exitoso.</li>
+</ol>
+<p>Los enlaces son finales y se establecen por constructor. Las clases suministradas no ofrecen una operación posterior que permita crear ciclos.</p>
+<h3>2.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Resultado[aceptada=true, motivo=Lectura aceptada]
+Resultado[aceptada=false, motivo=Unidad no admitida]
+Resultado[aceptada=false, motivo=Valor fuera de rango]
+Resultado[aceptada=false, motivo=Id obligatorio]
 </code></pre>
-<p>Si tu modelo permanece en <code>u01</code>, utiliza ese paquete en los imports de las clases nuevas; no dupliques <code>Lectura</code>.</p>
-<h3>3.4. Evidencias</h3>
-<p>Sube los cambios al repositorio remoto. En <code>evidencias/PC1.4.md</code> incluye únicamente:</p>
-<h4>1. Implementación realizada</h4>
-<p>En un párrafo breve, identifica el adaptador, las estrategias y el contexto. Explica cómo reutilizaste <code>Lectura.transformar</code> para convertir la muestra externa.</p>
-<h4>2. Ejecución correcta</h4>
-<p>Agrega una captura con los tres sensores evaluados mediante ambas estrategias y las comprobaciones de los límites, y otra con los mensajes del rango invertido y la fuente nula. Debajo, explica en una o dos frases por qué cambió el resultado de S02 al sustituir la estrategia sin modificar el monitor.</p>
-<h2>Referencias técnicas</h2>
-<ul>
-<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994. Catálogo original de 23 patrones.</li>
-<li><a href="https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-software-9780201633610">Ficha y contenido de la obra — Addison-Wesley / InformIT</a></li>
-<li><a href="https://refactoring.guru/es/design-patterns/catalog">Catálogo complementario — Refactoring.Guru</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/index.html">API Java</a></li>
-</ul>
+<p>El caso de unidad incorrecta no llega a la validación de rango. En la última entrada, aunque el valor y la unidad también son incorrectos, se informa primero el identificador vacío.</p>
+<h3>2.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Cómo cambiaría el mensaje si el filtro de unidad se colocara antes del de identidad?</li>
+<li>¿Qué tendría que modificarse para devolver todos los errores en lugar del primero?</li>
+<li>¿Por qué una solicitud nula produce una excepción, mientras un id vacío produce un <code>Resultado</code> rechazado?</li>
+</ol>
+<p><strong>Limitaciones y costo:</strong> con <code>k</code> filtros, el peor caso ejecuta O(k) comprobaciones y utiliza O(k) de pila por la propagación recursiva. No se corrigen los datos, no se acumulan fallos y no hay persistencia. Omitir un filtro cambia el contrato de aceptación: la configuración forma parte de la solución.</p>
+<p><strong>Criterio de diseño:</strong> la independencia de los manejadores no elimina la necesidad de definir el orden y la política de terminación.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="command"></a></p>
+<h2>3. Command · Ejecutar y deshacer cambios</h2>
+<h3>Definición</h3>
+<p><strong>Command</strong> representa una solicitud como un objeto que conserva la información necesaria para ejecutarla. Separa a quien solicita una operación de quien conoce cómo realizarla [2].</p>
+<p><strong>Idea principal:</strong> manipular la operación como un valor explícito que puede almacenarse, programarse o incorporarse a un historial.</p>
+<h3>3.1. ¿Qué problema resuelve?</h3>
+<p>Una aplicación permite cambiar el intervalo de muestreo desde distintos puntos. Si cada botón o controlador modifica directamente la configuración y guarda por su cuenta el valor anterior, la lógica de ejecución y deshacer se dispersa.</p>
+<p>Un comando reúne el receptor, el nuevo intervalo y la información necesaria para revertir el cambio. El invocador conoce únicamente las operaciones del comando y puede mantener un historial sin saber qué propiedad se modificó.</p>
+<p>Command no garantiza que toda acción sea reversible. Enviar un correo o activar un dispositivo puede requerir una acción compensatoria; no basta con devolver un campo a su valor anterior.</p>
+<h3>3.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Comando</td>
+<td>Declarar la operación que el invocador puede ejecutar.</td>
+</tr>
+<tr>
+<td>Comando concreto</td>
+<td>Conservar argumentos, utilizar al receptor y, si procede, implementar deshacer.</td>
+</tr>
+<tr>
+<td>Receptor</td>
+<td>Resolver la operación real y mantener las reglas del dominio.</td>
+</tr>
+<tr>
+<td>Invocador</td>
+<td>Solicitar ejecución y administrar los comandos.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Construir el comando con su receptor y parámetros.</td>
+</tr>
+</tbody></table></div>
+<p>El contrato de esta demostración incluye <code>deshacer()</code>. Otros comandos pueden limitarse a ejecutar. La reversibilidad es una decisión del diseño, no una obligación de la familia completa.</p>
+<h3>3.3. ¿Cuándo utilizarlo?</h3>
+<p>Es apropiado para acciones de interfaz, historiales, colas de trabajo o ejecución diferida. También permite registrar qué operación fue solicitada sin obligar al invocador a conocer cada caso concreto.</p>
+<p>Una llamada directa suele bastar si no se necesita almacenar, diferir ni uniformar solicitudes. Añadir una clase por operación puede aumentar la complejidad sin aportar valor en un proceso pequeño y estable.</p>
+<h3>3.4. Caso práctico: intervalo de muestreo</h3>
+<p>La configuración comienza en 30 segundos y permite valores entre 1 y 3600. Se ejecutan cambios a 10 y luego a 5. Un intento de cambio a 0 debe rechazarse y no incorporarse al historial.</p>
+<p>Dos operaciones de deshacer deben recuperar 10 y 30. El orden inverso es esencial: deshacer un cambio antiguo sobre una configuración más reciente podría sobrescribir un resultado válido de otra acción.</p>
+<p>Cada instancia de <code>CambiarIntervalo</code> representa una solicitud de un solo uso exitoso. No se incluye una operación de rehacer.</p>
+<h3>3.5. Estructura UML</h3>
+<p><a href="assets/command.mmd">Diagrama editable de Command</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Comando</td>
+<td><code>Comando</code></td>
+</tr>
+<tr>
+<td>Comando concreto</td>
+<td><code>CambiarIntervalo</code></td>
+</tr>
+<tr>
+<td>Receptor</td>
+<td><code>ConfiguracionMuestreo</code></td>
+</tr>
+<tr>
+<td>Invocador</td>
+<td><code>HistorialComandos</code></td>
+</tr>
+</tbody></table></div>
+<p>El historial conserva referencias al contrato <code>Comando</code>. El comando concreto conserva la configuración receptora y los valores relacionados con su solicitud; el invocador no tiene una asociación directa con la configuración.</p>
+<h3>3.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/CommandDemo.java">CommandDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ConfiguracionMuestreo</code> · clase</td>
+<td>Validar el intervalo y realizar el cambio.</td>
+</tr>
+<tr>
+<td><code>Comando</code> · interfaz</td>
+<td>Declarar ejecución y reversión.</td>
+</tr>
+<tr>
+<td><code>CambiarIntervalo</code> · clase</td>
+<td>Capturar el intervalo previo y controlar su ciclo de ejecución.</td>
+</tr>
+<tr>
+<td><code>HistorialComandos</code> · clase</td>
+<td>Mantener una pila de comandos exitosos.</td>
+</tr>
+</tbody></table></div>
+<p>El intervalo anterior se obtiene cuando el comando se ejecuta, no cuando se construye. Así, una solicitud preparada con anticipación puede deshacer el valor que realmente encontró al aplicarse.</p>
+<p>El historial agrega el comando después de que <code>ejecutar()</code> termina correctamente. Al deshacer, consulta la cima, solicita la reversión y solo entonces la retira. Una excepción evita registrar una ejecución fallida o perder la entrada antes de completar su reversión.</p>
+<h3>3.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente crea la configuración y el historial.</li>
+<li>Construye un comando para cada cambio y lo entrega al invocador.</li>
+<li>El comando solicita el cambio al receptor y conserva el valor previo.</li>
+<li>El invocador apila el comando exitoso.</li>
+<li>Al deshacer, se recupera el último y se restaura su valor anterior.</li>
+</ol>
+<p>Los controles internos rechazan volver a ejecutar un comando exitoso o deshacerlo más de una vez. El historial vacío devuelve <code>false</code> sin modificar la configuración.</p>
+<h3>3.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Intervalo actual: 5
+Rechazado: Intervalo permitido: 1 a 3600
+Primer deshacer: 10
+Segundo deshacer: 30
+Otro deshacer disponible: false
+</code></pre>
+<p>El intento inválido no altera la secuencia de reversión. El primer deshacer restaura 10 porque el comando rechazado nunca entró en la pila.</p>
+<h3>3.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Por qué el valor anterior se captura durante la ejecución?</li>
+<li>¿Qué problema provocaría agregar un comando al historial antes de ejecutarlo?</li>
+<li>¿Por qué modificar la configuración por fuera del historial puede invalidar la expectativa de deshacer?</li>
+</ol>
+<p><strong>Limitaciones:</strong> se presupone que los cambios que se desean revertir pasan por el mismo historial y se deshacen en orden LIFO. No hay rehacer, persistencia, concurrencia ni transacciones sobre varias configuraciones. El patrón no proporciona por sí mismo idempotencia, reintentos seguros ni ejecución exactamente una vez.</p>
+<p><strong>Criterio de diseño:</strong> el comando representa una solicitud; el receptor sigue siendo responsable de proteger su estado.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="interpreter"></a></p>
+<h2>4. Interpreter · Evaluar reglas de medición</h2>
+<h3>Definición</h3>
+<p><strong>Interpreter</strong> representa las expresiones de un lenguaje mediante objetos y define cómo evaluarlas respecto de un contexto. Las expresiones compuestas delegan parte de la interpretación en sus componentes [11].</p>
+<p><strong>Idea principal:</strong> convertir reglas combinables de un lenguaje pequeño en una estructura evaluable con un contrato común.</p>
+<h3>4.1. ¿Qué problema resuelve?</h3>
+<p>Una alerta puede depender de temperatura, ocupación y combinaciones lógicas. Si cada regla se escribe como una condición fija dentro del servicio, cambiar su estructura obliga a cambiar esa implementación.</p>
+<p>Un árbol de expresiones representa la regla como datos y objetos: una comparación produce un resultado booleano; otras expresiones combinan resultados con conjunción, disyunción o negación. El mismo árbol puede evaluarse repetidamente sobre diferentes mediciones.</p>
+<p>El patrón explica la representación y la evaluación. Leer una expresión escrita por un usuario requiere además análisis léxico y sintáctico, tareas que no están incluidas en esta demostración.</p>
+<h3>4.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Expresión abstracta</td>
+<td>Definir la operación de interpretación.</td>
+</tr>
+<tr>
+<td>Expresión terminal</td>
+<td>Evaluar una operación elemental del lenguaje del ejemplo.</td>
+</tr>
+<tr>
+<td>Expresión no terminal</td>
+<td>Combinar los resultados de otras expresiones.</td>
+</tr>
+<tr>
+<td>Contexto</td>
+<td>Proporcionar los valores utilizados durante la evaluación.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Construir el árbol y solicitar su interpretación.</td>
+</tr>
+</tbody></table></div>
+<p>En este lenguaje, una comparación “magnitud mayor o igual que umbral” se trata como terminal. <code>Y</code>, <code>O</code> y <code>No</code> son expresiones compuestas. Esta elección define el nivel de abstracción del lenguaje; no pretende representar cada símbolo de una gramática de propósito general.</p>
+<h3>4.3. ¿Cuándo utilizarlo?</h3>
+<p>Es adecuado para reglas pequeñas, combinables y con semántica claramente delimitada: filtros, condiciones de alertas o expresiones de configuración.</p>
+<p>Para un lenguaje amplio, con muchas construcciones, tipos y diagnósticos de sintaxis, mantener una clase por regla puede resultar costoso. En esos casos conviene evaluar herramientas especializadas de parsing y un modelo explícito de compilación o interpretación.</p>
+<h3>4.4. Caso práctico: condición de alerta</h3>
+<p>La condición es: <strong>temperatura de al menos 28 °C y ocupación de al menos una persona, o temperatura de al menos 40 °C</strong>. La segunda alternativa permite activar la alerta extrema aunque no haya ocupantes.</p>
+<p>El contexto contiene una temperatura finita y una ocupación no negativa. Las magnitudes posibles están delimitadas por un <code>enum</code>. La estructura del árbol agrupa primero la conjunción y luego la disyunción.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Expresión admitida</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MayorIgual</code></td>
+<td>Comparar una magnitud del contexto con un umbral.</td>
+</tr>
+<tr>
+<td><code>Y</code></td>
+<td>Exigir que se cumplan ambas expresiones.</td>
+</tr>
+<tr>
+<td><code>O</code></td>
+<td>Exigir que se cumpla al menos una expresión.</td>
+</tr>
+<tr>
+<td><code>No</code></td>
+<td>Negar el resultado de su operando.</td>
+</tr>
+</tbody></table></div>
+<h3>4.5. Estructura UML</h3>
+<p><a href="assets/interpreter.mmd">Diagrama editable de Interpreter</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Expresión</td>
+<td><code>Expresion</code></td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td><code>MayorIgual</code></td>
+</tr>
+<tr>
+<td>No terminales</td>
+<td><code>Y</code>, <code>O</code>, <code>No</code></td>
+</tr>
+<tr>
+<td>Contexto</td>
+<td><code>Contexto</code></td>
+</tr>
+<tr>
+<td>Identificación de variables</td>
+<td><code>Magnitud</code></td>
+</tr>
+</tbody></table></div>
+<p>Las asociaciones de <code>Y</code> y <code>O</code> representan dos operandos; <code>No</code> conserva uno. Los operandos usan la interfaz común, por lo que pueden ser terminales o expresiones compuestas anidadas.</p>
+<h3>4.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/InterpreterDemo.java">InterpreterDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Contexto</code> · record</td>
+<td>Validar temperatura y ocupación de cada evaluación.</td>
+</tr>
+<tr>
+<td><code>Magnitud</code> · enum</td>
+<td>Delimitar las variables reconocidas por el lenguaje.</td>
+</tr>
+<tr>
+<td><code>MayorIgual</code> · record</td>
+<td>Elegir el valor de la magnitud y compararlo con su umbral.</td>
+</tr>
+<tr>
+<td><code>Y</code>, <code>O</code>, <code>No</code> · records</td>
+<td>Conservar expresiones hijas y aplicar operaciones lógicas.</td>
+</tr>
+</tbody></table></div>
+<p>Las referencias de los nodos se validan al construirse. <code>Y</code> y <code>O</code> utilizan cortocircuito de izquierda a derecha: pueden omitir la evaluación de su segundo hijo cuando el primero ya determina el resultado.</p>
+<p>Los nodos no modifican el contexto. El árbol construido puede reutilizarse sobre varias entradas. Añadir otra variable exigiría revisar <code>Magnitud</code> y la forma de obtener su valor; añadir otro operador requiere una nueva implementación del contrato.</p>
+<h3>4.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>Se construyen las tres comparaciones terminales.</li>
+<li>Se agrupan temperatura moderada y ocupación dentro de <code>Y</code>.</li>
+<li>Se combina ese grupo con temperatura extrema dentro de <code>O</code>.</li>
+<li>Se evalúa la raíz con tres contextos diferentes.</li>
+<li>Se utiliza <code>No</code> para evaluar la negación de la misma regla.</li>
+</ol>
+<p>No existe una cadena de texto que el programa convierta automáticamente al árbol. La agrupación está determinada por los objetos construidos, por lo que no se aplican reglas implícitas de precedencia textual.</p>
+<h3>4.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">29 °C, 5 personas: true
+29 °C, 0 personas: false
+40 °C, 0 personas: true
+Negación a 29 °C y 5 personas: false
+</code></pre>
+<p>La segunda entrada no dispara la regla porque falta ocupación y la temperatura no es extrema. La tercera sí la dispara por la segunda alternativa.</p>
+<h3>4.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué árbol representaría temperatura alta y, además, ocupación alta o una condición alternativa?</li>
+<li>¿Por qué <code>O</code> puede omitir la evaluación del segundo operando?</li>
+<li>¿Qué componente adicional permitiría que un usuario escriba reglas como texto?</li>
+</ol>
+<p><strong>Limitaciones y costo:</strong> el recorrido cuesta O(n) en el peor caso, con <code>n</code> nodos evaluados y O(h) de pila según la altura. No hay parser, variables arbitrarias, conversiones de unidades ni límites de profundidad. Un umbral fraccionario para ocupación es técnicamente posible; si el dominio lo prohíbe, debe añadirse esa validación.</p>
+<p><strong>Criterio de diseño:</strong> el lenguaje debe tener un alcance y una semántica definidos antes de representar sus expresiones.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="iterator"></a></p>
+<h2>5. Iterator · Recorrer un inventario</h2>
+<h3>Definición</h3>
+<p><strong>Iterator</strong> proporciona un mecanismo de recorrido que separa el avance de la representación interna de una colección. El cliente solicita elementos mediante un contrato de iteración sin acceder directamente al almacenamiento [3].</p>
+<p><strong>Idea principal:</strong> encapsular el cursor y la política de recorrido en un objeto independiente de la colección.</p>
+<h3>5.1. ¿Qué problema resuelve?</h3>
+<p>Un inventario almacena sensores en una lista interna, pero sus consumidores solo necesitan recorrerlos. Devolver esa lista directamente puede revelar la estructura y permitir modificaciones no previstas.</p>
+<p>Un iterador ofrece acceso secuencial sin exponer el contenedor. Cada recorrido conserva su posición, de modo que dos clientes pueden avanzar de manera independiente.</p>
+<p>También es necesario definir qué observa el recorrido si la colección cambia. No todos los iteradores tienen la misma política: algunos detectan ciertos cambios estructurales; otros trabajan con instantáneas o admiten consistencia débil.</p>
+<h3>5.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Agregado</td>
+<td>Proporcionar una operación para obtener un iterador.</td>
+</tr>
+<tr>
+<td>Agregado concreto</td>
+<td>Conservar la colección y construir el recorrido apropiado.</td>
+</tr>
+<tr>
+<td>Iterador</td>
+<td>Definir consulta de disponibilidad y obtención del siguiente elemento.</td>
+</tr>
+<tr>
+<td>Iterador concreto</td>
+<td>Mantener el cursor y resolver el avance.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Consumir el recorrido sin manipular el almacenamiento.</td>
+</tr>
+</tbody></table></div>
+<p>Java ofrece <code>Iterable&lt;T&gt;</code> e <code>Iterator&lt;T&gt;</code>. El primero proporciona el iterador; el segundo representa un recorrido concreto. Implementar <code>Iterable</code> permite utilizar el objeto como origen de un bucle for-each.</p>
+<h3>5.3. ¿Cuándo utilizarlo?</h3>
+<p>Es útil cuando una estructura necesita recorridos independientes, una política de orden propia o acceso uniforme sin exponer su almacenamiento. La biblioteca estándar ya proporciona iteradores para muchas colecciones; no se necesita reimplementarlos en cada aplicación.</p>
+<p>La demostración utiliza un iterador propio para hacer visible su estado y su contrato. En un inventario simple, devolver el iterador de una copia controlada también sería una alternativa válida.</p>
+<h3>5.4. Caso práctico: recorrido por instantánea</h3>
+<p>El inventario contiene S01 y S02. Se obtiene un iterador y luego se incorpora S03. El recorrido existente debe seguir mostrando únicamente los dos sensores que estaban presentes cuando comenzó.</p>
+<p>Un nuevo recorrido, solicitado después del alta, debe incluir S03. La política es una <strong>instantánea de la colección en el momento de crear cada iterador</strong>.</p>
+<p>Los elementos son records inmutables con identificador y ubicación. La copia de la lista conserva referencias a esos objetos; no crea sensores nuevos.</p>
+<h3>5.5. Estructura UML</h3>
+<p><a href="assets/iterator.mmd">Diagrama editable de Iterator</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Agregado</td>
+<td><code>Iterable&lt;Sensor&gt;</code> de Java</td>
+</tr>
+<tr>
+<td>Agregado concreto</td>
+<td><code>Inventario</code></td>
+</tr>
+<tr>
+<td>Iterador</td>
+<td><code>Iterator&lt;Sensor&gt;</code> de Java</td>
+</tr>
+<tr>
+<td>Iterador concreto</td>
+<td><code>IteradorInventario</code></td>
+</tr>
+<tr>
+<td>Elemento</td>
+<td><code>Sensor</code></td>
+</tr>
+</tbody></table></div>
+<p>El inventario crea un <code>IteradorInventario</code>, pero devuelve el contrato estándar. El iterador conserva una instantánea, no una referencia a la lista mutable original.</p>
+<h3>5.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/IteratorDemo.java">IteratorDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Sensor</code> · record</td>
+<td>Exigir identificador y ubicación no vacíos.</td>
+</tr>
+<tr>
+<td><code>Inventario</code> · clase</td>
+<td>Agregar sensores y producir un nuevo recorrido.</td>
+</tr>
+<tr>
+<td><code>IteradorInventario</code> · clase</td>
+<td>Mantener una lista no modificable y un índice.</td>
+</tr>
+</tbody></table></div>
+<p><code>hasNext()</code> consulta si queda un elemento y no avanza. <code>next()</code> devuelve el actual y después incrementa la posición. Si no quedan elementos, lanza <code>NoSuchElementException</code>; no devuelve <code>null</code> ni vuelve al inicio.</p>
+<p>La implementación no sobrescribe <code>remove()</code>, por lo que conserva la operación no admitida del contrato estándar. Que una colección permita agregar elementos no implica que su iterador permita eliminarlos.</p>
+<h3>5.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente registra dos sensores.</li>
+<li>Solicita el primer iterador, que captura la lista disponible.</li>
+<li>Agrega un tercer sensor al inventario.</li>
+<li>Consume el primer recorrido mediante <code>hasNext()</code> y <code>next()</code>.</li>
+<li>Inicia un for-each, que solicita un nuevo iterador e incluye el alta posterior.</li>
+</ol>
+<p>Finalmente, se solicita otro elemento al primer iterador agotado para mostrar la excepción del contrato.</p>
+<h3>5.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Instantánea anterior:
+S01
+S02
+Nuevo recorrido con for-each:
+S01
+S02
+S03
+Recorrido agotado
+</code></pre>
+<p>El contraste entre ambos recorridos verifica la política de instantánea. No se trata de una omisión accidental de S03, sino de una decisión explícita de consistencia.</p>
+<h3>5.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué ocurriría si ambos recorridos compartieran el mismo índice?</li>
+<li>¿Por qué llamar varias veces a <code>hasNext()</code> no debe consumir elementos?</li>
+<li>¿Sería suficiente copiar la lista si los sensores conservaran campos internos mutables?</li>
+</ol>
+<p><strong>Limitaciones y costo:</strong> crear una instantánea requiere O(n) de tiempo y memoria; avanzar cuesta O(1) por elemento. La copia es superficial. El inventario no está sincronizado: copiar mientras otro hilo modifica la lista no queda protegido por usar <code>List.copyOf()</code>. Tampoco se comprueban identificadores duplicados.</p>
+<p><strong>Criterio de diseño:</strong> un recorrido debe especificar tanto el orden como su relación con los cambios de la colección.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="mediator"></a></p>
+<h2>6. Mediator · Coordinar un sistema de ventilación</h2>
+<h3>Definición</h3>
+<p><strong>Mediator</strong> concentra las reglas de colaboración entre componentes en un objeto coordinador. Los participantes comunican hechos al mediador en lugar de conocer y controlar directamente a todos sus colaboradores [4].</p>
+<p><strong>Idea principal:</strong> separar el comportamiento local de cada componente de la política que relaciona varios componentes.</p>
+<h3>6.1. ¿Qué problema resuelve?</h3>
+<p>Un sensor informa temperatura, una ventana informa si está abierta y un ventilador debe responder a ambos datos. Si el sensor controla directamente al ventilador y consulta la ventana, mientras la ventana también conoce al sensor, aparecen dependencias cruzadas.</p>
+<p>Una modificación de la regla puede obligar a editar varios componentes. También resulta más difícil reutilizar el sensor en otro sistema que tenga una política diferente.</p>
+<p>El mediador conserva el contexto y decide qué acción ejecutar. El sensor publica una temperatura, la ventana informa un cambio y el ventilador ejecuta una orden concreta. Ninguno necesita conocer la implementación de los otros dos.</p>
+<h3>6.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mediador</td>
+<td>Definir cómo los participantes comunican eventos.</td>
+</tr>
+<tr>
+<td>Mediador concreto</td>
+<td>Conservar el contexto y aplicar las reglas de coordinación.</td>
+</tr>
+<tr>
+<td>Componentes</td>
+<td>Resolver su tarea local y colaborar a través del mediador cuando corresponda.</td>
+</tr>
+</tbody></table></div>
+<p>No todos los componentes tienen que enviar eventos. En el ejemplo, sensor y ventana notifican; el ventilador recibe órdenes. Evitar una notificación de vuelta desde el actuador también simplifica el control de ciclos de eventos.</p>
+<h3>6.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene cuando varias piezas tienen reglas de interacción que no pertenecen exclusivamente a ninguna de ellas: controles de formularios, coordinación de dispositivos o participantes de un flujo de trabajo.</p>
+<p>El mediador puede convertirse en una clase excesivamente grande si acumula reglas de todos los subsistemas. Conviene delimitar su alcance y mantener fuera las operaciones locales de los componentes.</p>
+<h3>6.4. Caso práctico: regla de ventilación</h3>
+<p>La regla enciende el ventilador si la temperatura es al menos 28 °C y la ventana está cerrada. Si la ventana se abre o la temperatura baja, se apaga. Antes de recibir una temperatura, permanece apagado.</p>
+<p>La ventana se considera cerrada al inicio. El contexto conserva la última temperatura conocida, de modo que cerrar la ventana permite reevaluar la regla sin exigir otra publicación del sensor.</p>
+<p>Es una política simulada para estudiar coordinación. No constituye un sistema de control de climatización certificado ni incorpora características físicas del dispositivo.</p>
+<h3>6.5. Estructura UML</h3>
+<p><a href="assets/mediator.mmd">Diagrama editable de Mediator</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mediador</td>
+<td><code>MediadorClima</code></td>
+</tr>
+<tr>
+<td>Mediador concreto</td>
+<td><code>ControlClima</code></td>
+</tr>
+<tr>
+<td>Componentes que notifican</td>
+<td><code>SensorTemperatura</code>, <code>Ventana</code></td>
+</tr>
+<tr>
+<td>Componente que ejecuta una orden</td>
+<td><code>Ventilador</code></td>
+</tr>
+</tbody></table></div>
+<p>Sensor y ventana conservan la interfaz del mediador. <code>ControlClima</code> conserva los tres componentes. No existe una asociación directa entre el sensor y el ventilador ni entre la ventana y el sensor.</p>
+<h3>6.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/MediatorDemo.java">MediatorDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SensorTemperatura</code> · clase</td>
+<td>Validar que la muestra sea finita y notificarla.</td>
+</tr>
+<tr>
+<td><code>Ventana</code> · clase</td>
+<td>Comunicar un estado abierto o cerrado.</td>
+</tr>
+<tr>
+<td><code>Ventilador</code> · clase</td>
+<td>Mantener el encendido e imprimir únicamente cambios reales.</td>
+</tr>
+<tr>
+<td><code>ControlClima</code> · clase</td>
+<td>Conservar temperatura y estado de ventana, y aplicar la regla.</td>
+</tr>
+</tbody></table></div>
+<p>Las dos notificaciones del mediador terminan en <code>coordinar()</code>. Así, una única operación contiene la decisión de ventilación. El dato de temperatura se representa como <code>Double</code> para distinguir ausencia de medición y un valor numérico legítimo como cero.</p>
+<p>El actuador no vuelve a notificar al mediador. Además, si recibe el mismo estado que ya tiene, no realiza otra acción visible. Esta idempotencia local evita repetir mensajes de encendido sin cambios.</p>
+<h3>6.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El control construye sus componentes y les proporciona la referencia al mediador.</li>
+<li>El sensor publica 30 °C; el mediador conserva la muestra y enciende el ventilador.</li>
+<li>La ventana se abre; el mediador reevalúa y apaga.</li>
+<li>La ventana se cierra; se usa la temperatura conservada y se enciende.</li>
+<li>El sensor publica 24 °C; se vuelve a apagar.</li>
+</ol>
+<p>Los constructores de los componentes no emiten eventos. Esto evita ejecutar reglas mientras el mediador todavía está ensamblando sus colaboradores.</p>
+<h3>6.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Temperatura 30, ventana cerrada:
+Ventilador: encendido
+Abrir ventana:
+Ventilador: apagado
+Cerrar ventana:
+Ventilador: encendido
+Temperatura 24:
+Ventilador: apagado
+</code></pre>
+<p>La reapertura y el cierre de la ventana influyen en el actuador sin que la ventana conozca al ventilador. La regla se interpreta siempre en el mediador.</p>
+<h3>6.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Dónde cambiarías la regla para utilizar un umbral diferente?</li>
+<li>¿Por qué es necesario conservar la temperatura al recibir un evento de ventana?</li>
+<li>¿Qué riesgo aparecería si el actuador notificara un evento que provocara la misma orden nuevamente?</li>
+</ol>
+<p><strong>Limitaciones:</strong> se utiliza la última muestra sin comprobar su antigüedad. No hay histéresis para evitar alternancias cerca de 28 °C, manejo de desconexiones ni concurrencia. La construcción de componentes queda centralizada para simplificar el ensamblaje; una aplicación mayor podría inyectarlos con un ciclo de inicialización explícito.</p>
+<p><strong>Criterio de diseño:</strong> centralizar la coordinación no significa trasladar al mediador todo el comportamiento de los participantes.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="memento"></a></p>
+<h2>7. Memento · Restaurar un plan de muestreo</h2>
+<h3>Definición</h3>
+<p><strong>Memento</strong> permite capturar y restaurar el estado de un objeto manteniendo bajo control de ese objeto la interpretación de su estado interno. Otro componente puede conservar las instantáneas sin administrar sus campos [5].</p>
+<p><strong>Idea principal:</strong> separar la decisión de guardar o recuperar un estado de los detalles necesarios para reconstruirlo.</p>
+<h3>7.1. ¿Qué problema resuelve?</h3>
+<p>Un editor permite modificar intervalo y umbral de un plan. Para deshacer, necesita recuperar ambos valores como una configuración coherente. Si el historial conoce cada atributo y lo restaura por separado, queda acoplado a la estructura interna del plan.</p>
+<p>Cada cambio en el modelo obligaría a revisar el historial. Además, exponer todos los campos solo para permitir copias puede debilitar la encapsulación.</p>
+<p>El originador produce su propia instantánea y sabe cómo restaurarla. El historial únicamente conserva referencias y solicita la restauración. No necesita conocer si la configuración contiene dos campos o muchos más.</p>
+<h3>7.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Originador</td>
+<td>Producir una instantánea válida y restaurar su propio estado.</td>
+</tr>
+<tr>
+<td>Memento</td>
+<td>Conservar la información necesaria para la restauración.</td>
+</tr>
+<tr>
+<td>Cuidador</td>
+<td>Administrar cuándo guardar y qué instantánea recuperar, sin interpretar el contenido.</td>
+</tr>
+</tbody></table></div>
+<p>Una instantánea no tiene que ser una copia completa de todo el sistema. Debe contener el estado necesario para cumplir el alcance de restauración definido. Tampoco implica persistencia: puede existir únicamente en memoria.</p>
+<h3>7.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene para deshacer ediciones, conservar puntos de restauración o explorar alternativas de configuración sin exponer la representación del objeto.</p>
+<p>Si el estado es grande, conservar muchas copias puede ser costoso. Pueden necesitarse límites de historial, almacenamiento de diferencias o una estrategia de persistencia. Memento no determina automáticamente qué política resulta adecuada.</p>
+<h3>7.4. Caso práctico: configuración del muestreo</h3>
+<p>El plan comienza con intervalo de 30 segundos y umbral de 28. Se guarda ese estado y se cambia a 10 y 30. Se guarda nuevamente y se cambia a 5 y 35.</p>
+<p>Las dos restauraciones deben recuperar primero 10 y 30, y después 30 y 28. El historial guarda <strong>antes</strong> de cada modificación que se desea poder deshacer.</p>
+<p>También se prueba una instantánea producida por otro plan. Aunque los tipos coincidan, se rechaza porque pertenece a un originador diferente.</p>
+<h3>7.5. Estructura UML</h3>
+<p><a href="assets/memento.mmd">Diagrama editable de Memento</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Originador</td>
+<td><code>PlanMuestreo</code></td>
+</tr>
+<tr>
+<td>Contrato opaco</td>
+<td><code>Memento</code></td>
+</tr>
+<tr>
+<td>Instantánea concreta</td>
+<td><code>Instantanea</code>, record privado dentro del originador</td>
+</tr>
+<tr>
+<td>Cuidador</td>
+<td><code>Historial</code></td>
+</tr>
+</tbody></table></div>
+<p>El historial mantiene una pila de referencias <code>Memento</code>. La dependencia desde el plan hacia <code>Instantanea</code> indica que conoce su representación. La marca de record privado señala que no es un tipo público que el cuidador deba descomponer.</p>
+<h3>7.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/MementoDemo.java">MementoDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PlanMuestreo</code> · clase</td>
+<td>Validar cambios y producir o restaurar estados.</td>
+</tr>
+<tr>
+<td><code>Memento</code> · interfaz</td>
+<td>Permitir transportar una instantánea sin ofrecer accesores de sus valores.</td>
+</tr>
+<tr>
+<td><code>Instantanea</code> · record privado</td>
+<td>Guardar intervalo, umbral y un identificador de propietario.</td>
+</tr>
+<tr>
+<td><code>Historial</code> · clase</td>
+<td>Apilar instantáneas y restaurarlas en orden inverso.</td>
+</tr>
+</tbody></table></div>
+<p>El propietario se identifica mediante un objeto privado conservado por cada plan. La restauración comprueba identidad de ese objeto, no igualdad de valores del plan. Esta validación impide mezclar historiales de distintos originadores mediante las operaciones normales del ejemplo.</p>
+<p>Los valores guardados son primitivos y el identificador es estable. No se comparten listas modificables que puedan cambiar retroactivamente una instantánea. Si el estado incluyera objetos mutables, habría que decidir explícitamente cómo copiarlos.</p>
+<h3>7.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente crea un plan y un historial asociado a él.</li>
+<li>Solicita guardar antes de editar.</li>
+<li>El plan construye el memento y el cuidador lo apila sin inspeccionarlo.</li>
+<li>Se modifica la configuración y se repite el proceso para otra edición.</li>
+<li>Al deshacer, el plan restaura la instantánea de la cima y el historial la retira tras el éxito.</li>
+</ol>
+<p>El historial vacío devuelve <code>false</code>. El ejemplo no crea una pila paralela para rehacer ni conserva automáticamente el estado abandonado al restaurar.</p>
+<h3>7.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Intervalo=5, umbral=35.0
+Intervalo=10, umbral=30.0
+Intervalo=30, umbral=28.0
+Otro estado disponible: false
+Instantánea ajena
+</code></pre>
+<p>Las configuraciones se restauran por pares, no como cambios aislados de un único atributo. El último mensaje comprueba que un memento ajeno no se aplica al plan actual.</p>
+<h3>7.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué se recuperaría si se guardara después de editar en lugar de antes?</li>
+<li>¿Por qué el historial no necesita conocer el umbral?</li>
+<li>¿Qué habría que revisar si el plan incorporara una lista mutable de sensores?</li>
+</ol>
+<p><strong>Limitaciones:</strong> el historial no tiene límite de tamaño y existe solo durante la ejecución. El record privado y el contrato opaco expresan encapsulación de diseño, no aislamiento frente a reflexión o código malicioso. La demostración agrupa los tipos en un archivo; en un sistema mayor deben preservarse las restricciones al separar paquetes y archivos.</p>
+<p><strong>Criterio de diseño:</strong> el originador controla qué significa restaurar; el cuidador controla qué estado se conserva y cuándo se solicita su recuperación.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="observer"></a></p>
+<h2>8. Observer · Notificar nuevas lecturas</h2>
+<h3>Definición</h3>
+<p><strong>Observer</strong> establece una relación de suscripción entre un publicador y varios receptores. Cuando ocurre un hecho relevante, el publicador notifica a los observadores registrados mediante un contrato común [6].</p>
+<p><strong>Idea principal:</strong> permitir que diferentes reacciones se incorporen o retiren sin introducir referencias a cada clase concreta dentro de la fuente.</p>
+<h3>8.1. ¿Qué problema resuelve?</h3>
+<p>Cuando llega una lectura, puede ser necesario actualizar una pantalla y comprobar un umbral. Si la fuente construye y llama directamente a cada componente concreto, añadir otra reacción obliga a modificarla.</p>
+<p>Una lista de observadores permite configurar las reacciones desde fuera. La fuente solo conoce la operación de notificación; cada receptor decide cómo interpretar el evento.</p>
+<p>Esto no significa ausencia de acoplamiento. Existe un contrato compartido y una política de entrega que deben mantenerse estables. Además, una fuente que conserva observadores mantiene referencias a esos objetos hasta que se retiran o deja de existir.</p>
+<h3>8.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Publicador o sujeto</td>
+<td>Mantener suscripciones y emitir notificaciones.</td>
+</tr>
+<tr>
+<td>Observador</td>
+<td>Definir la operación que recibe el evento.</td>
+</tr>
+<tr>
+<td>Observador concreto</td>
+<td>Resolver una reacción particular.</td>
+</tr>
+<tr>
+<td>Evento o dato comunicado</td>
+<td>Transportar la información necesaria para reaccionar.</td>
+</tr>
+</tbody></table></div>
+<p>En el modelo <strong>push</strong>, el publicador entrega los datos del evento. En un modelo <strong>pull</strong>, el receptor recibe una señal y consulta información adicional. La demostración utiliza push mediante un objeto <code>Lectura</code>.</p>
+<h3>8.3. ¿Cuándo utilizarlo?</h3>
+<p>Es útil cuando varias reacciones dependen de un evento y sus participantes pueden variar: interfaces de usuario, avisos, proyecciones o monitoreo.</p>
+<p>No debe confundirse con mensajería distribuida. Observer puede ejecutarse completamente en un solo hilo mediante llamadas de método. Colas, reintentos, entrega duradera y comunicación entre procesos son decisiones adicionales.</p>
+<h3>8.4. Caso práctico: pantalla y alerta</h3>
+<p>La fuente publica temperaturas. Una pantalla imprime todas las lecturas y una alerta reacciona cuando el valor es al menos 28 °C. Ambas se suscriben antes de recibir datos.</p>
+<p>Después de dos publicaciones, la alerta se retira. Una tercera lectura de 31 °C debe mostrarse en pantalla, pero no producir el mensaje de alerta.</p>
+<p>El contrato del ejemplo presupone temperaturas Celsius. El record conserva identificador y valor, por lo que esa unidad es una condición del flujo; no se deduce del tipo <code>double</code>.</p>
+<h3>8.5. Estructura UML</h3>
+<p><a href="assets/observer.mmd">Diagrama editable de Observer</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Publicador</td>
+<td><code>FuenteLecturas</code></td>
+</tr>
+<tr>
+<td>Observador</td>
+<td><code>ObservadorLectura</code></td>
+</tr>
+<tr>
+<td>Observadores concretos</td>
+<td><code>Pantalla</code>, <code>AlertaUmbral</code></td>
+</tr>
+<tr>
+<td>Evento</td>
+<td><code>Lectura</code></td>
+</tr>
+</tbody></table></div>
+<p>La fuente conserva una colección de la interfaz, no una colección específica de pantallas. Los observadores reciben la lectura como parámetro y no mantienen una referencia de vuelta a la fuente en esta implementación.</p>
+<h3>8.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/ObserverDemo.java">ObserverDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Lectura</code> · record</td>
+<td>Rechazar identificadores vacíos y valores no finitos.</td>
+</tr>
+<tr>
+<td><code>FuenteLecturas</code> · clase</td>
+<td>Suscribir, retirar y publicar sobre una instantánea de destinatarios.</td>
+</tr>
+<tr>
+<td><code>Pantalla</code> · clase</td>
+<td>Representar el dato recibido.</td>
+</tr>
+<tr>
+<td><code>AlertaUmbral</code> · clase</td>
+<td>Comparar el valor con un límite finito.</td>
+</tr>
+</tbody></table></div>
+<p>La suscripción evita duplicados usando <code>contains()</code>. En las clases suministradas no se redefine igualdad, por lo que agregar otra vez la misma instancia no la duplica; dos instancias distintas de alerta siguen siendo receptores diferentes.</p>
+<p>La copia de la lista estabiliza quiénes participan en una publicación. Cambios de suscripción realizados durante una notificación afectan publicaciones posteriores, no la instantánea ya obtenida. La política de error es explícita: una excepción de un observador interrumpe el envío a los siguientes.</p>
+<h3>8.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente crea la fuente, una pantalla y una alerta.</li>
+<li>Registra los receptores en ese orden.</li>
+<li>La fuente publica y llama a cada <code>actualizar()</code> con la misma lectura inmutable.</li>
+<li>Cada observador ejecuta su reacción local.</li>
+<li>El cliente retira la alerta y realiza otra publicación.</li>
+</ol>
+<p>La notificación es síncrona. La llamada a <code>publicar()</code> no termina hasta que finalizan los observadores alcanzados o se propaga una excepción.</p>
+<h3>8.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Pantalla: S01 = 27.0 °C
+Pantalla: S02 = 30.0 °C
+Alerta: S02
+Después de retirar la alerta:
+Pantalla: S03 = 31.0 °C
+</code></pre>
+<p>La primera lectura no alcanza el umbral. La segunda genera ambas reacciones. La última solo aparece en pantalla porque la alerta ya no está registrada.</p>
+<h3>8.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Cómo se añadiría un registro de lecturas sin modificar la fuente?</li>
+<li>¿Qué política sería necesaria si un observador fallido no debiera impedir los demás avisos?</li>
+<li>¿Por qué debe retirarse un observador cuando su ciclo de vida termina antes que el de la fuente?</li>
+</ol>
+<p><strong>Limitaciones y costo:</strong> cada publicación recorre O(m) observadores y copia O(m) referencias. No hay entrega asíncrona, aislamiento de fallos, reintentos ni protección concurrente. La copia no evita una recursión si un observador vuelve a publicar indefinidamente. El orden visible corresponde al registro y no debería asumirse sin documentar esa política.</p>
+<p><strong>Criterio de diseño:</strong> desacoplar las reacciones exige mantener explícitas las reglas de suscripción, entrega y manejo de fallos.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="state"></a></p>
+<h2>9. State · Controlar una sesión de muestreo</h2>
+<h3>Definición</h3>
+<p><strong>State</strong> distribuye el comportamiento dependiente del estado entre objetos que representan los estados posibles de un contexto. El contexto delega sus operaciones en el estado actual y puede sustituirlo durante una transición [7].</p>
+<p><strong>Idea principal:</strong> localizar las reglas de cada estado y sus transiciones sin repetir condicionales sobre el estado en todas las operaciones.</p>
+<h3>9.1. ¿Qué problema resuelve?</h3>
+<p>Una sesión puede estar preparada, activa, pausada o cerrada. La acción de iniciar no significa lo mismo en todos esos estados: desde preparada comienza el muestreo; desde pausada lo reanuda; desde cerrada es inválida.</p>
+<p>Un conjunto de métodos con condiciones repetidas puede dispersar las reglas de transición. Al incorporar un estado, habría que revisar cada operación para comprobar que lo contempla.</p>
+<p>State asigna cada respuesta a un objeto de estado. La sesión sigue siendo la misma instancia: lo que cambia es el colaborador que decide cómo responder.</p>
+<h3>9.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contexto</td>
+<td>Conservar el estado actual y delegar operaciones.</td>
+</tr>
+<tr>
+<td>Estado</td>
+<td>Declarar el contrato de operaciones dependientes del estado.</td>
+</tr>
+<tr>
+<td>Estado concreto</td>
+<td>Resolver una operación y, cuando corresponda, solicitar una transición.</td>
+</tr>
+</tbody></table></div>
+<p>Las transiciones pueden definirse en el contexto o en los estados concretos. El ejemplo las ubica en los estados. Esa elección hace visible la regla local, pero también crea dependencias entre estados que conocen sus posibles destinos.</p>
+<h3>9.3. ¿Cuándo utilizarlo?</h3>
+<p>Es apropiado cuando varias operaciones dependen del estado y las reglas de transición tienen suficiente complejidad para justificar su separación. Puede utilizarse en sesiones, documentos, pedidos o protocolos.</p>
+<p>Para un número pequeño de estados y una sola operación, un <code>enum</code> con una tabla o un condicional puede ser más claro. State no obliga a reemplazar cualquier variable booleana por una jerarquía de clases.</p>
+<h3>9.4. Caso práctico: ciclo de la sesión</h3>
+<p>La sesión comienza preparada. Iniciar la activa, pausar la suspende e iniciar desde pausa la reactiva. Cerrar es irreversible en este modelo.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Estado actual</th>
+<th>Iniciar</th>
+<th>Pausar</th>
+<th>Cerrar</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Preparada</td>
+<td>Pasa a Activa</td>
+<td>Error</td>
+<td>Pasa a Cerrada</td>
+</tr>
+<tr>
+<td>Activa</td>
+<td>Permanece Activa</td>
+<td>Pasa a Pausada</td>
+<td>Pasa a Cerrada</td>
+</tr>
+<tr>
+<td>Pausada</td>
+<td>Pasa a Activa</td>
+<td>Permanece Pausada</td>
+<td>Pasa a Cerrada</td>
+</tr>
+<tr>
+<td>Cerrada</td>
+<td>Error</td>
+<td>Error</td>
+<td>Permanece Cerrada</td>
+</tr>
+</tbody></table></div>
+<p>Las operaciones que permanecen en el mismo estado son idempotentes respecto del estado. No se consideran errores porque el ejemplo define expresamente esa política.</p>
+<h3>9.5. Estructura UML</h3>
+<p><a href="assets/state.mmd">Diagrama editable de State</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contexto</td>
+<td><code>SesionMuestreo</code></td>
+</tr>
+<tr>
+<td>Estado</td>
+<td><code>EstadoSesion</code></td>
+</tr>
+<tr>
+<td>Estados concretos</td>
+<td><code>Preparada</code>, <code>Activa</code>, <code>Pausada</code>, <code>Cerrada</code></td>
+</tr>
+</tbody></table></div>
+<p>La sesión conserva un único estado. Las dependencias entre estados indican los destinos que cada uno construye. La tabla anterior expresa la semántica de las transiciones; el diagrama UML muestra las clases que la implementan.</p>
+<h3>9.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/StateDemo.java">StateDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SesionMuestreo</code> · clase</td>
+<td>Delegar iniciar, pausar y cerrar; reemplazar su referencia de estado.</td>
+</tr>
+<tr>
+<td><code>EstadoSesion</code> · interfaz</td>
+<td>Definir las operaciones y el nombre visible del estado.</td>
+</tr>
+<tr>
+<td>Estados concretos · clases</td>
+<td>Implementar las decisiones de la tabla.</td>
+</tr>
+</tbody></table></div>
+<p>El contexto se entrega como parámetro a las operaciones del estado. Así, un estado puede solicitar el cambio sin conservar una referencia permanente a una sesión concreta.</p>
+<p><code>cambiar()</code> es una operación interna de colaboración, con visibilidad de paquete en la demostración. No debe convertirse en una vía pública para asignar cualquier estado y saltarse las reglas del ciclo. Al distribuir los tipos en un proyecto, esa frontera debe conservarse mediante un diseño de paquetes o encapsulación adecuado.</p>
+<h3>9.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente crea la sesión y consulta su estado inicial.</li>
+<li>Solicita iniciar; <code>Preparada</code> instala una instancia de <code>Activa</code>.</li>
+<li>Solicita pausar; la respuesta procede ahora de <code>Activa</code>.</li>
+<li>Inicia otra vez; <code>Pausada</code> vuelve a instalar <code>Activa</code>.</li>
+<li>Cierra y después intenta iniciar; <code>Cerrada</code> rechaza la operación.</li>
+</ol>
+<p>No se reemplaza la sesión ni se cambia su clase Java. Las diferencias de comportamiento se producen por la referencia que recibe las llamadas delegadas.</p>
+<h3>9.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Preparada
+Activa
+Pausada
+Activa
+Cerrada
+Sesión cerrada
+</code></pre>
+<p>La última operación muestra que una sesión cerrada no puede volver a activarse mediante el contrato del ejemplo.</p>
+<h3>9.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué diferencia existe entre iniciar una sesión activa y una cerrada?</li>
+<li>¿Qué clases habría que revisar para añadir un estado de fallo con recuperación?</li>
+<li>¿Por qué permitir asignar libremente el estado desde el cliente debilitaría la máquina de estados?</li>
+</ol>
+<p><strong>Limitaciones:</strong> no se leen sensores ni se inicia un hilo de muestreo. Las transiciones no persisten y no son atómicas frente a llamadas concurrentes. Añadir un estado no siempre evita modificar otros: deben conectarse los destinos y garantizarse las reglas de transición.</p>
+<p><strong>Criterio de diseño:</strong> el comportamiento cambia por el ciclo de vida del contexto, no porque el cliente elija libremente otro algoritmo de cálculo.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="strategy"></a></p>
+<h2>10. Strategy · Seleccionar un cálculo estadístico</h2>
+<h3>Definición</h3>
+<p><strong>Strategy</strong> define algoritmos alternativos mediante un contrato común y permite que un contexto utilice uno de ellos por composición. El contexto delega el cálculo sin contener la implementación de cada alternativa [8].</p>
+<p><strong>Idea principal:</strong> separar la operación que un servicio necesita del algoritmo concreto seleccionado para realizarla.</p>
+<h3>10.1. ¿Qué problema resuelve?</h3>
+<p>Un análisis puede resumir mediciones mediante promedio o mediana. Ambas operaciones producen una medida central, pero responden de forma diferente a valores extremos.</p>
+<p>Si cada alternativa se inserta dentro de un método con condiciones, la clase analizadora acumula algoritmos y debe modificarse al agregar otro. Las estrategias separan esas implementaciones mientras el analizador conserva las reglas comunes de entrada.</p>
+<p>Intercambiable no significa numéricamente equivalente. El cliente selecciona una estrategia según el objetivo del análisis, no porque todos los algoritmos deban devolver el mismo número.</p>
+<h3>10.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contexto</td>
+<td>Conservar una estrategia y delegar la operación.</td>
+</tr>
+<tr>
+<td>Estrategia</td>
+<td>Declarar el contrato del algoritmo.</td>
+</tr>
+<tr>
+<td>Estrategia concreta</td>
+<td>Implementar una alternativa.</td>
+</tr>
+<tr>
+<td>Cliente</td>
+<td>Seleccionar la estrategia adecuada y proporcionar datos.</td>
+</tr>
+</tbody></table></div>
+<p>El contrato debe incluir precondiciones y tratamiento de ausencia. Aquí todas las estrategias admiten una lista vacía y devuelven <code>OptionalDouble.empty()</code>, sin inventar un cero como resultado estadístico.</p>
+<h3>10.3. ¿Cuándo utilizarlo?</h3>
+<p>Es útil para algoritmos con variantes seleccionables: cálculo de resúmenes, tarifas, rutas, validaciones o criterios de clasificación. Permite probar cada alternativa por separado.</p>
+<p>Si la variación es una expresión pequeña, una interfaz funcional y una lambda pueden ser suficientes. Las clases con nombre se utilizan aquí para hacer visibles las responsabilidades y los costos de cada algoritmo.</p>
+<h3>10.4. Caso práctico: promedio y mediana</h3>
+<p>Se reciben 20, 21 y 100. El promedio es 47 y la mediana es 21. La diferencia muestra la influencia del valor extremo sobre el promedio.</p>
+<p>Se asume que los datos pertenecen a la misma magnitud y unidad. El tipo <code>Double</code> no puede garantizar ese requisito. La validación rechaza valores no finitos y referencias nulas.</p>
+<p>La estrategia de mediana no debe modificar el orden de la lista recibida. El cliente puede necesitar reutilizar esos datos para otra operación o conservar su secuencia original.</p>
+<h3>10.5. Estructura UML</h3>
+<p><a href="assets/strategy.mmd">Diagrama editable de Strategy</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contexto</td>
+<td><code>Analizador</code></td>
+</tr>
+<tr>
+<td>Estrategia</td>
+<td><code>EstrategiaResumen</code></td>
+</tr>
+<tr>
+<td>Estrategias concretas</td>
+<td><code>Promedio</code>, <code>Mediana</code></td>
+</tr>
+<tr>
+<td>Resultado</td>
+<td><code>OptionalDouble</code> de Java</td>
+</tr>
+</tbody></table></div>
+<p><code>Analizador</code> conserva una sola estrategia y puede reemplazarla mediante <code>usar()</code>. Las estrategias no se conocen entre sí ni deciden automáticamente cuál debe ejecutarse después.</p>
+<h3>10.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/StrategyDemo.java">StrategyDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Analizador</code> · clase</td>
+<td>Validar la entrada, obtener una copia no modificable y delegar.</td>
+</tr>
+<tr>
+<td><code>EstrategiaResumen</code> · interfaz</td>
+<td>Declarar <code>calcular()</code> con resultado opcional.</td>
+</tr>
+<tr>
+<td><code>Promedio</code> · clase</td>
+<td>Sumar valores y dividir por la cantidad.</td>
+</tr>
+<tr>
+<td><code>Mediana</code> · clase</td>
+<td>Ordenar una copia y seleccionar el centro o promediar los dos centrales.</td>
+</tr>
+</tbody></table></div>
+<p>La implementación de promedio rechaza un resultado no finito por desbordamiento. La mediana divide los dos valores centrales antes de sumarlos para evitar el desbordamiento de su suma directa. Esta decisión no convierte a <code>double</code> en aritmética exacta: todavía puede haber redondeo y subdesbordamiento.</p>
+<p>Las estrategias presuponen la validación efectuada por <code>Analizador</code>. Invocarlas directamente con valores inválidos no está cubierto por el contrato de uso de esta demostración.</p>
+<h3>10.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente construye un analizador con <code>Promedio</code>.</li>
+<li>Solicita el resumen y recibe un valor presente.</li>
+<li>Reemplaza la estrategia por <code>Mediana</code> usando la misma instancia de analizador.</li>
+<li>Vuelve a calcular sobre los mismos datos.</li>
+<li>Comprueba la lista original, la entrada vacía y el rechazo de <code>NaN</code>.</li>
+</ol>
+<p>La selección cambia fuera del algoritmo. El método <code>resumir()</code> no necesita preguntar si el objeto es un promedio o una mediana.</p>
+<h3>10.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">Promedio: 47.0
+Mediana: 21.0
+Lista original: [20.0, 21.0, 100.0]
+Lista vacía: OptionalDouble.empty
+Valor no finito
+</code></pre>
+<p>La lista original conserva su orden y sus valores. La entrada vacía comunica ausencia de resultado; no se confunde con un resumen cuyo valor legítimo sea cero.</p>
+<h3>10.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué implementación añadirías para calcular un máximo sin cambiar el analizador?</li>
+<li>¿Por qué promedio y mediana pueden compartir contrato aunque produzcan valores diferentes?</li>
+<li>¿Qué riesgo habría al ordenar directamente una lista recibida del cliente?</li>
+</ol>
+<p><strong>Limitaciones y costo:</strong> el promedio usa O(n) de tiempo y O(1) de memoria auxiliar dentro de su algoritmo; la mediana implementada mediante ordenación usa O(n log n) y O(n) para la copia. El analizador añade su propia copia O(n) en ambos casos. No se implementa una mediana mediante selección lineal ni estadística de precisión arbitraria.</p>
+<p><strong>Criterio de diseño:</strong> la estrategia contiene el algoritmo variable; el contexto conserva la operación y sus condiciones comunes.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="template-method"></a></p>
+<h2>11. Template Method · Especializar un proceso de importación</h2>
+<h3>Definición</h3>
+<p><strong>Template Method</strong> fija la secuencia de un algoritmo en una clase base y permite que las subclases especialicen determinados pasos. La estructura general se conserva mientras varían operaciones concretas [9].</p>
+<p><strong>Idea principal:</strong> reutilizar un procedimiento estable y declarar explícitamente sus puntos de extensión.</p>
+<h3>11.1. ¿Qué problema resuelve?</h3>
+<p>Importar lecturas desde distintos formatos exige recorrer líneas, ignorar vacías, interpretar, validar y devolver resultados. Copiar ese procedimiento para cada separador duplica el manejo de errores y las decisiones comunes.</p>
+<p>La clase base puede controlar el recorrido y pedir a una subclase que interprete cada línea. También puede ofrecer una operación opcional al finalizar, sin obligar a todas las variantes a realizar una acción adicional.</p>
+<p>El cliente llama a la operación completa. No organiza manualmente los pasos ni puede cambiar su orden a través de las subclases suministradas.</p>
+<h3>11.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Clase abstracta</td>
+<td>Contener el método plantilla y declarar los pasos variables.</td>
+</tr>
+<tr>
+<td>Método plantilla</td>
+<td>Establecer el orden general de ejecución.</td>
+</tr>
+<tr>
+<td>Operación primitiva</td>
+<td>Paso que una subclase debe implementar.</td>
+</tr>
+<tr>
+<td>Hook</td>
+<td>Punto de extensión opcional con comportamiento predeterminado.</td>
+</tr>
+<tr>
+<td>Clase concreta</td>
+<td>Especializar los pasos que le corresponden.</td>
+</tr>
+</tbody></table></div>
+<p>Una operación primitiva abstracta es obligatoria; un hook tiene una implementación por defecto y puede permanecer sin cambios. No todos los métodos de la clase base deben poder sobrescribirse.</p>
+<h3>11.3. ¿Cuándo utilizarlo?</h3>
+<p>Conviene cuando varios procesos tienen la misma estructura y diferencias en pasos concretos: importaciones, validaciones por etapas o algoritmos que utilizan especialización por herencia.</p>
+<p>Si se necesita combinar pasos libremente en tiempo de ejecución, la composición con estrategias puede ser más flexible. Template Method vincula las variantes a la jerarquía y exige respetar las condiciones del algoritmo base.</p>
+<h3>11.4. Caso práctico: dos separadores</h3>
+<p>Se admiten líneas separadas por punto y coma o por tabulación, siempre con id, valor y unidad. El proceso omite líneas vacías y rechaza datos no finitos.</p>
+<p>La variante de tabulación informa cuántas lecturas importó al terminar. La variante de punto y coma no añade un mensaje de finalización. Ambas mantienen el mismo recorrido y el mismo formato de error con número de línea física.</p>
+<p>Si existe una línea vacía antes de un registro inválido, el error debe conservar su posición original. No se renumeran las líneas después de omitir las vacías.</p>
+<h3>11.5. Estructura UML</h3>
+<p><a href="assets/template-method.mmd">Diagrama editable de Template Method</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Implementación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Clase abstracta</td>
+<td><code>Importador</code></td>
+</tr>
+<tr>
+<td>Método plantilla</td>
+<td><code>importar()</code></td>
+</tr>
+<tr>
+<td>Operación primitiva</td>
+<td><code>interpretar()</code></td>
+</tr>
+<tr>
+<td>Hook</td>
+<td><code>alCompletar()</code></td>
+</tr>
+<tr>
+<td>Clases concretas</td>
+<td><code>ImportadorPuntoComa</code>, <code>ImportadorTabulacion</code></td>
+</tr>
+<tr>
+<td>Dato generado</td>
+<td><code>Lectura</code></td>
+</tr>
+</tbody></table></div>
+<p>La relación principal es herencia entre importadores. No hay una interfaz de lector ni un método que cree un lector para delegarle la interpretación: el paso se especializa directamente en la subclase.</p>
+<h3>11.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/TemplateMethodDemo.java">TemplateMethodDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo o método</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Lectura</code> · record</td>
+<td>Validar id, unidad y finitud del valor.</td>
+</tr>
+<tr>
+<td><code>Importador.importar()</code> · método final</td>
+<td>Controlar recorrido, omisión de vacías, errores, copia de salida y finalización.</td>
+</tr>
+<tr>
+<td><code>Importador.interpretar()</code> · método abstracto</td>
+<td>Exigir la interpretación particular de cada formato.</td>
+</tr>
+<tr>
+<td><code>Importador.desdeCampos()</code> · método final</td>
+<td>Reutilizar validación del número de campos y construcción de lecturas.</td>
+</tr>
+<tr>
+<td><code>Importador.alCompletar()</code> · hook</td>
+<td>Ofrecer una acción opcional después de una importación correcta.</td>
+</tr>
+</tbody></table></div>
+<p>El método plantilla es <code>final</code>, por lo que la subclase no puede sustituir el algoritmo completo. La variante de tabulación sobrescribe tanto la interpretación como el hook. La de punto y coma solo implementa el paso obligatorio.</p>
+<p>La copia de salida no permite modificar la lista y rechaza resultados nulos. Las subclases suministradas devuelven lecturas válidas o lanzan una excepción; ese es el contrato que debe respetar cualquier extensión.</p>
+<h3>11.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente selecciona una subclase de importador.</li>
+<li>Invoca el método heredado <code>importar()</code>.</li>
+<li>La clase base recorre las líneas y llama al paso <code>interpretar()</code> mediante polimorfismo.</li>
+<li>La subclase separa campos y utiliza el apoyo común.</li>
+<li>Tras completar todas las líneas, se obtiene la copia de salida y se ejecuta el hook.</li>
+</ol>
+<p>El hook no se ejecuta si una interpretación falla. Si el propio hook lanza una excepción, la llamada completa tampoco devuelve un resultado exitoso; la demostración no incluye recuperación de ese efecto.</p>
+<h3>11.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">[Lectura[id=S01, valor=22.5, unidad=°C]]
+Importadas con tabulación: 1
+[Lectura[id=S02, valor=18.0, unidad=personas]]
+Línea 2: Lectura inválida
+</code></pre>
+<p>El mensaje de cantidad procede solo de la subclase de tabulación. El error se atribuye a la línea 2 porque la línea vacía anterior conserva su posición en la entrada.</p>
+<h3>11.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre el paso abstracto y el hook?</li>
+<li>¿Por qué marcar <code>importar()</code> como <code>final</code> protege la estructura del proceso?</li>
+<li>¿Qué tendría que cambiar para utilizar un lector intercambiable por composición en lugar de herencia?</li>
+</ol>
+<p><strong>Limitaciones:</strong> no se admiten delimitadores escapados ni campos entre comillas. El algoritmo conserva toda la salida en memoria y no guarda en una base de datos. Las extensiones deben respetar el contrato de los pasos para no invalidar las garantías de la clase base.</p>
+<p><strong>Relación con Factory Method:</strong> Factory Method varía la provisión de un producto, como un lector. Aquí se varía directamente un paso de interpretación. Un método plantilla podría utilizar un Factory Method, pero ambos conceptos cumplen responsabilidades distintas.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="visitor"></a></p>
+<h2>12. Visitor · Aplicar operaciones a distintos sensores</h2>
+<h3>Definición</h3>
+<p><strong>Visitor</strong> separa operaciones de una familia de elementos y las reúne en objetos visitantes. Los elementos aceptan al visitante para que se ejecute la variante de la operación correspondiente a su tipo concreto [10].</p>
+<p><strong>Idea principal:</strong> facilitar la incorporación de operaciones sobre una estructura de tipos relativamente estable, manteniendo esas operaciones fuera de los elementos.</p>
+<h3>12.1. ¿Qué problema resuelve?</h3>
+<p>Una lista contiene sensores de temperatura y ocupación. Se necesita describirlos y elaborar un diagnóstico distinto para cada tipo. Añadir cada nueva operación directamente a todos los sensores puede dispersar la lógica de un mismo proceso entre varias clases.</p>
+<p>Otra posibilidad sería una función externa con muchos <code>instanceof</code>. Visitor organiza explícitamente las variantes de cada operación en un visitante y utiliza el método de aceptación del elemento para dirigir la llamada.</p>
+<p>El costo aparece cuando cambian los tipos de elemento: agregar un tipo nuevo suele exigir ampliar el contrato del visitante y actualizar sus implementaciones. El patrón favorece un eje de extensión, no todos a la vez.</p>
+<h3>12.2. Estructura y participantes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Participante</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Elemento</td>
+<td>Declarar una operación de aceptación del visitante.</td>
+</tr>
+<tr>
+<td>Elemento concreto</td>
+<td>Dirigir al visitante hacia la operación correspondiente a su tipo.</td>
+</tr>
+<tr>
+<td>Visitante</td>
+<td>Declarar una operación por tipo de elemento.</td>
+</tr>
+<tr>
+<td>Visitante concreto</td>
+<td>Implementar un proceso completo sobre los tipos admitidos.</td>
+</tr>
+<tr>
+<td>Estructura de objetos</td>
+<td>Conservar los elementos sobre los que se aplica la operación.</td>
+</tr>
+</tbody></table></div>
+<p>El visitante puede devolver un resultado o acumularlo. Este ejemplo devuelve un <code>String</code> por elemento y no mantiene acumuladores, para hacer visible el despacho sin añadir estado de reporte.</p>
+<h3>12.3. ¿Cuándo utilizarlo?</h3>
+<p>Es apropiado cuando los tipos de elemento cambian poco y se necesitan varias operaciones externas: exportación, validación, descripción o análisis de una estructura.</p>
+<p>Si aparecen tipos nuevos continuamente, mantener todos los visitantes puede resultar costoso. Una operación central y estable del dominio también puede pertenecer naturalmente al propio elemento, sin necesitar un visitante.</p>
+<h3>12.4. Caso práctico: descripción y diagnóstico</h3>
+<p>La lista contiene un sensor de temperatura con 30 °C y uno de ocupación con 18 personas. <code>Descripcion</code> genera texto con la unidad correspondiente. <code>Diagnostico</code> aplica reglas distintas: temperatura alta a partir de 28 y aforo excedido por encima de 30 personas.</p>
+<p>Los records validan sus datos básicos: identificador no vacío, temperatura finita y ocupación no negativa. El diagnóstico interpreta esos datos, pero no es el responsable de permitir o impedir la construcción de un objeto inválido.</p>
+<p>Los umbrales son reglas locales de la demostración. No constituyen límites generales para todos los sensores o espacios.</p>
+<h3>12.5. Estructura UML</h3>
+<p><a href="assets/visitor.mmd">Diagrama editable de Visitor</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Tipo del ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Elemento</td>
+<td><code>Sensor</code></td>
+</tr>
+<tr>
+<td>Elementos concretos</td>
+<td><code>SensorTemperatura</code>, <code>SensorOcupacion</code></td>
+</tr>
+<tr>
+<td>Visitante</td>
+<td><code>VisitanteSensor</code></td>
+</tr>
+<tr>
+<td>Visitantes concretos</td>
+<td><code>Descripcion</code>, <code>Diagnostico</code></td>
+</tr>
+<tr>
+<td>Estructura</td>
+<td><code>List&lt;Sensor&gt;</code> construida en <code>main()</code></td>
+</tr>
+</tbody></table></div>
+<p>La interfaz del visitante declara dos sobrecargas de <code>visitar()</code>, una por tipo concreto. Cada sensor acepta un visitante mediante el mismo contrato y llama a la sobrecarga que corresponde a su clase.</p>
+<h3>12.6. Implementación del ejemplo en Java</h3>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/VisitorDemo.java">VisitorDemo.java</a>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Responsabilidad concreta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Sensor</code> · interfaz</td>
+<td>Declarar <code>aceptar()</code> con resultado de texto.</td>
+</tr>
+<tr>
+<td>Records de sensores</td>
+<td>Conservar los datos y ejecutar la llamada al visitante usando su tipo concreto.</td>
+</tr>
+<tr>
+<td><code>VisitanteSensor</code> · interfaz</td>
+<td>Enumerar las variantes de visita admitidas.</td>
+</tr>
+<tr>
+<td><code>Descripcion</code> · clase</td>
+<td>Representar id, valor y unidad.</td>
+</tr>
+<tr>
+<td><code>Diagnostico</code> · clase</td>
+<td>Evaluar temperatura y ocupación según reglas distintas.</td>
+</tr>
+</tbody></table></div>
+<p>El <strong>doble despacho</strong> se implementa mediante dos etapas. Primero, la llamada a <code>aceptar()</code> se resuelve según la clase real del sensor. Dentro de esa implementación, el tipo estático de <code>this</code> es concreto, por lo que Java selecciona la sobrecarga correcta de <code>visitar()</code>. La implementación de esa operación se despacha luego según el visitante real.</p>
+<p>Java no selecciona sobrecargas automáticamente según el tipo dinámico de los argumentos. Por eso no basta con invocar <code>visitar()</code> sobre una variable cuyo tipo estático es simplemente <code>Sensor</code>.</p>
+<h3>12.7. ¿Cómo se utiliza el patrón?</h3>
+<ol>
+<li>El cliente construye una lista declarada con el contrato <code>Sensor</code>.</li>
+<li>Crea un visitante de descripción y otro de diagnóstico.</li>
+<li>Recorre la lista y solicita a cada elemento aceptar el primer visitante.</li>
+<li>Cada elemento dirige la llamada a su variante de visita.</li>
+<li>Se repite el recorrido con el segundo visitante, sobre los mismos objetos.</li>
+</ol>
+<p>No se copia ni se reemplaza el sensor para cambiar de operación. La elección de visitante determina qué proceso se aplica.</p>
+<h3>12.8. Resultado de la ejecución</h3>
+<pre><code class="language-text">S01: 30.0 °C
+S02: 18 personas
+S01: temperatura alta
+S02: aforo permitido
+</code></pre>
+<p>Las dos primeras líneas proceden de la operación descriptiva y las dos siguientes de diagnóstico. Cada visitante implementa el proceso completo para los dos tipos de sensor.</p>
+<h3>12.9. Análisis</h3>
+<p><strong>Preguntas:</strong></p>
+<ol>
+<li>¿Qué implementación nueva permitiría obtener otra representación sin modificar los sensores existentes?</li>
+<li>¿Qué contratos habría que revisar para añadir un sensor de humedad?</li>
+<li>¿Por qué <code>aceptar()</code> resulta necesario para resolver las sobrecargas con tipos concretos?</li>
+</ol>
+<p><strong>Limitaciones:</strong> todos los visitantes deben cubrir los tipos declarados. Si una operación necesitara información no expuesta, habría que revisar la encapsulación del elemento; no conviene publicar todo su estado únicamente para facilitar visitas. La lista del ejemplo es plana: Visitor no incorpora por sí mismo un recorrido de árboles o grafos.</p>
+<p><strong>Criterio de diseño:</strong> resulta favorable añadir operaciones cuando la familia de elementos es estable; cambiar esa familia desplaza el costo hacia los visitantes.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="comparacion"></a></p>
+<h2>13. Comparación y criterios de elección</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Patrón</th>
+<th>Problema central</th>
+<th>Colaboración decisiva del ejemplo</th>
+<th>Condición que debe definirse</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chain of Responsibility</td>
+<td>Procesar una solicitud mediante responsables ordenados.</td>
+<td>Un filtro comprueba y continúa o rechaza.</td>
+<td>Orden, final de cadena y primer error.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Representar una solicitud como objeto.</td>
+<td>El historial ejecuta comandos que utilizan una configuración.</td>
+<td>Momento de registro, reversibilidad y repetición.</td>
+</tr>
+<tr>
+<td>Interpreter</td>
+<td>Evaluar expresiones de un lenguaje pequeño.</td>
+<td>Los nodos interpretan un contexto y combinan resultados.</td>
+<td>Gramática, tipos, agrupación y límites del lenguaje.</td>
+</tr>
+<tr>
+<td>Iterator</td>
+<td>Separar recorrido y representación de una colección.</td>
+<td>Cada iterador mantiene su propia instantánea y cursor.</td>
+<td>Orden, agotamiento y cambios de la colección.</td>
+</tr>
+<tr>
+<td>Mediator</td>
+<td>Centralizar la coordinación entre componentes.</td>
+<td>Un control recibe eventos y decide acciones del ventilador.</td>
+<td>Alcance de las reglas y ciclos de notificación.</td>
+</tr>
+<tr>
+<td>Memento</td>
+<td>Capturar y restaurar estado sin trasladar su interpretación al historial.</td>
+<td>El plan produce instantáneas que el cuidador conserva.</td>
+<td>Profundidad de copia, propietario y retención.</td>
+</tr>
+<tr>
+<td>Observer</td>
+<td>Notificar hechos a receptores suscritos.</td>
+<td>Una fuente publica a los observadores mediante un contrato común.</td>
+<td>Entrega, errores, orden y fin de suscripción.</td>
+</tr>
+<tr>
+<td>State</td>
+<td>Variar la respuesta según el estado interno.</td>
+<td>Una sesión delega y sus estados producen transiciones.</td>
+<td>Operaciones válidas y destinos permitidos.</td>
+</tr>
+<tr>
+<td>Strategy</td>
+<td>Intercambiar algoritmos de una operación.</td>
+<td>Un analizador delega en promedio o mediana.</td>
+<td>Precondiciones y significado del resultado.</td>
+</tr>
+<tr>
+<td>Template Method</td>
+<td>Conservar un algoritmo y especializar pasos.</td>
+<td>Una clase base recorre y las subclases interpretan líneas.</td>
+<td>Pasos obligatorios, hooks y secuencia invariable.</td>
+</tr>
+<tr>
+<td>Visitor</td>
+<td>Añadir operaciones sobre tipos de elemento estables.</td>
+<td>Cada sensor dirige la operación al visitante adecuado.</td>
+<td>Costo de incorporar nuevos tipos de elemento.</td>
+</tr>
+</tbody></table></div>
+<h3>13.1. State y Strategy</h3>
+<p>Ambos utilizan delegación, pero responden a motivos diferentes. En Strategy, el cliente elige un algoritmo para una operación. En State, el estado actual determina qué acciones son válidas y cómo cambia el contexto durante su ciclo de vida.</p>
+<p>Promedio no necesita conocer Mediana ni cambiar automáticamente a ella. En cambio, Preparada conoce un destino de transición hacia Activa. La estructura parecida no implica la misma intención.</p>
+<h3>13.2. Command y Memento</h3>
+<p>Command representa una acción y puede conservar información para revertirla. Memento representa un estado y permite restaurarlo. Un historial puede usar comandos, mementos o ambos.</p>
+<p>En el cambio de intervalo, el comando conserva un valor anterior específico. En el plan de muestreo, el originador conserva una configuración completa en una instantánea. Ningún mecanismo revierte automáticamente un efecto externo irreversible.</p>
+<h3>13.3. Mediator y Observer</h3>
+<p>Observer distribuye eventos a receptores que tienen sus propias reacciones. Mediator concentra una política de coordinación entre componentes. La fuente de lecturas no decide cómo se combinan pantalla y alerta; el control de clima sí decide cómo influyen ventana y temperatura sobre el ventilador.</p>
+<p>Un mediador podría recibir eventos mediante observadores, pero el mecanismo de notificación y la regla de coordinación seguirían siendo responsabilidades diferentes.</p>
+<h3>13.4. Strategy y Template Method</h3>
+<p>Strategy utiliza composición para sustituir un algoritmo. Template Method utiliza herencia para especializar pasos de una estructura definida por la clase base. Si la variación debe seleccionarse durante la ejecución, una estrategia puede facilitarlo; si debe conservarse una secuencia con extensiones limitadas, un método plantilla puede expresar mejor esa restricción.</p>
+<p>La elección no debe basarse únicamente en preferir interfaces o clases abstractas, sino en qué parte del comportamiento debe permanecer estable.</p>
+<h3>13.5. Interpreter, Composite y Visitor</h3>
+<p>Un árbol de expresiones de Interpreter puede tener una estructura similar a Composite: nodos simples y compuestos comparten contrato. Interpreter añade la intención específica de representar y evaluar un lenguaje.</p>
+<p>Visitor puede incorporar operaciones sobre ese árbol, mientras Iterator podría proporcionar un recorrido. Ninguno de esos patrones obliga a utilizar los otros. Cada uno responde a una responsabilidad distinta.</p>
+<h3>13.6. Guía para analizar una implementación</h3>
+<p>Antes de seleccionar un patrón, identifica la variación concreta: algoritmo, estado, receptor, orden, regla o tipo de operación. Después establece el contrato, asigna responsabilidades y decide qué ocurre con una entrada vacía, una operación inválida o un fallo intermedio.</p>
+<p>La justificación debe explicar qué cambio queda localizado y qué costo introduce la solución. Tener más clases no prueba que el diseño sea mejor; la estructura debe permitir comprender y modificar el comportamiento con menos dependencia accidental.</p>
+<p>Estos ejemplos son independientes. No constituyen once componentes que deban integrarse simultáneamente en una sola aplicación.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="referencias"></a></p>
+<h2>14. Referencias</h2>
+<p>Las definiciones se apoyan en el catálogo clásico de patrones. Los escenarios, implementaciones y diagramas se elaboraron para las demostraciones de este material. Interpreter se incluye por pertenecer a los once patrones de comportamiento del catálogo GoF, aunque no aparezca desarrollado en todas las selecciones de patrones disponibles en línea.</p>
+<ol>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/chain-of-responsibility">Chain of Responsibility</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/command">Command</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/iterator">Iterator</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/mediator">Mediator</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/memento">Memento</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/observer">Observer</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/state">State</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/strategy">Strategy</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/template-method">Template Method</a>.</li>
+<li>Refactoring.Guru. <a href="https://refactoring.guru/es/design-patterns/visitor">Visitor</a>.</li>
+<li>Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994. Sección de patrones de comportamiento, incluido Interpreter.</li>
+</ol>
+<p><a href="#indice">Volver al índice</a></p>
 
       
   <nav class="article-nav" aria-label="Recursos del contenido">

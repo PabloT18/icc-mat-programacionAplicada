@@ -1,0 +1,29 @@
+classDiagram
+    direction TB
+    class Comando {
+        <<interface>>
+        +ejecutar() void
+        +deshacer() void
+    }
+    class CambiarIntervalo {
+        -ConfiguracionMuestreo receptor
+        -int nuevo
+        -Integer anterior
+        -boolean ejecutado
+        -boolean deshecho
+        +ejecutar() void
+        +deshacer() void
+    }
+    class ConfiguracionMuestreo {
+        -int intervalo
+        ~intervalo() int
+        ~cambiarIntervalo(segundos) void
+    }
+    class HistorialComandos {
+        -Deque~Comando~ historial
+        ~ejecutar(comando) void
+        ~deshacerUltimo() boolean
+    }
+    Comando <|.. CambiarIntervalo
+    CambiarIntervalo --> ConfiguracionMuestreo : receptor
+    HistorialComandos --> "0..*" Comando : conserva y ejecuta

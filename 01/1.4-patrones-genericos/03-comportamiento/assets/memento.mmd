@@ -1,0 +1,30 @@
+classDiagram
+    direction TB
+    class Memento {
+        <<interface>>
+    }
+    class Instantanea {
+        <<private record>>
+        -Object propietario
+        -int intervalo
+        -double umbral
+    }
+    class PlanMuestreo {
+        -Object identidad
+        -int intervalo
+        -double umbral
+        ~configurar(intervalo, umbral) void
+        ~guardar() Memento
+        ~restaurar(memento) void
+        ~describir() String
+    }
+    class Historial {
+        -PlanMuestreo plan
+        -Deque~Memento~ estados
+        ~guardar() void
+        ~deshacer() boolean
+    }
+    Memento <|.. Instantanea
+    PlanMuestreo ..> Instantanea : crea y restaura
+    Historial --> PlanMuestreo : originador
+    Historial --> "0..*" Memento : conserva sin inspeccionar

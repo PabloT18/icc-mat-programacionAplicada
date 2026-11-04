@@ -1,0 +1,25 @@
+classDiagram
+    direction TB
+    class Importador {
+        <<abstract>>
+        ~importar(lineas) List~Lectura~
+        #interpretar(linea) Lectura*
+        #alCompletar(cantidad) void
+        #desdeCampos(campos) Lectura
+    }
+    class ImportadorPuntoComa {
+        #interpretar(linea) Lectura
+    }
+    class ImportadorTabulacion {
+        #interpretar(linea) Lectura
+        #alCompletar(cantidad) void
+    }
+    class Lectura {
+        <<record>>
+        -String id
+        -double valor
+        -String unidad
+    }
+    Importador <|-- ImportadorPuntoComa
+    Importador <|-- ImportadorTabulacion
+    Importador ..> Lectura : produce lista

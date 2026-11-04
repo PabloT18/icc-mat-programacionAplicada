@@ -1,0 +1,34 @@
+classDiagram
+    direction TB
+    class Filtro {
+        <<abstract>>
+        -Filtro siguiente
+        ~procesar(lectura) Resultado
+        #comprobar(lectura) String*
+    }
+    class FiltroIdentidad {
+        #comprobar(lectura) String
+    }
+    class FiltroUnidad {
+        #comprobar(lectura) String
+    }
+    class FiltroRango {
+        #comprobar(lectura) String
+    }
+    class Lectura {
+        <<record>>
+        -String id
+        -double valor
+        -String unidad
+    }
+    class Resultado {
+        <<record>>
+        -boolean aceptada
+        -String motivo
+    }
+    Filtro <|-- FiltroIdentidad
+    Filtro <|-- FiltroUnidad
+    Filtro <|-- FiltroRango
+    Filtro --> "0..1" Filtro : siguiente
+    Filtro ..> Lectura : comprueba
+    Filtro ..> Resultado : devuelve

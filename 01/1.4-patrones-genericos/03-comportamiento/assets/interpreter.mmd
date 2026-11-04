@@ -1,0 +1,48 @@
+classDiagram
+    direction TB
+    class Expresion {
+        <<interface>>
+        +interpretar(contexto) boolean
+    }
+    class MayorIgual {
+        <<record>>
+        -Magnitud magnitud
+        -double umbral
+        +interpretar(contexto) boolean
+    }
+    class Y {
+        <<record>>
+        -Expresion izquierda
+        -Expresion derecha
+        +interpretar(contexto) boolean
+    }
+    class O {
+        <<record>>
+        -Expresion izquierda
+        -Expresion derecha
+        +interpretar(contexto) boolean
+    }
+    class No {
+        <<record>>
+        -Expresion operando
+        +interpretar(contexto) boolean
+    }
+    class Contexto {
+        <<record>>
+        -double temperatura
+        -int ocupacion
+    }
+    class Magnitud {
+        <<enumeration>>
+        TEMPERATURA
+        OCUPACION
+    }
+    Expresion <|.. MayorIgual
+    Expresion <|.. Y
+    Expresion <|.. O
+    Expresion <|.. No
+    Y --> "2" Expresion : operandos
+    O --> "2" Expresion : operandos
+    No --> "1" Expresion : operando
+    MayorIgual --> Magnitud : consulta
+    Expresion ..> Contexto : interpreta

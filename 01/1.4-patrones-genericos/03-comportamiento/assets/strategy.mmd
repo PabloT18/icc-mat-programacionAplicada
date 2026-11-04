@@ -1,0 +1,20 @@
+classDiagram
+    direction TB
+    class EstrategiaResumen {
+        <<interface>>
+        +calcular(valores) OptionalDouble
+    }
+    class Promedio {
+        +calcular(valores) OptionalDouble
+    }
+    class Mediana {
+        +calcular(valores) OptionalDouble
+    }
+    class Analizador {
+        -EstrategiaResumen estrategia
+        ~usar(estrategia) void
+        ~resumir(valores) OptionalDouble
+    }
+    EstrategiaResumen <|.. Promedio
+    EstrategiaResumen <|.. Mediana
+    Analizador --> "1" EstrategiaResumen : delega calculo

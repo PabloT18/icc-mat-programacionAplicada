@@ -1,0 +1,53 @@
+classDiagram
+    direction TB
+    class EstadoSesion {
+        <<interface>>
+        +iniciar(sesion) void
+        +pausar(sesion) void
+        +cerrar(sesion) void
+        +nombre() String
+    }
+    class SesionMuestreo {
+        -EstadoSesion estado
+        ~cambiar(nuevo) void
+        ~iniciar() void
+        ~pausar() void
+        ~cerrar() void
+        ~estado() String
+    }
+    class Preparada {
+        +iniciar(sesion) void
+        +pausar(sesion) void
+        +cerrar(sesion) void
+        +nombre() String
+    }
+    class Activa {
+        +iniciar(sesion) void
+        +pausar(sesion) void
+        +cerrar(sesion) void
+        +nombre() String
+    }
+    class Pausada {
+        +iniciar(sesion) void
+        +pausar(sesion) void
+        +cerrar(sesion) void
+        +nombre() String
+    }
+    class Cerrada {
+        +iniciar(sesion) void
+        +pausar(sesion) void
+        +cerrar(sesion) void
+        +nombre() String
+    }
+    EstadoSesion <|.. Preparada
+    EstadoSesion <|.. Activa
+    EstadoSesion <|.. Pausada
+    EstadoSesion <|.. Cerrada
+    SesionMuestreo --> "1" EstadoSesion : delega
+    EstadoSesion ..> SesionMuestreo : recibe contexto
+    Preparada ..> Activa : iniciar
+    Preparada ..> Cerrada : cerrar
+    Activa ..> Pausada : pausar
+    Activa ..> Cerrada : cerrar
+    Pausada ..> Activa : iniciar
+    Pausada ..> Cerrada : cerrar

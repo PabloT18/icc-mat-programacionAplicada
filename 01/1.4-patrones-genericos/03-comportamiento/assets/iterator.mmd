@@ -1,0 +1,32 @@
+classDiagram
+    direction TB
+    class Iterable {
+        <<interface Java>>
+        +iterator() Iterator~Sensor~
+    }
+    class Iterator {
+        <<interface Java>>
+        +hasNext() boolean
+        +next() Sensor
+    }
+    class Inventario {
+        -List~Sensor~ sensores
+        ~agregar(sensor) void
+        +iterator() Iterator~Sensor~
+    }
+    class IteradorInventario {
+        -List~Sensor~ instantanea
+        -int posicion
+        +hasNext() boolean
+        +next() Sensor
+    }
+    class Sensor {
+        <<record>>
+        -String id
+        -String ubicacion
+    }
+    Iterable <|.. Inventario
+    Iterator <|.. IteradorInventario
+    Inventario ..> IteradorInventario : crea
+    Inventario --> "0..*" Sensor : conserva
+    IteradorInventario --> "0..*" Sensor : instantanea

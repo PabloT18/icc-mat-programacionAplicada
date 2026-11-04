@@ -1,0 +1,29 @@
+classDiagram
+    direction TB
+    class ObservadorLectura {
+        <<interface>>
+        +actualizar(lectura) void
+    }
+    class FuenteLecturas {
+        -List~ObservadorLectura~ observadores
+        ~suscribir(observador) void
+        ~retirar(observador) void
+        ~publicar(lectura) void
+    }
+    class Pantalla {
+        +actualizar(lectura) void
+    }
+    class AlertaUmbral {
+        -double umbral
+        +actualizar(lectura) void
+    }
+    class Lectura {
+        <<record>>
+        -String id
+        -double valor
+    }
+    ObservadorLectura <|.. Pantalla
+    ObservadorLectura <|.. AlertaUmbral
+    FuenteLecturas --> "0..*" ObservadorLectura : notifica
+    FuenteLecturas ..> Lectura : publica
+    ObservadorLectura ..> Lectura : recibe
