@@ -1,5 +1,8 @@
 # Programación Aplicada
 
+![UPS · Carrera de Computación](../../../assets/logos/ups-computacion.png)
+
+
 ## 1.4c. Patrones de comportamiento
 
 **Autor:** Ing. Pablo Torres, Mgtr.  
@@ -116,7 +119,7 @@ Una lectura con varios errores produce únicamente el primero. Llegar al final s
 
 ### 2.5. Estructura UML
 
-[Diagrama editable de Chain of Responsibility](assets/chain-of-responsibility.mmd).
+![Diagrama UML Chain of Responsibility | medium](assets/chain-of-responsibility-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -223,7 +226,7 @@ Cada instancia de `CambiarIntervalo` representa una solicitud de un solo uso exi
 
 ### 3.5. Estructura UML
 
-[Diagrama editable de Command](assets/command.mmd).
+![Diagrama UML Command | medium](assets/command-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -338,7 +341,7 @@ El contexto contiene una temperatura finita y una ocupación no negativa. Las ma
 
 ### 4.5. Estructura UML
 
-[Diagrama editable de Interpreter](assets/interpreter.mmd).
+![Diagrama UML Interpreter | medium](assets/interpreter-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -448,7 +451,7 @@ Los elementos son records inmutables con identificador y ubicación. La copia de
 
 ### 5.5. Estructura UML
 
-[Diagrama editable de Iterator](assets/iterator.mmd).
+![Diagrama UML Iterator | medium](assets/iterator-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -559,7 +562,7 @@ Es una política simulada para estudiar coordinación. No constituye un sistema 
 
 ### 6.5. Estructura UML
 
-[Diagrama editable de Mediator](assets/mediator.mmd).
+![Diagrama UML Mediator | medium](assets/mediator-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -670,7 +673,7 @@ También se prueba una instantánea producida por otro plan. Aunque los tipos co
 
 ### 7.5. Estructura UML
 
-[Diagrama editable de Memento](assets/memento.mmd).
+![Diagrama UML Memento | medium](assets/memento-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -779,7 +782,7 @@ El contrato del ejemplo presupone temperaturas Celsius. El record conserva ident
 
 ### 8.5. Estructura UML
 
-[Diagrama editable de Observer](assets/observer.mmd).
+![Diagrama UML Observer | medium](assets/observer-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -892,7 +895,7 @@ Las operaciones que permanecen en el mismo estado son idempotentes respecto del 
 
 ### 9.5. Estructura UML
 
-[Diagrama editable de State](assets/state.mmd).
+![Diagrama UML State | medium](assets/state-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -1000,7 +1003,7 @@ La estrategia de mediana no debe modificar el orden de la lista recibida. El cli
 
 ### 10.5. Estructura UML
 
-[Diagrama editable de Strategy](assets/strategy.mmd).
+![Diagrama UML Strategy | medium](assets/strategy-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -1110,7 +1113,7 @@ Si existe una línea vacía antes de un registro inválido, el error debe conser
 
 ### 11.5. Estructura UML
 
-[Diagrama editable de Template Method](assets/template-method.mmd).
+![Diagrama UML Template Method | medium](assets/template-method-mmd.svg)
 
 | Rol | Implementación |
 |---|---|
@@ -1222,7 +1225,7 @@ Los umbrales son reglas locales de la demostración. No constituyen límites gen
 
 ### 12.5. Estructura UML
 
-[Diagrama editable de Visitor](assets/visitor.mmd).
+![Diagrama UML Visitor | medium](assets/visitor-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|

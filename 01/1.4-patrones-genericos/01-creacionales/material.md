@@ -390,8 +390,6 @@ Las fuentes son simuladas y devuelven valores fijos. El ejemplo comprueba la com
 
 ![Diagrama UML Abstract Factory | medium](assets/abstract-factory-mmd.svg)
 
-[Fuente editable del diagrama](assets/abstract-factory.mmd).
-
 #### Identificación de participantes
 
 | Rol del patrón | Implementación en CampusMonitor |
@@ -589,8 +587,6 @@ El caso construye un plan con `S01`, reutiliza el builder para agregar `S02` y c
 ### 4.5. Estructura UML
 
 ![Diagrama UML Builder | medium](assets/builder-mmd.svg)
-
-[Fuente editable del diagrama](assets/builder.mmd).
 
 #### Identificación de participantes
 
@@ -802,8 +798,6 @@ Un laboratorio necesita reducir el límite de temperatura a 25,0 y cambiar el no
 
 ![Diagrama UML Prototype | medium](assets/prototype-mmd.svg)
 
-[Fuente editable del diagrama](assets/prototype.mmd).
-
 #### Identificación de participantes
 
 | Rol del patrón | Implementación en CampusMonitor |
@@ -1004,8 +998,6 @@ En la demostración se crea un servicio con el Singleton y otro con un sustituto
 ### 6.5. Estructura UML
 
 ![Diagrama UML Singleton | medium](assets/singleton-mmd.svg)
-
-[Fuente editable del diagrama](assets/singleton.mmd).
 
 #### Identificación de participantes
 

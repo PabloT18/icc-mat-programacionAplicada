@@ -147,7 +147,7 @@ El patrón Adapter resuelve este problema mediante una clase intermediaria que c
 <p>El equipo devuelve <code>770</code>, equivalente a 77,0 °F. La estación debe recibir 25,0 °C. El dato <code>-9999</code> significa que no hay una lectura disponible y no debe convertirse como si fuera una temperatura.</p>
 <p>La conversión tiene dos etapas: dividir entre 10,0 para recuperar Fahrenheit y aplicar <code>C = (F − 32) × 5 / 9</code>. El adaptador comprueba primero el código de error. Esa secuencia evita producir un número aparentemente válido a partir de un fallo del equipo.</p>
 <h3>2.5. Estructura UML</h3>
-<p><img src="assets/adapter-mmd.svg" alt="Diagrama UML Factory Method" class="zoomable-diagram medium"></p>
+<p><img src="assets/adapter-mmd.svg" alt="Diagrama UML Adapter" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -274,7 +274,7 @@ El patrón Bridge resuelve este problema separando la abstracción de su impleme
 <p><code>FormatoTexto</code> separa etiqueta y dato con dos puntos. <code>FormatoCsv</code> produce dos campos entre comillas, separados por coma; también duplica comillas internas. Los reportes no implementan esas reglas de representación.</p>
 <p>Las lecturas de esta demostración deben corresponder a la misma magnitud y unidad. El promedio de una temperatura y una ocupación carecería de sentido, aunque ambos valores sean <code>double</code>.</p>
 <h3>3.5. Estructura UML</h3>
-<p><a href="assets/bridge.mmd">Diagrama editable de Bridge</a>.</p>
+<p><img src="assets/bridge-mmd.svg" alt="Diagrama UML Bridge" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -413,7 +413,7 @@ Promedio: Sin datos
 <p>Una zona sin hijos devuelve 0, que es el elemento neutro de la suma. Un sensor activo devuelve 1 y uno inactivo devuelve 0. Estas decisiones permiten combinar resultados sin condiciones especiales en el cliente.</p>
 <p>La estructura de la demostración se construye desde las hojas hacia la raíz. Los hijos se copian a una lista no modificable y las clases incluidas no permiten cambiar su estructura después de construirse.</p>
 <h3>4.5. Estructura UML</h3>
-<p><a href="assets/composite.mmd">Diagrama editable de Composite</a>.</p>
+<p><img src="assets/composite-mmd.svg" alt="Diagrama UML Composite" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -537,7 +537,7 @@ El patrón Decorator resuelve este problema permitiendo incorporar comportamient
 <p>Se comparan dos composiciones. En la primera, la auditoría envuelve a la calibración: registra 24,5. En la segunda, la calibración envuelve a la auditoría: esta registra 24,0 y luego el valor se ajusta. Ambas devuelven 24,5, pero su evidencia de auditoría es diferente.</p>
 <p>El orden forma parte del comportamiento observable. Compartir una interfaz no implica que dos decoradores puedan intercambiarse sin consecuencias.</p>
 <h3>5.5. Estructura UML</h3>
-<p><a href="assets/decorator.mmd">Diagrama editable de Decorator</a>.</p>
+<p><img src="assets/decorator-mmd.svg" alt="Diagrama UML Decorator" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -663,7 +663,7 @@ Resultado: 24.5 °C
 <p>Se exige que un error de datos no deje guardadas las primeras filas del mismo lote. La fachada construye una lista temporal, interpreta y valida todas las entradas y solo después solicita el almacenamiento.</p>
 <p>Esta regla se comprueba con un lote válido de dos lecturas y un segundo lote cuya segunda fila contiene 180 °C. La primera fila del segundo lote tampoco se guarda.</p>
 <h3>6.5. Estructura UML</h3>
-<p><a href="assets/facade.mmd">Diagrama editable de Facade</a>.</p>
+<p><img src="assets/facade-mmd.svg" alt="Diagrama UML Facade" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -819,7 +819,7 @@ Lote vacío: 0
 <p>Se crean tres contextos <code>Sensor</code>, pero únicamente dos instancias de <code>TipoSensor</code> dentro de la misma fábrica. Las dos solicitudes para T100 emplean claves nuevas con valores iguales; no dependen de reutilizar la misma instancia de clave.</p>
 <p>El tipo compartido puede comprobar un valor contra su rango y producir una descripción si recibe el identificador y la ubicación del contexto.</p>
 <h3>7.5. Estructura UML</h3>
-<p><a href="assets/flyweight.mmd">Diagrama editable de Flyweight</a>.</p>
+<p><img src="assets/flyweight-mmd.svg" alt="Diagrama UML Flyweight" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -945,7 +945,7 @@ Temperatura 90 admitida: false
 <p>El proxy recibe al usuario y un <code>Supplier&lt;CatalogoSensores&gt;</code>, que es un proveedor capaz de crear el servicio. Recibir el proveedor no equivale a ejecutar su operación: permite posponer la construcción hasta después de comprobar el permiso.</p>
 <p>La primera solicitud autorizada crea el servicio; la segunda reutiliza esa instancia. El ejemplo combina protección y creación diferida dentro de un mismo representante.</p>
 <h3>8.5. Estructura UML</h3>
-<p><a href="assets/proxy.mmd">Diagrama editable de Proxy</a>.</p>
+<p><img src="assets/proxy-mmd.svg" alt="Diagrama UML Proxy" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>

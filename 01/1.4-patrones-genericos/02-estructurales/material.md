@@ -97,7 +97,7 @@ La conversión tiene dos etapas: dividir entre 10,0 para recuperar Fahrenheit y 
 
 ### 2.5. Estructura UML
 
-![Diagrama UML Factory Method | medium](assets/adapter-mmd.svg)
+![Diagrama UML Adapter | medium](assets/adapter-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -207,7 +207,7 @@ Las lecturas de esta demostración deben corresponder a la misma magnitud y unid
 
 ### 3.5. Estructura UML
 
-[Diagrama editable de Bridge](assets/bridge.mmd).
+![Diagrama UML Bridge | medium](assets/bridge-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -320,7 +320,7 @@ La estructura de la demostración se construye desde las hojas hacia la raíz. L
 
 ### 4.5. Estructura UML
 
-[Diagrama editable de Composite](assets/composite.mmd).
+![Diagrama UML Composite | medium](assets/composite-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -426,7 +426,7 @@ El orden forma parte del comportamiento observable. Compartir una interfaz no im
 
 ### 5.5. Estructura UML
 
-[Diagrama editable de Decorator](assets/decorator.mmd).
+![Diagrama UML Decorator | medium](assets/decorator-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -536,7 +536,7 @@ Esta regla se comprueba con un lote válido de dos lecturas y un segundo lote cu
 
 ### 6.5. Estructura UML
 
-[Diagrama editable de Facade](assets/facade.mmd).
+![Diagrama UML Facade | medium](assets/facade-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -652,7 +652,7 @@ El tipo compartido puede comprobar un valor contra su rango y producir una descr
 
 ### 7.5. Estructura UML
 
-[Diagrama editable de Flyweight](assets/flyweight.mmd).
+![Diagrama UML Flyweight | medium](assets/flyweight-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|
@@ -762,7 +762,7 @@ La primera solicitud autorizada crea el servicio; la segunda reutiliza esa insta
 
 ### 8.5. Estructura UML
 
-[Diagrama editable de Proxy](assets/proxy.mmd).
+![Diagrama UML Proxy | medium](assets/proxy-mmd.svg)
 
 | Rol | Tipo del ejemplo |
 |---|---|

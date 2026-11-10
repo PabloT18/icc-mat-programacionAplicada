@@ -39,6 +39,7 @@
     <a href="../../../02/2.1-lenguajes-regulares/index.html">Siguiente</a>
   </nav>
       <h1>Programación Aplicada</h1>
+<p><img src="../../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
 <h2>1.4c. Patrones de comportamiento</h2>
 <p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 1. Programación genérica<br><strong>Tema:</strong> 1.4. Patrones de diseño · Patrones de comportamiento</p>
 <p>Los patrones de comportamiento organizan algoritmos, solicitudes, cambios de estado y colaboraciones entre objetos. Su propósito es asignar responsabilidades para que una variación del comportamiento no obligue a modificar todos los componentes que participan en una operación.</p>
@@ -164,7 +165,7 @@
 <p>La entrada llega como un record <code>Lectura</code> todavía no validado. Se permite representar datos defectuosos para que la cadena los examine. Esto es una decisión del ejemplo: no significa que todos los modelos del dominio deban permitir estados inválidos.</p>
 <p>Una lectura con varios errores produce únicamente el primero. Llegar al final sin errores significa aceptación. No existe un almacenamiento posterior dentro de esta demostración.</p>
 <h3>2.5. Estructura UML</h3>
-<p><a href="assets/chain-of-responsibility.mmd">Diagrama editable de Chain of Responsibility</a>.</p>
+<p><img src="assets/chain-of-responsibility-mmd.svg" alt="Diagrama UML Chain of Responsibility" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -291,7 +292,7 @@ Resultado[aceptada=false, motivo=Id obligatorio]
 <p>Dos operaciones de deshacer deben recuperar 10 y 30. El orden inverso es esencial: deshacer un cambio antiguo sobre una configuración más reciente podría sobrescribir un resultado válido de otra acción.</p>
 <p>Cada instancia de <code>CambiarIntervalo</code> representa una solicitud de un solo uso exitoso. No se incluye una operación de rehacer.</p>
 <h3>3.5. Estructura UML</h3>
-<p><a href="assets/command.mmd">Diagrama editable de Command</a>.</p>
+<p><img src="assets/command-mmd.svg" alt="Diagrama UML Command" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -443,7 +444,7 @@ Otro deshacer disponible: false
 </tr>
 </tbody></table></div>
 <h3>4.5. Estructura UML</h3>
-<p><a href="assets/interpreter.mmd">Diagrama editable de Interpreter</a>.</p>
+<p><img src="assets/interpreter-mmd.svg" alt="Diagrama UML Interpreter" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -575,7 +576,7 @@ Negación a 29 °C y 5 personas: false
 <p>Un nuevo recorrido, solicitado después del alta, debe incluir S03. La política es una <strong>instantánea de la colección en el momento de crear cada iterador</strong>.</p>
 <p>Los elementos son records inmutables con identificador y ubicación. La copia de la lista conserva referencias a esos objetos; no crea sensores nuevos.</p>
 <h3>5.5. Estructura UML</h3>
-<p><a href="assets/iterator.mmd">Diagrama editable de Iterator</a>.</p>
+<p><img src="assets/iterator-mmd.svg" alt="Diagrama UML Iterator" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -699,7 +700,7 @@ Recorrido agotado
 <p>La ventana se considera cerrada al inicio. El contexto conserva la última temperatura conocida, de modo que cerrar la ventana permite reevaluar la regla sin exigir otra publicación del sensor.</p>
 <p>Es una política simulada para estudiar coordinación. No constituye un sistema de control de climatización certificado ni incorpora características físicas del dispositivo.</p>
 <h3>6.5. Estructura UML</h3>
-<p><a href="assets/mediator.mmd">Diagrama editable de Mediator</a>.</p>
+<p><img src="assets/mediator-mmd.svg" alt="Diagrama UML Mediator" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -823,7 +824,7 @@ Ventilador: apagado
 <p>Las dos restauraciones deben recuperar primero 10 y 30, y después 30 y 28. El historial guarda <strong>antes</strong> de cada modificación que se desea poder deshacer.</p>
 <p>También se prueba una instantánea producida por otro plan. Aunque los tipos coincidan, se rechaza porque pertenece a un originador diferente.</p>
 <h3>7.5. Estructura UML</h3>
-<p><a href="assets/memento.mmd">Diagrama editable de Memento</a>.</p>
+<p><img src="assets/memento-mmd.svg" alt="Diagrama UML Memento" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -948,7 +949,7 @@ Instantánea ajena
 <p>Después de dos publicaciones, la alerta se retira. Una tercera lectura de 31 °C debe mostrarse en pantalla, pero no producir el mensaje de alerta.</p>
 <p>El contrato del ejemplo presupone temperaturas Celsius. El record conserva identificador y valor, por lo que esa unidad es una condición del flujo; no se deduce del tipo <code>double</code>.</p>
 <h3>8.5. Estructura UML</h3>
-<p><a href="assets/observer.mmd">Diagrama editable de Observer</a>.</p>
+<p><img src="assets/observer-mmd.svg" alt="Diagrama UML Observer" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -1102,7 +1103,7 @@ Pantalla: S03 = 31.0 °C
 </tbody></table></div>
 <p>Las operaciones que permanecen en el mismo estado son idempotentes respecto del estado. No se consideran errores porque el ejemplo define expresamente esa política.</p>
 <h3>9.5. Estructura UML</h3>
-<p><a href="assets/state.mmd">Diagrama editable de State</a>.</p>
+<p><img src="assets/state-mmd.svg" alt="Diagrama UML State" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -1220,7 +1221,7 @@ Sesión cerrada
 <p>Se asume que los datos pertenecen a la misma magnitud y unidad. El tipo <code>Double</code> no puede garantizar ese requisito. La validación rechaza valores no finitos y referencias nulas.</p>
 <p>La estrategia de mediana no debe modificar el orden de la lista recibida. El cliente puede necesitar reutilizar esos datos para otra operación o conservar su secuencia original.</p>
 <h3>10.5. Estructura UML</h3>
-<p><a href="assets/strategy.mmd">Diagrama editable de Strategy</a>.</p>
+<p><img src="assets/strategy-mmd.svg" alt="Diagrama UML Strategy" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -1349,7 +1350,7 @@ Valor no finito
 <p>La variante de tabulación informa cuántas lecturas importó al terminar. La variante de punto y coma no añade un mensaje de finalización. Ambas mantienen el mismo recorrido y el mismo formato de error con número de línea física.</p>
 <p>Si existe una línea vacía antes de un registro inválido, el error debe conservar su posición original. No se renumeran las líneas después de omitir las vacías.</p>
 <h3>11.5. Estructura UML</h3>
-<p><a href="assets/template-method.mmd">Diagrama editable de Template Method</a>.</p>
+<p><img src="assets/template-method-mmd.svg" alt="Diagrama UML Template Method" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
@@ -1489,7 +1490,7 @@ Línea 2: Lectura inválida
 <p>Los records validan sus datos básicos: identificador no vacío, temperatura finita y ocupación no negativa. El diagnóstico interpreta esos datos, pero no es el responsable de permitir o impedir la construcción de un objeto inválido.</p>
 <p>Los umbrales son reglas locales de la demostración. No constituyen límites generales para todos los sensores o espacios.</p>
 <h3>12.5. Estructura UML</h3>
-<p><a href="assets/visitor.mmd">Diagrama editable de Visitor</a>.</p>
+<p><img src="assets/visitor-mmd.svg" alt="Diagrama UML Visitor" class="zoomable-diagram medium"></p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
