@@ -2236,6 +2236,12 @@
       "defense": "Cada estudiante deberá identificar las clases y métodos de Prototype y Decorator, explicar cómo funcionan, demostrar su integración y justificar las decisiones de diseño. El docente podrá solicitar la modificación de un ingrediente, su precio o una regla de compatibilidad, verificando que el estudiante identifique las clases afectadas y explique los cambios. La evaluación será individual. Cada criterio de la rúbrica se calificará considerando 75 % de implementación y 25 % de defensa. Un proyecto funcional no garantiza la calificación máxima si el estudiante no demuestra conocimiento del código presentado."
     },
     {
+      "unit": 1,
+      "id": "PL1.2",
+      "title": "SnakeLab — Minijuego con patrones de diseño",
+      "problem": "Desarrollar un minijuego Snake en Java Swing que integre los patrones State y Decorator, además de un tercer patrón de libre elección. El juego permitirá controlar la serpiente mediante las flechas, generar alimentos aleatoriamente o mediante coordenadas, aplicar efectos especiales y gestionar los estados de la partida. El proyecto se desarrollará en parejas y deberá incluir un JAR ejecutable, documentación, evidencias y contribuciones verificables de ambos integrantes en Git."
+    },
+    {
       "unit": 2,
       "id": "PL2.1",
       "title": "Importador y auditor de tramas de sensores",

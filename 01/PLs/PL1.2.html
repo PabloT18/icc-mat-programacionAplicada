@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <meta
+    name="description"
+    content="PL1.2: SnakeLab, minijuego en Java Swing con State, Decorator y un tercer patrón de diseño. Entrega mediante JAR ejecutable."
+  >
+  <title>PL1.2 · SnakeLab · Programación Aplicada</title>
+  <link
+    rel="stylesheet"
+    href="../../assets/css/styles.css"
+  >
+  <link
+    rel="stylesheet"
+    href="assets/practica-app1.css"
+  >
+  <script
+    defer
+    src="../../assets/js/vendor/mermaid.min.js"
+  ></script>
+  <script
+    defer
+    src="../../assets/js/mermaid-init.js"
+  ></script>
+  <script
+    defer
+    src="../../assets/js/diagram-viewer.js"
+  ></script>
+</head>
+
+<body>
+  <a
+    class="skip"
+    href="#practice-content"
+  >Ir a la práctica</a>
+  <main
+    class="page"
+    id="practice-content"
+    data-protected="true"
+  >
+    <nav
+      class="article-nav"
+      aria-label="Navegación de prácticas"
+    >
+      <a
+        href="../../index.html"
+        target="_top"
+      >Índice del curso</a>
+      <a
+        href="assets/mockup-pl12.png"
+        target="_blank"
+        rel="noopener"
+      >Ver mockup</a>
+      <a href="#casos-aceptacion">Casos de aceptación</a>
+      <a href="#rubrica">Rúbrica</a>
+    </nav>
+
+    <div class="table-scroll">
+      <table class="guide-table">
+        <colgroup>
+          <col style="width:20%">
+          <col style="width:12%">
+          <col style="width:19%">
+          <col style="width:24%">
+          <col style="width:25%">
+        </colgroup>
+        <tbody>
+          <tr>
+            <td class="guide-logo-cell">
+              <img
+                class="guide-logo"
+                src="../../assets/logos/ups.png"
+                alt="Universidad Politécnica Salesiana"
+              >
+            </td>
+            <td
+              colspan="4"
+              class="guide-heading"
+            >GUÍA DE PRÁCTICA DE LABORATORIO / TALLERES / CENTROS DE SIMULACIÓN — PARA DOCENTES</td>
+          </tr>
+          <tr class="guide-blank">
+            <td
+              colspan="5"
+              aria-hidden="true"
+            >&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="2"><strong>CARRERA:</strong> Computación</td>
+            <td colspan="3"><strong>ASIGNATURA:</strong> Programación Aplicada</td>
+          </tr>
+          <tr>
+            <td><strong>NRO. PRÁCTICA:</strong></td>
+            <td>PL1.2</td>
+            <td colspan="3"><strong>TÍTULO PRÁCTICA:</strong> SnakeLab — Minijuego con patrones de diseño</td>
+          </tr>
+
+          <tr>
+            <td
+              colspan="5"
+              class="section-content"
+            >
+              <strong class="full-section-title">OBJETIVO</strong>
+              <ul>
+                <li>Implementar el patrón de comportamiento <strong>State</strong> para gestionar el ciclo de vida y las
+                  acciones permitidas de una partida.</li>
+                <li>Implementar el patrón estructural <strong>Decorator</strong> para aplicar y combinar dos efectos
+                  especiales sobre las reglas del juego.</li>
+                <li>Seleccionar, implementar y justificar un <strong>tercer patrón de diseño</strong>, diferente de
+                  State y Decorator, para resolver una necesidad real de SnakeLab.</li>
+                <li>Distribuir el minijuego mediante un <strong>JAR ejecutable</strong> y documentar su ejecución y
+                  compatibilidad con la versión de Java utilizada.</li>
+                <li>Organizar el trabajo en parejas y registrar contribuciones técnicas verificables de ambos
+                  integrantes en el repositorio remoto.</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">CONTEXTO</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Se requiere desarrollar <strong>SnakeLab</strong>, un minijuego de escritorio en Java Swing. Una
+                serpiente se desplaza sobre un tablero de dimensiones definidas y cambia su dirección mediante las
+                flechas del teclado. Al consumir comida, aumenta su longitud y la puntuación. La partida termina si la
+                cabeza colisiona con los límites del tablero o con el cuerpo.</p>
+              <p>La comida podrá colocarse introduciendo coordenadas <strong>X, Y</strong> o utilizando un botón que
+                genere una posición aleatoria válida y libre. Se incluirán comida normal y alimentos especiales que
+                activen los efectos de <strong>puntuación doble</strong> y <strong>modificación de velocidad</strong>.
+              </p>
+              <p><strong>Problema de diseño:</strong> separar el comportamiento de los estados de la partida, incorporar
+                efectos combinables mediante composición y justificar un patrón adicional sin concentrar la lógica en la
+                ventana gráfica.</p>
+              <p>El producto final será el código fuente, su documentación y un archivo
+                <strong><code>SnakeLab.jar</code> ejecutable en la raíz del repositorio</strong>.
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">RECURSOS</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <ul>
+                <li>JDK y editor o IDE compatibles con Java; <strong>la versión de Java no está predeterminada</strong>.
+                  Se deberá identificar y documentar la versión utilizada.</li>
+                <li><strong>Java Swing</strong> para la interfaz gráfica, un único punto de entrada a la aplicación y
+                  controles estándar.</li>
+                <li>Git, un repositorio remoto compartido y una herramienta para diseñar el mockup y el diagrama UML.
+                </li>
+                <li>Modalidad de trabajo: <strong>parejas</strong>. Las fechas y los plazos de entrega se establecerán
+                  en el AVAC.</li>
+              </ul>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">INSTRUCCIONES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <h3>1. Aplicación que se debe construir</h3>
+              <p>Desarrollar un minijuego de escritorio denominado <strong>SnakeLab</strong>. Implementar una ventana
+                principal que contenga el tablero, los controles de partida, el marcador, los efectos activos y el panel
+                para generar comida. No se exige reproducir exactamente la apariencia del mockup; se verificará la
+                funcionalidad requerida y la arquitectura de los patrones.</p>
+              <ol>
+                <li><strong>Tablero:</strong> definir una cuadrícula de tamaño fijo, documentar sus dimensiones y
+                  utilizar coordenadas enteras con origen <code>(0, 0)</code> en la esquina superior izquierda.</li>
+                <li><strong>Serpiente:</strong> iniciar con al menos tres segmentos, moverla a intervalos regulares y
+                  cambiar la dirección con las teclas <code>↑</code>, <code>↓</code>, <code>←</code> y <code>→</code>.
+                </li>
+                <li><strong>Dirección:</strong> impedir un cambio directo de 180 grados que provoque un desplazamiento
+                  inmediato hacia el cuerpo.</li>
+                <li><strong>Alimentación:</strong> aumentar la longitud y la puntuación cuando la cabeza alcance una
+                  casilla con comida. Mantener una sola comida visible a la vez.</li>
+                <li><strong>Colisiones:</strong> finalizar la partida al salir de los límites o colisionar con el propio
+                  cuerpo. Considerar correctamente el desplazamiento de la cola al validar una colisión.</li>
+                <li><strong>Partida:</strong> incorporar botones <strong>Iniciar</strong>, <strong>Pausar</strong>,
+                  <strong>Reanudar</strong> y <strong>Reiniciar</strong>; indicar el estado actual y el puntaje.
+                </li>
+                <li><strong>Reinicio:</strong> restaurar la serpiente, el marcador, la comida, la velocidad y los
+                  efectos activos a sus valores iniciales.</li>
+              </ol>
+
+              <h3>2. Generación de comida</h3>
+              <p>Incorporar un selector de tipo de comida: <strong>Normal</strong>, <strong>Puntuación doble</strong> y
+                <strong>Velocidad</strong>. Las dos operaciones siguientes deben utilizar el tipo seleccionado:
+              </p>
+              <ol>
+                <li><strong>Ubicar comida:</strong> introducir <code>X</code> e <code>Y</code> y presionar el botón
+                  correspondiente. Rechazar entradas no enteras, fuera del tablero u ocupadas por la serpiente.</li>
+                <li><strong>Generar aleatoria:</strong> al presionar el botón, seleccionar automáticamente una casilla
+                  libre dentro del tablero. La generación aleatoria <strong>se inicia mediante el botón</strong>; no se
+                  exige un generador que actúe sin intervención.</li>
+                <li><strong>Operación inválida:</strong> mostrar el motivo del rechazo y conservar la comida y el estado
+                  anterior.</li>
+                <li><strong>Tablero completo:</strong> resolver el caso en que no existan casillas disponibles para
+                  ubicar comida, con un mensaje y una transición coherente de partida.</li>
+              </ol>
+              <p>Permitir reemplazar la comida actual cuando se realiza una generación válida. Después de consumir una
+                comida, una nueva posición podrá generarse desde los controles del panel.</p>
+
+              <h3>3. Patrón State: comportamiento de la partida</h3>
+              <p>Implementar un <strong>contexto de partida</strong>, por ejemplo <code>Partida</code>, y un contrato
+                <code>EstadoPartida</code> con cuatro implementaciones concretas:
+              </p>
+              <ul>
+                <li><strong>Preparado:</strong> partida inicializada, sin movimiento hasta presionar Iniciar.</li>
+                <li><strong>Jugando:</strong> movimiento activo, consumo de comida y detección de colisiones.</li>
+                <li><strong>Pausado:</strong> se conserva la posición y no avanza la lógica de desplazamiento hasta
+                  Reanudar.</li>
+                <li><strong>Terminado:</strong> se bloquean los desplazamientos y se permite recuperar una partida
+                  mediante Reiniciar.</li>
+              </ul>
+              <p><strong>Obligatorio:</strong> encapsular en las clases de estado las decisiones relativas a operaciones
+                y transiciones. La implementación no puede limitarse a una enumeración o a un conjunto de condiciones
+                centralizadas en los listeners de Swing. Identificar las transiciones válidas e inválidas y su
+                tratamiento.</p>
+
+              <h3>4. Patrón Decorator: efectos sobre las reglas</h3>
+              <p>Definir un contrato común para las reglas afectadas por los modificadores, por ejemplo, el puntaje
+                otorgado al consumir comida y el intervalo entre desplazamientos. Construir un componente base y un
+                decorador abstracto que lo envuelva, por ejemplo <code>ReglasJuego</code>, <code>ReglasBase</code> y
+                <code>DecoradorReglas</code>, además de los siguientes decoradores concretos:
+              </p>
+              <ul>
+                <li><strong>Puntuación doble:</strong> modifica la puntuación de las comidas consumidas mientras el
+                  efecto esté activo.</li>
+                <li><strong>Velocidad modificada:</strong> altera el intervalo de desplazamiento mientras el efecto esté
+                  activo.</li>
+              </ul>
+              <p>Ambos efectos deben funcionar <strong>por separado y simultáneamente</strong> mediante anidación de
+                decoradores. Definir y documentar una duración verificable para cada efecto, su activación al consumir
+                el alimento especial y su finalización. Al pausar la partida, la duración de los efectos no debe
+                avanzar.</p>
+              <p><strong>Obligatorio:</strong> los decoradores deben compartir el contrato del componente envuelto y
+                delegar las operaciones correspondientes. No sustituir el patrón por dos variables booleanas y un
+                <code>if</code> que calcule todos los efectos desde la interfaz gráfica.
+              </p>
+
+              <h3>5. Tercer patrón: selección y justificación</h3>
+              <p>Seleccionar e implementar un <strong>tercer patrón de diseño distinto de State y Decorator</strong>. No
+                se restringe su clasificación; debe resolver una necesidad real de SnakeLab y formar parte del flujo de
+                ejecución.</p>
+              <p>Documentar el nombre del patrón, el problema que resuelve, sus participantes, las clases concretas, la
+                relación con el resto del sistema y un caso de ejecución que demuestre su uso. No se aceptará únicamente
+                un diagrama o clases que no intervengan en el juego.</p>
+
+              <h3>6. Arquitectura y organización</h3>
+              <p>Separar la lógica del tablero, la serpiente, las reglas, los estados, los efectos y la interfaz Swing.
+                Utilizar nombres de paquetes equivalentes a la siguiente propuesta, sin imponer nombres exactos de
+                clases:</p>
+              <pre class="code-line">src/main/java/
+├── app/
+├── modelo/
+├── juego/
+├── state/
+├── decorator/
+├── patronadicional/
+└── vista/</pre>
+              <p>La ventana debe capturar acciones y reflejar resultados; las reglas de estado, colisión, generación de
+                coordenadas y efectos deben permanecer fuera de sus listeners. Elaborar un diagrama UML que represente
+                los tres patrones y las relaciones entre sus participantes.</p>
+              <p><strong>Mockup de referencia.</strong> La imagen conserva la distribución propuesta del tablero, los
+                botones, la puntuación, los efectos y el panel de coordenadas. Las dimensiones, posiciones y valores
+                mostrados son ilustrativos.</p>
+              <figure class="mockup-figure">
+                <a
+                  href="assets/mockup-pl12.png"
+                  target="_blank"
+                  rel="noopener"
+                ><img
+                    src="assets/mockup-pl12.png"
+                    alt="Mockup de SnakeLab: tablero de serpiente, controles de partida, puntuación, efectos, coordenadas y generación aleatoria de comida"
+                    loading="lazy"
+                  ></a>
+                <figcaption>Referencia de funcionalidades de la interfaz Java Swing. No es necesario reproducir los
+                  colores ni las medidas exactas.</figcaption>
+              </figure>
+
+              <h3>7. JAR ejecutable y compatibilidad de Java</h3>
+              <ol>
+                <li>Generar un <strong>JAR ejecutable</strong> con clase principal configurada y colocarlo directamente
+                  en la <strong>raíz del repositorio</strong> con el nombre <code>SnakeLab.jar</code>.</li>
+                <li>Comprobar que se abre desde una terminal sin iniciar el IDE. El comando de ejecución debe funcionar
+                  desde la raíz del proyecto:</li>
+              </ol>
+              <pre class="code-line">java -jar SnakeLab.jar</pre>
+              <p>Registrar en el <code>README.md</code> los comandos reales para compilar, empaquetar y ejecutar, así
+                como el resultado de:</p>
+              <pre class="code-line">java -version
+javac -version</pre>
+              <p>Indicar la <strong>versión con la que se compiló</strong> y la <strong>versión mínima de Java necesaria
+                  para ejecutar</strong> el archivo generado. Explicar cómo comprobar la versión del equipo de destino y
+                qué hacer cuando es incompatible:</p>
+              <ul>
+                <li>Si es <strong>anterior a la requerida</strong>, instalar un entorno de ejecución compatible o
+                  recompilar para una versión objetivo anterior, siempre que el código y las dependencias lo permitan.
+                </li>
+                <li>Si es <strong>diferente o más reciente</strong>, comprobar la ejecución y documentar el resultado;
+                  no suponer compatibilidad sin verificarla.</li>
+                <li>Si aparece <code>UnsupportedClassVersionError</code>, identificar la incompatibilidad entre la
+                  versión del bytecode y la máquina virtual y aplicar la corrección correspondiente.</li>
+              </ul>
+              <p>El JAR debe incluir o resolver correctamente las dependencias requeridas por el procedimiento
+                documentado.</p>
+
+              <h3>8. Trabajo colaborativo</h3>
+              <p>Desarrollar el proyecto en <strong>parejas</strong>, utilizando un repositorio remoto común. Registrar
+                commits descriptivos por fases y conservar evidencia de cambios técnicos realizados por <strong>ambos
+                  integrantes</strong>. Registrar contribuciones al código de ambos integrantes y conocer el
+                funcionamiento de los tres patrones, independientemente de la distribución de tareas.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              colspan="5"
+              class="section-content"
+            >
+              <strong class="full-section-title">ACTIVIDADES POR DESARROLLAR</strong>
+              <h3>Fase 1. Diseño y estructura</h3>
+              <ol>
+                <li>Definir el tablero, el modelo de serpiente y los tipos de comida; crear los paquetes y archivos
+                  iniciales.</li>
+                <li>Elaborar el mockup y un diagrama UML preliminar de los tres patrones.</li>
+                <li>Crear el repositorio remoto y registrar aportes iniciales de ambos integrantes.</li>
+              </ol>
+              <p><strong>Commit orientativo:</strong> <code>feat(pl1.2): crear estructura y diseño inicial</code>.</p>
+
+              <h3>Fase 2. Mecánica y State</h3>
+              <ol>
+                <li>Implementar desplazamiento, controles de dirección, crecimiento y colisiones.</li>
+                <li>Construir los cuatro estados y verificar las transiciones permitidas.</li>
+              </ol>
+              <p><strong>Commit orientativo:</strong> <code>feat(pl1.2): implementar estados y movimiento</code>.</p>
+
+              <h3>Fase 3. Decorator y patrón adicional</h3>
+              <ol>
+                <li>Integrar la ubicación manual y aleatoria de alimentos.</li>
+                <li>Implementar los dos efectos especiales mediante Decorator y comprobar su composición.</li>
+                <li>Integrar el tercer patrón, documentando su justificación técnica.</li>
+              </ol>
+              <p><strong>Commit orientativo:</strong> <code>feat(pl1.2): integrar efectos y tercer patron</code>.</p>
+
+              <h3>Fase 4. Distribución y validación</h3>
+              <ol>
+                <li>Ejecutar los casos de aceptación y registrar evidencias reales.</li>
+                <li>Generar y probar <code>SnakeLab.jar</code> desde una terminal.</li>
+                <li>Actualizar el README, el UML y el informe; verificar la contribución de ambos integrantes.</li>
+              </ol>
+              <p><strong>Commit orientativo:</strong> <code>build(pl1.2): empaquetar jar y documentar ejecucion</code>.
+              </p>
+            </td>
+          </tr>
+
+          <tr id="casos-aceptacion">
+            <td
+              colspan="5"
+              class="section-content"
+            >
+              <strong class="full-section-title">CASOS DE ACEPTACIÓN</strong>
+              <div class="table-scroll">
+                <table class="acceptance-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Operación / entrada</th>
+                      <th>Resultado esperado</th>
+                      <th>Aspecto validado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>CA01</td>
+                      <td>Abrir SnakeLab</td>
+                      <td>Se visualiza el tablero y la partida inicia en Preparado, sin movimiento.</td>
+                      <td>State</td>
+                    </tr>
+                    <tr>
+                      <td>CA02</td>
+                      <td>Iniciar y cambiar dirección con flechas</td>
+                      <td>La serpiente se desplaza; se impide el giro directo de 180°.</td>
+                      <td>Movimiento</td>
+                    </tr>
+                    <tr>
+                      <td>CA03</td>
+                      <td>Pausar y reanudar</td>
+                      <td>La posición y las duraciones de efectos no cambian durante la pausa.</td>
+                      <td>State</td>
+                    </tr>
+                    <tr>
+                      <td>CA04</td>
+                      <td>Provocar colisión con borde</td>
+                      <td>La partida pasa a Terminado y detiene el desplazamiento.</td>
+                      <td>State / colisión</td>
+                    </tr>
+                    <tr>
+                      <td>CA05</td>
+                      <td>Provocar colisión con el cuerpo</td>
+                      <td>La partida finaliza correctamente.</td>
+                      <td>Colisión</td>
+                    </tr>
+                    <tr>
+                      <td>CA06</td>
+                      <td>Consumir comida normal</td>
+                      <td>La longitud aumenta y se actualiza la puntuación definida.</td>
+                      <td>Mecánica</td>
+                    </tr>
+                    <tr>
+                      <td>CA07</td>
+                      <td>Ubicar comida en coordenadas libres</td>
+                      <td>La comida aparece exactamente en X e Y.</td>
+                      <td>Panel manual</td>
+                    </tr>
+                    <tr>
+                      <td>CA08</td>
+                      <td>Ingresar texto no numérico o coordenadas fuera de límites</td>
+                      <td>Se rechaza la operación sin modificar la comida existente.</td>
+                      <td>Validación</td>
+                    </tr>
+                    <tr>
+                      <td>CA09</td>
+                      <td>Intentar ubicar comida sobre la serpiente</td>
+                      <td>Se rechaza la casilla ocupada y se conserva el tablero.</td>
+                      <td>Validación</td>
+                    </tr>
+                    <tr>
+                      <td>CA10</td>
+                      <td>Presionar Generar aleatoria</td>
+                      <td>La comida se ubica dentro de los límites y fuera del cuerpo.</td>
+                      <td>Generación</td>
+                    </tr>
+                    <tr>
+                      <td>CA11</td>
+                      <td>Solicitar comida sin casillas disponibles</td>
+                      <td>Se informa que el tablero está completo y la partida se resuelve coherentemente.</td>
+                      <td>Caso límite</td>
+                    </tr>
+                    <tr>
+                      <td>CA12</td>
+                      <td>Consumir alimento de puntuación doble</td>
+                      <td>Se activa el decorador y se observa la modificación de los puntos durante su vigencia.</td>
+                      <td>Decorator</td>
+                    </tr>
+                    <tr>
+                      <td>CA13</td>
+                      <td>Consumir alimento de velocidad</td>
+                      <td>Se aplica el decorador y cambia el intervalo de desplazamiento.</td>
+                      <td>Decorator</td>
+                    </tr>
+                    <tr>
+                      <td>CA14</td>
+                      <td>Mantener ambos efectos activos</td>
+                      <td>Se comprueba la composición de los dos decoradores y su finalización.</td>
+                      <td>Decorator</td>
+                    </tr>
+                    <tr>
+                      <td>CA15</td>
+                      <td>Reiniciar una partida</td>
+                      <td>Se restablecen cuerpo, puntuación, velocidad, comida y efectos.</td>
+                      <td>State / reinicio</td>
+                    </tr>
+                    <tr>
+                      <td>CA16</td>
+                      <td>Ejecutar caso del tercer patrón</td>
+                      <td>Una operación real demuestra la intervención de sus participantes.</td>
+                      <td>Tercer patrón</td>
+                    </tr>
+                    <tr>
+                      <td>CA17</td>
+                      <td>Ejecutar <code>java -jar SnakeLab.jar</code></td>
+                      <td>El juego abre desde terminal, sin iniciar el IDE, con la versión documentada.</td>
+                      <td>Distribución</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p><strong>Evidencia:</strong> registrar para cada caso la entrada, el resultado esperado, el resultado
+                real, el estado de cumplimiento y una referencia a captura o prueba. Los resultados deben proceder de la
+                ejecución de la aplicación y no de imágenes simuladas.</p>
+            </td>
+          </tr>
+
+          <tr id="rubrica">
+            <td
+              colspan="5"
+              class="section-content"
+            >
+              <strong class="full-section-title">RÚBRICA</strong>
+              <div class="table-scroll">
+                <table class="rubric">
+                  <thead>
+                    <tr>
+                      <th>Criterio</th>
+                      <th>Completo · 100 %</th>
+                      <th>Parcial · 50 %</th>
+                      <th>No logrado · 0 %</th>
+                      <th style="text-align:right">Máximo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>State</td>
+                      <td>Implementa cuatro estados, comportamientos y transiciones encapsulados y verificables.</td>
+                      <td>La estructura es reconocible, pero hay transiciones o responsabilidades incompletas.</td>
+                      <td>El comportamiento no utiliza State o se limita a condiciones.</td>
+                      <td class="points"><strong>2.0</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Decorator</td>
+                      <td>Dos efectos funcionales con contrato común, delegación, composición y finalización coherente.
+                      </td>
+                      <td>La estructura existe, pero algún efecto, composición o duración falla.</td>
+                      <td>No existen decoradores funcionales; los efectos se implementan solo con condiciones.</td>
+                      <td class="points"><strong>2.0</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Tercer patrón</td>
+                      <td>Patrón distinto, integrado en una operación real y justificado con clases y responsabilidades.
+                      </td>
+                      <td>Implementación reconocible, pero integración o justificación incompleta.</td>
+                      <td>No existe un tercer patrón demostrable.</td>
+                      <td class="points"><strong>1.5</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Funcionamiento del juego</td>
+                      <td>Movimiento, controles, colisiones, crecimiento y generación manual y aleatoria correctos.</td>
+                      <td>El juego funciona, pero presenta fallos en operaciones o casos límite.</td>
+                      <td>La mecánica principal no funciona.</td>
+                      <td class="points"><strong>1.5</strong></td>
+                    </tr>
+                    <tr>
+                      <td>JAR y evidencias</td>
+                      <td>JAR ejecutable en raíz, Java y comandos documentados, UML, mockup y casos reproducibles.</td>
+                      <td>Falta documentación, evidencia o alguna condición de ejecución.</td>
+                      <td>JAR no ejecutable o ausencia de evidencias verificables.</td>
+                      <td class="points"><strong>1.0</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Código, Git y aportes</td>
+                      <td>Paquetes organizados, commits por fases con mensajes descriptivos y aportes técnicos
+                        verificables de ambos integrantes.</td>
+                      <td>Organización o historial incompleto, o participación técnica insuficientemente evidenciada.
+                      </td>
+                      <td>Sin organización o historial verificable, o sin aportes técnicos identificables de la pareja.
+                      </td>
+                      <td class="points"><strong>2.0</strong></td>
+                    </tr>
+                    <tr class="total">
+                      <td><strong>TOTAL</strong></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="points"><strong>10.0</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3>Condiciones de evaluación</h3>
+              <p>Cada criterio se evaluará considerando <strong>50 % de implementación y evidencias</strong> y
+                <strong>50 % de defensa individual</strong>. El puntaje de cada criterio se obtiene multiplicando su
+                valor máximo por la suma ponderada de ambos componentes.
+              </p>
+              <pre class="code-line">Puntaje del criterio = Máximo ×
+                       (0.50 × Implementación + 0.50 × Defensa)</pre>
+              <p>Los niveles de implementación y defensa se expresan mediante valores entre 0 y 1. El resultado de la
+                defensa podrá ser distinto para cada integrante de la pareja. Un proyecto funcional no garantiza la
+                calificación máxima si no se demuestra conocimiento del código.</p>
+              <p><strong>Aplicación de la rúbrica:</strong> los descriptores Completo, Parcial y No logrado corresponden
+                a la evidencia de implementación. El componente de defensa se valora por separado con la siguiente
+                escala.</p>
+
+              <h4>Niveles de valoración de la defensa</h4>
+              <div class="table-scroll">
+                <table class="rubric defense-levels">
+                  <thead>
+                    <tr>
+                      <th>Nivel</th>
+                      <th>Porcentaje</th>
+                      <th>Descriptor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Completo</td>
+                      <td>100 %</td>
+                      <td>Identifica, explica, demuestra y justifica correctamente el código y los patrones
+                        involucrados.</td>
+                    </tr>
+                    <tr>
+                      <td>Satisfactorio</td>
+                      <td>75 %</td>
+                      <td>Explica y demuestra la implementación con imprecisiones menores.</td>
+                    </tr>
+                    <tr>
+                      <td>Parcial</td>
+                      <td>50 %</td>
+                      <td>Identifica participantes del patrón, pero presenta dificultades para explicar su
+                        funcionamiento.</td>
+                    </tr>
+                    <tr>
+                      <td>Insuficiente</td>
+                      <td>25 %</td>
+                      <td>Reconoce elementos aislados, sin explicar correctamente sus relaciones o comportamiento.</td>
+                    </tr>
+                    <tr>
+                      <td>No logrado</td>
+                      <td>0 %</td>
+                      <td>No identifica ni demuestra la implementación entregada.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">ENTREGABLES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>La entrega se realizará en el <strong>AVAC mediante el enlace al repositorio remoto compartido por la
+                  pareja</strong>. El repositorio debe contener:</p>
+              <ol>
+                <li><strong>Código fuente Java</strong> con la estructura de paquetes y las implementaciones de State,
+                  Decorator y el tercer patrón.</li>
+                <li><strong><code>SnakeLab.jar</code> en la raíz</strong>, con una clase principal configurada y las
+                  dependencias necesarias para ejecutarlo con los comandos documentados.</li>
+                <li><strong><code>README.md</code></strong> con descripción, instrucciones de compilación y ejecución,
+                  versión de Java utilizada y mínima requerida, procedimiento para equipos con otra versión, estructura
+                  del proyecto, <strong>diagrama UML</strong>, imagen del mockup y justificación del tercer patrón.</li>
+                <li><strong><code>evidencias/PL1.2.md</code></strong> con CA01–CA17, entradas, resultados reales,
+                  capturas, registro de errores, prueba del JAR desde terminal y al menos tres conclusiones.</li>
+                <li><strong>Mockup como imagen</strong> guardada en el repositorio y enlazada desde el README, junto con
+                  el archivo o imagen del diagrama UML.</li>
+                <li><strong>Historial Git verificable</strong> con commits descriptivos por fases y participación
+                  técnica de ambos integrantes. Identificar en el README los integrantes y sus aportes principales.</li>
+              </ol>
+              <p><strong>Estructura orientativa del repositorio:</strong></p>
+              <pre class="code-line">SnakeLab.jar
+README.md
+src/
+docs/
+  mockup.png
+  diagrama-clases.png
+evidencias/
+  PL1.2.md
+  capturas/</pre>
+              <p>Conservar los nombres <code>SnakeLab.jar</code>, <code>README.md</code> y
+                <code>evidencias/PL1.2.md</code> para facilitar la revisión.
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">RESULTADOS OBTENIDOS</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Documentar los resultados reales de los casos de aceptación en una tabla con <strong>ID, operación o
+                  entrada, resultado esperado, resultado obtenido, estado y evidencia</strong>. Registrar expresamente
+                los casos fallidos y su causa.</p>
+              <p>Incluir capturas del tablero, generación de comida manual y aleatoria, estado Pausado, aplicación
+                simultánea de ambos decoradores, ejecución del tercer patrón y apertura del JAR desde terminal.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">DEFENSA</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <h3>Defensa individual de la práctica</h3>
+              <p>La defensa será <strong>individual</strong>, aunque el desarrollo y el repositorio sean compartidos. Se
+                deberá demostrar conocimiento del funcionamiento general del proyecto y de sus tres patrones.</p>
+              <p>Durante la defensa, el docente podrá solicitar:</p>
+              <ol>
+                <li><strong>Identificación:</strong> localizar las clases e interfaces de State, Decorator y del tercer
+                  patrón.</li>
+                <li><strong>Explicación:</strong> describir sus responsabilidades, relaciones, transiciones y
+                  composición.</li>
+                <li><strong>Ejecución:</strong> demostrar los casos de partida, generación de alimentos, efectos
+                  especiales y JAR desde terminal.</li>
+                <li><strong>Justificación:</strong> explicar la selección del tercer patrón y las decisiones de
+                  arquitectura.</li>
+                <li><strong>Modificación:</strong> realizar un cambio puntual solicitado en el código y explicar su
+                  efecto, por ejemplo, una transición, una regla de comida o el comportamiento de un decorador.</li>
+                <li><strong>Colaboración:</strong> explicar los aportes registrados en Git y las partes relevantes
+                  implementadas por la pareja.</li>
+              </ol>
+              <p>La defensa representa el <strong>50 % de la puntuación máxima de cada criterio</strong>. No será
+                suficiente ejecutar la aplicación o describir únicamente los controles de la interfaz; deberá
+                identificarse y explicarse el código entregado.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">CONCLUSIONES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Redactar al menos <strong>tres conclusiones fundamentadas en resultados verificables</strong>. Analizar
+                la utilidad de State para controlar las transiciones, la composición de efectos mediante Decorator, el
+                aporte del tercer patrón y los límites de distribución o compatibilidad del JAR. Relacionar cada
+                conclusión con decisiones de diseño o casos ejecutados.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="section-label">RECOMENDACIONES</td>
+            <td
+              colspan="4"
+              class="section-content"
+            >
+              <p>Implementar y verificar primero la lógica de movimiento y los patrones fuera de la vista. Separar
+                responsabilidades, definir resultados reproducibles para casos límite y comprobar la ejecución del JAR
+                desde una terminal. Registrar cambios técnicos en Git con mensajes claros y mantener actualizados el
+                UML, las evidencias y el README.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="signature">
+      <p><strong>Docente / Técnico Docente:</strong> Ing. Pablo Torres, Mgtr.</p>
+      <p>Firma: _______________________________</p>
+    </div>
+    <div class="reference-note">
+      <span>Formato aprobado con Res. C.S. N° 076-04-2016-04-20</span>
+      <span>Programación Aplicada · PL1.2 · Rúbrica: 10 puntos</span>
+    </div>
+  </main>
+  <script src="../../assets/js/protection.js"></script>
+</body>
+
+</html>
