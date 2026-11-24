@@ -39,142 +39,439 @@
     <a href="../2.2-diseno-expresiones/index.html">Siguiente</a>
   </nav>
       <h1>Programación Aplicada</h1>
-<h2>2.1. Fundamentos de lenguajes regulares</h2>
 <p><img src="../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 2. Expresiones regulares<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a></p>
-<hr>
-<h2>1. Conceptos y ejemplos</h2>
-<h3>Contexto</h3>
-<p>CampusMonitor recibirá líneas como S01;23.5. Antes de convertirlas a objetos necesitamos definir qué textos pertenecen al formato aceptado. Una expresión regular describe una estructura léxica y un autómata ayuda a explicar cómo se reconoce.</p>
-<h3>Antes de empezar</h3>
-<p>Recupera el avance de <a href="../../01/1.4-patrones-genericos/index.html">1.4</a>. Conserva sus comandos y evidencias. Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas del proyecto personal.</p>
-<p><img src="assets/analogia.png" alt="Analogía visual de Fundamentos de lenguajes regulares"></p>
-<p>La ilustración sirve como analogía. El contrato técnico se define en el texto y el código.</p>
-<p><a id="concepto-1"></a></p>
-<h3>1.1. Alfabeto, cadena y lenguaje</h3>
-<p>Un alfabeto es un conjunto de símbolos. Una cadena es una secuencia finita de esos símbolos, incluida la cadena vacía ε. Un lenguaje es un conjunto de cadenas sobre un alfabeto. Para identificadores de sensor, podemos definir S seguida de exactamente dos dígitos ASCII: S00 a S99.</p>
-<p>El patrón no explica aún qué sensor existe ni si está autorizado. Reconoce una forma. Después se valida el significado con reglas del dominio. Esta separación evita expresiones difíciles de mantener que intentan resolver relaciones de datos. En CampusMonitor, una trama puede tener un ID bien formado y aun así referirse a un sensor no registrado.</p>
-<p><a id="concepto-2"></a></p>
-<h3>1.2. Operaciones regulares y autómatas</h3>
-<p>Las operaciones básicas son unión, concatenación y clausura de Kleene. Unión admite alternativas. Concatenación exige una secuencia. La estrella permite cero o más repeticiones. Los lenguajes regulares pueden reconocerse mediante autómatas finitos. Un autómata mantiene un estado que resume la parte relevante del prefijo leído.</p>
-<p>Para S y dos dígitos, q0 espera S, q1 espera el primer dígito, q2 el segundo y q3 acepta únicamente si terminó la entrada. Una transición inválida rechaza. El autómata no necesita recordar una cantidad ilimitada de símbolos. La demostración implementa esta lógica y la compara con Pattern, haciendo visible la equivalencia para este lenguaje.</p>
-<p><a id="concepto-3"></a></p>
-<h3>1.3. Expresiones formales y motor de Java</h3>
-<p>La sintaxis de java.util.regex incorpora funciones adicionales a las expresiones regulares formales, como referencias a grupos previamente capturados. No todos los patrones admitidos por el motor describen lenguajes regulares en el sentido teórico. Por ejemplo, exigir la repetición exacta de una subcadena arbitraria puede necesitar memoria no acotada.</p>
-<p>Java utiliza un motor con retroceso. Una expresión ambigua puede explorar muchas alternativas antes de rechazar un texto. El hecho de que la sintaxis sea breve no garantiza buen rendimiento. En los siguientes temas se evitarán cuantificadores anidados ambiguos y se limitará el tamaño de las entradas externas.</p>
-<p><a id="concepto-4"></a></p>
-<h3>1.4. Validación completa y pruebas negativas</h3>
-<p>Matcher.matches exige que toda la región de entrada coincida. Matcher.find busca una coincidencia dentro del texto. Para validar un identificador completo, matches expresa la intención. Usar find podría aceptar XXS01YY porque contiene una subcadena válida.</p>
-<p>Las pruebas deben incluir longitudes cercanas al límite, símbolos de otro alfabeto, prefijos, sufijos y cadena vacía. [0-9] limita los dígitos a ASCII de forma explícita. La categoría Unicode de dígitos tiene un alcance diferente y debe decidirse según el protocolo. La PC definirá primero el lenguaje y después la expresión.</p>
-<h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual" class="zoomable-diagram medium"></p>
-<hr>
-<p><a id="demostracion"></a></p>
-<h2>2. Demostración guiada</h2>
-<h3>2.1. Problema y contrato</h3>
-<p>CampusMonitor recibirá líneas como S01;23.5. Antes de convertirlas a objetos necesitamos definir qué textos pertenecen al formato aceptado. Una expresión regular describe una estructura léxica y un autómata ayuda a explicar cómo se reconoce.</p>
-<p>La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una ampliación propia sobre CampusMonitor.</p>
-<p><strong>Archivo completo:</strong> <a href="ejemplos/LenguajeDemo.java">LenguajeDemo.java</a>.</p>
-<pre><code class="language-java">package edu.ups.pap.u02;
-import java.util.regex.Pattern;
-public class LenguajeDemo {
-    static boolean automata(String texto) {
-        int estado = 0;
-        for (char c : texto.toCharArray()) {
-            if (estado == 0 &amp;&amp; c == &#39;S&#39;) estado = 1;
-            else if ((estado == 1 || estado == 2) &amp;&amp; c &gt;= &#39;0&#39; &amp;&amp; c &lt;= &#39;9&#39;) estado++;
-            else return false;
-        }
-        return estado == 3;
-    }
-    public static void main(String[] args) {
-        Pattern patron = Pattern.compile(&quot;S[0-9]{2}&quot;);
-        for (String s : new String[]{&quot;S01&quot;,&quot;S9&quot;,&quot;XS01&quot;,&quot;S001&quot;,&quot;S99&quot;,&quot;&quot;}) {
-            boolean manual = automata(s), regex = patron.matcher(s).matches();
-            if (manual != regex) throw new AssertionError(s);
-            System.out.println(&quot;&#39;&quot; + s + &quot;&#39; -&gt; &quot; + regex);
-        }
-    }
-}
-</code></pre>
-<h3>2.2. Ejecución</h3>
-<p>Desde la raíz de este repositorio, con JDK 25:</p>
-<pre><code class="language-bash">java 02/2.1-lenguajes-regulares/ejemplos/LenguajeDemo.java
-</code></pre>
-<p>Con el proyecto Gradle de demostraciones:</p>
-<pre><code class="language-bash">cd demostraciones
-./gradlew runDemo -Pdemo=2.1
-</code></pre>
-<p>En Windows usa <code>gradlew.bat</code>. Ejecuta cada demostración desde una terminal nueva o vuelve a la raíz antes de cambiar de contenido.</p>
-<h3>2.3. Resultado y lectura de la ejecución</h3>
-<pre><code class="language-text">&#39;S01&#39; -&gt; true
-&#39;S9&#39; -&gt; false
-&#39;XS01&#39; -&gt; false
-&#39;S001&#39; -&gt; false
-&#39;S99&#39; -&gt; true
-&#39;&#39; -&gt; false
-</code></pre>
+<h2>2.1. Fundamentos de los lenguajes regulares</h2>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 2. Expresiones regulares<br><strong>Tema:</strong> 2.1. Fundamentos de los lenguajes regulares</p>
+<p>Los lenguajes regulares permiten describir conjuntos de cadenas mediante reglas precisas y reconocerlas con modelos de cómputo de memoria finita. Constituyen la base teórica de las expresiones regulares utilizadas para validar formatos, localizar patrones y procesar texto.</p>
+<p>Este material desarrolla los conceptos de alfabeto, cadena, lenguaje, operaciones, expresiones regulares y autómatas finitos. Los ejemplos parten de requisitos de reconocimiento y muestran cómo formularlos, verificarlos y distinguir sus limitaciones. La construcción detallada de expresiones regulares en Java corresponde al tema 2.2.</p>
+<p><a id="indice"></a></p>
+<h2>Índice</h2>
 <ol>
-<li>Identifica los datos iniciales y las precondiciones que la demostración valida.</li>
-<li>Sigue las llamadas desde <code>main</code> o <code>loop</code> y relaciona las operaciones con los conceptos de la sección 1.</li>
-<li>Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la invariante y no el orden de impresión.</li>
-<li>Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y su causa.</li>
+<li><a href="#fundamentos">Fundamentos de los lenguajes formales</a></li>
+<li><a href="#alfabetos">Alfabetos, cadenas y lenguajes</a></li>
+<li><a href="#operaciones">Operaciones sobre cadenas y lenguajes</a></li>
+<li><a href="#regulares">Lenguajes regulares y expresiones regulares</a></li>
+<li><a href="#automatas">Autómatas finitos</a></li>
+<li><a href="#equivalencia">Equivalencia de modelos y criterios de reconocimiento</a></li>
+<li><a href="#casos">Casos prácticos y trazas de reconocimiento</a></li>
+<li><a href="#java">Introducción al reconocimiento en Java</a></li>
+<li><a href="#analisis">Análisis y criterios de aplicación</a></li>
+<li><a href="#referencias">Referencias</a></li>
 </ol>
 <hr>
-<p><a id="pc"></a></p>
-<h2>3. PC2.1 · Práctica de clase</h2>
-<h3>3.1. Ampliación del proyecto</h3>
-<p>Esta actividad se resuelve en tu repositorio <code>icc-pap-campusmonitor-apellido</code>. Mantén la funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.</p>
-<ol>
-<li>Especifica el lenguaje de identificadores de CampusMonitor: una letra T u O seguida de tres dígitos ASCII.</li>
-<li>Implementa un reconocedor por estados y otro con Pattern. Integra la validación antes de registrar sensores.</li>
-<li>Prueba al menos ocho cadenas que cubran aceptación, rechazo y límites. Explica por qué un ID válido puede no existir en el catálogo.</li>
-</ol>
-<h3>3.2. Comprobación y evidencia</h3>
-<p>Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.</p>
+<p><a id="fundamentos"></a></p>
+<h2>1. Fundamentos de los lenguajes formales</h2>
+<p>Un <strong>lenguaje formal</strong> es un conjunto de cadenas construidas con símbolos de un alfabeto y seleccionadas según una definición matemática. Su descripción establece qué secuencias pertenecen al lenguaje, independientemente de que tengan significado en un idioma natural.</p>
+<p>Por ejemplo, un sistema puede admitir identificadores formados por una letra <code>A</code> seguida de uno o más dígitos. El lenguaje describe todas las cadenas válidas; un reconocedor determina si una entrada concreta pertenece a ese conjunto.</p>
+<p>Conviene distinguir tres niveles:</p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Caso que debes revisar</th>
-<th>Comportamiento requerido</th>
+<th>Nivel</th>
+<th>Pregunta</th>
+<th>Ejemplo</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>T001 y O999</td>
-<td>Aceptados</td>
+<td>Alfabeto</td>
+<td>¿Qué símbolos están disponibles?</td>
+<td><code>{A, 0, 1}</code></td>
 </tr>
 <tr>
-<td>T01, A001, XT001</td>
-<td>Rechazados</td>
+<td>Lenguaje</td>
+<td>¿Qué secuencias se admiten?</td>
+<td><code>A0</code>, <code>A1</code>, <code>A00</code>, <code>A01</code>, ...</td>
 </tr>
 <tr>
-<td>T001 en catálogo vacío</td>
-<td>Formato válido, entidad ausente</td>
+<td>Reconocedor</td>
+<td>¿Cómo se verifica una entrada?</td>
+<td>Un autómata que acepta <code>A01</code> y rechaza <code>01A</code></td>
 </tr>
 </tbody></table></div>
-<p>En <code>evidencias/PC2.1.md</code> agrega: cambio realizado, archivos principales, comandos de ejecución, tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.</p>
-<h3>3.3. Commits de la actividad</h3>
-<pre><code class="language-bash">git status
-git add src evidencias
-git commit -m &quot;feat(pc2.1): fundamentos-de-lenguajes-regulares&quot;
-git push
-git log -1 --format=%H
+<p>La definición del lenguaje y el mecanismo que lo reconoce son aspectos diferentes. Se puede representar el mismo lenguaje regular mediante una expresión regular o mediante distintos autómatas finitos.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="alfabetos"></a></p>
+<h2>2. Alfabetos, cadenas y lenguajes</h2>
+<h3>2.1. Alfabeto</h3>
+<p>Un <strong>alfabeto</strong>, usualmente denotado por <code>Σ</code>, es un conjunto finito de símbolos.</p>
+<ul>
+<li><code>Σ = {0, 1}</code>: alfabeto binario.</li>
+<li><code>Σ = {a, b}</code>: alfabeto con dos letras.</li>
+<li><code>Σ = {A, 0, 1}</code>: alfabeto para un ejemplo simplificado de identificadores.</li>
+</ul>
+<p>Un símbolo es una unidad del alfabeto. No debe confundirse con una cadena que contiene ese símbolo.</p>
+<h3>2.2. Cadena y longitud</h3>
+<p>Una <strong>cadena</strong> es una secuencia finita de símbolos de <code>Σ</code>. Su longitud, denotada <code>|w|</code>, es la cantidad de símbolos que contiene.</p>
+<p>Si <code>Σ = {a, b}</code>, entonces <code>a</code>, <code>ab</code>, <code>bba</code> y <code>aaab</code> son cadenas válidas sobre ese alfabeto. Por ejemplo, <code>|abba| = 4</code>.</p>
+<p>La <strong>cadena vacía</strong>, escrita <code>ε</code>, no contiene símbolos y cumple <code>|ε| = 0</code>. No es lo mismo que un espacio en blanco ni que la cadena de dos caracteres <code>&quot;ε&quot;</code>.</p>
+<h3>2.3. Conjunto de cadenas y lenguaje</h3>
+<ul>
+<li><code>Σ*</code> representa <strong>todas las cadenas finitas</strong> sobre <code>Σ</code>, incluida <code>ε</code>.</li>
+<li><code>Σ+</code> representa todas las cadenas <strong>no vacías</strong> sobre <code>Σ</code>.</li>
+<li>Un <strong>lenguaje</strong> <code>L</code> sobre <code>Σ</code> es cualquier subconjunto de <code>Σ*</code>.</li>
+</ul>
+<p>Para <code>Σ = {0, 1}</code>:</p>
+<pre><code class="language-text">Σ* = {ε, 0, 1, 00, 01, 10, 11, 000, ...}
+Σ+ = {0, 1, 00, 01, 10, 11, 000, ...}
+L  = {0, 00, 000, 0000, ...}
 </code></pre>
-<p>Ajusta las rutas de <code>git add</code> a los archivos que realmente creaste. Incluye también configuración o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.</p>
-<h3>Lo esencial</h3>
+<p>En el último caso, <code>L</code> contiene una o más apariciones del símbolo <code>0</code>. Por tanto, <code>0 ∈ L</code>, pero <code>ε ∉ L</code> y <code>01 ∉ L</code>.</p>
+<p><strong>Distinción importante:</strong> <code>∅</code> denota un lenguaje sin cadenas. <code>{ε}</code> denota un lenguaje con un elemento: la cadena vacía. Sus cardinalidades son 0 y 1, respectivamente.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="operaciones"></a></p>
+<h2>3. Operaciones sobre cadenas y lenguajes</h2>
+<h3>3.1. Concatenación de cadenas</h3>
+<p>La concatenación coloca una cadena después de otra. Si <code>u = ab</code> y <code>v = ba</code>, entonces <code>uv = abba</code>. En general, <code>uv</code> no tiene por qué ser igual a <code>vu</code>.</p>
+<p>La cadena vacía es el elemento neutro: <code>wε = εw = w</code>.</p>
+<h3>3.2. Operaciones sobre lenguajes</h3>
+<p>Para <code>L₁ = {a, ab}</code> y <code>L₂ = {b, ba}</code>:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Notación</th>
+<th>Resultado o interpretación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Unión</td>
+<td><code>L₁ ∪ L₂</code></td>
+<td><code>{a, ab, b, ba}</code></td>
+</tr>
+<tr>
+<td>Concatenación</td>
+<td><code>L₁L₂</code></td>
+<td><code>{ab, aba, abb, abba}</code></td>
+</tr>
+<tr>
+<td>Potencia</td>
+<td><code>L₁²</code></td>
+<td><code>L₁L₁ = {aa, aab, aba, abab}</code></td>
+</tr>
+<tr>
+<td>Clausura de Kleene</td>
+<td><code>L₁*</code></td>
+<td>Cero o más concatenaciones de elementos de <code>L₁</code>; incluye <code>ε</code></td>
+</tr>
+<tr>
+<td>Clausura positiva</td>
+<td><code>L₁+</code></td>
+<td>Una o más concatenaciones de elementos de <code>L₁</code></td>
+</tr>
+</tbody></table></div>
+<p>La <strong>clausura de Kleene</strong> se define como <code>L* = ⋃ₙ₌₀^∞ Lⁿ</code>, con <code>L⁰ = {ε}</code>. La clausura positiva comienza con <code>L¹</code>.</p>
+<p>La unión opera sobre conjuntos de cadenas; la concatenación construye nuevas cadenas. Por ejemplo, <code>{a}{b} = {ab}</code>, mientras que <code>{a} ∪ {b} = {a, b}</code>.</p>
+<p><strong>Caso límite:</strong> <code>∅* = {ε}</code>. Aunque <code>∅</code> no tiene elementos, se admite la concatenación de cero elementos, cuyo resultado es <code>ε</code>.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="regulares"></a></p>
+<h2>4. Lenguajes regulares y expresiones regulares</h2>
+<p>Un lenguaje es <strong>regular</strong> si puede ser descrito por una expresión regular formal o reconocido por un autómata finito. Los lenguajes regulares se construyen a partir de casos básicos mediante operaciones que preservan la regularidad.</p>
+<h3>4.1. Definición inductiva</h3>
+<p>Sobre un alfabeto <code>Σ</code>, son expresiones regulares básicas:</p>
+<ol>
+<li><code>∅</code>, que denota el lenguaje vacío.</li>
+<li><code>ε</code>, que denota el lenguaje <code>{ε}</code>.</li>
+<li>Cada símbolo <code>a ∈ Σ</code>, que denota el lenguaje <code>{a}</code>.</li>
+</ol>
+<p>Si <code>r</code> y <code>s</code> son expresiones regulares, también lo son:</p>
 <ul>
-<li>Un lenguaje es un conjunto de cadenas.</li>
-<li>Un autómata finito resume el prefijo en un estado.</li>
-<li>El motor Java incluye extensiones al formalismo regular.</li>
-<li>matches comprueba toda la entrada; el dominio valida su sentido.</li>
+<li><code>(r|s)</code>: alternativa, que denota la unión.</li>
+<li><code>(rs)</code>: concatenación.</li>
+<li><code>(r*)</code>: repetición de cero o más cadenas del lenguaje de <code>r</code>.</li>
 </ul>
-<h2>Referencias técnicas</h2>
+<p>Estas reglas permiten construir expresiones más complejas. Para facilitar su lectura se usan paréntesis; la clausura se aplica antes que la concatenación, y la concatenación antes que la alternativa.</p>
+<h3>4.2. Interpretación de expresiones</h3>
+<p>Con <code>Σ = {a, b}</code>:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th align="left">Expresión formal</th>
+<th align="left">Lenguaje descrito</th>
+<th align="left">Acepta</th>
+<th align="left">Rechaza</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>a*</code></td>
+<td align="left">Cero o más letras <code>a</code></td>
+<td align="left"><code>ε</code>, <code>a</code>, <code>aaa</code></td>
+<td align="left"><code>ab</code></td>
+</tr>
+<tr>
+<td align="left"><code>ab</code></td>
+<td align="left">Exactamente <code>a</code> seguida de <code>b</code></td>
+<td align="left"><code>ab</code></td>
+<td align="left"><code>a</code>, <code>abb</code></td>
+</tr>
+<tr>
+<td align="left"><code>(a|b)*</code></td>
+<td align="left">Todas las cadenas sobre <code>{a, b}</code></td>
+<td align="left"><code>ε</code>, <code>baab</code></td>
+<td align="left"><code>c</code></td>
+</tr>
+<tr>
+<td align="left"><code>a(a|b)*</code></td>
+<td align="left">Cadenas que empiezan por <code>a</code></td>
+<td align="left"><code>a</code>, <code>abba</code></td>
+<td align="left"><code>ba</code>, <code>ε</code></td>
+</tr>
+<tr>
+<td align="left"><code>(a|b)*ab</code></td>
+<td align="left">Cadenas que terminan en <code>ab</code></td>
+<td align="left"><code>ab</code>, <code>baab</code></td>
+<td align="left"><code>aba</code>, <code>baa</code></td>
+</tr>
+</tbody></table></div>
+<p>Una expresión regular representa un <strong>lenguaje completo</strong>. Identificar una subcadena coincidente dentro de un texto es una operación diferente y depende de la API de búsqueda utilizada.</p>
+<h3>4.3. Notación formal y motores de programación</h3>
+<p>Las expresiones regulares de los lenguajes formales y las expresiones de motores como <code>java.util.regex</code> están relacionadas, pero no son idénticas. Los motores incluyen sintaxis práctica adicional y, en algunos casos, construcciones cuyo poder expresivo excede el de los autómatas finitos clásicos, como las retroreferencias.</p>
+<p>Por ello, no debe asumirse que todas las características de una biblioteca de expresiones regulares pertenecen a la definición matemática de lenguaje regular. El diseño de patrones y sus operadores específicos se desarrolla en el tema 2.2.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="automatas"></a></p>
+<h2>5. Autómatas finitos</h2>
+<p>Un <strong>autómata finito</strong> procesa una cadena símbolo por símbolo y cambia entre un número finito de estados. Al terminar la entrada, decide su aceptación según el estado alcanzado.</p>
+<h3>5.1. Autómata finito determinista</h3>
+<p>Un <strong>AFD</strong> se define mediante la quíntupla <code>M = (Q, Σ, δ, q₀, F)</code>:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Q</code></td>
+<td>Conjunto finito de estados</td>
+</tr>
+<tr>
+<td><code>Σ</code></td>
+<td>Alfabeto de entrada</td>
+</tr>
+<tr>
+<td><code>δ: Q × Σ → Q</code></td>
+<td>Función de transición</td>
+</tr>
+<tr>
+<td><code>q₀ ∈ Q</code></td>
+<td>Estado inicial</td>
+</tr>
+<tr>
+<td><code>F ⊆ Q</code></td>
+<td>Conjunto de estados de aceptación</td>
+</tr>
+</tbody></table></div>
+<p>En un AFD completo existe exactamente una transición definida para cada combinación de estado y símbolo del alfabeto.</p>
+<p><strong>Ejemplo:</strong> reconocer cadenas binarias que terminan en <code>1</code>.</p>
 <ul>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Pattern.html">Pattern, Java 25</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Matcher.html">Matcher, Java 25</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html">Files, Java 25</a></li>
+<li><code>Q = {q0, q1}</code>; estado inicial <code>q0</code>.</li>
+<li><code>F = {q1}</code>.</li>
+<li><code>q0</code> significa que aún no se ha leído un <code>1</code> final; <code>q1</code>, que el último símbolo leído es <code>1</code>.</li>
 </ul>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Estado actual</th>
+<th>Entrada <code>0</code></th>
+<th>Entrada <code>1</code></th>
+<th>¿Acepta al terminar?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>q0</code></td>
+<td><code>q0</code></td>
+<td><code>q1</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>q1</code></td>
+<td><code>q0</code></td>
+<td><code>q1</code></td>
+<td>Sí</td>
+</tr>
+</tbody></table></div>
+<p>La cadena <code>101</code> produce <code>q0 → q1 → q0 → q1</code>, por lo que es aceptada. La cadena <code>100</code> termina en <code>q0</code> y es rechazada. La cadena vacía también es rechazada porque <code>q0</code> no es final.</p>
+<h3>5.2. Autómata finito no determinista</h3>
+<p>Un <strong>AFN</strong> puede ofrecer varias transiciones posibles para un mismo estado y símbolo, o ninguna. En su variante con transiciones vacías, también puede cambiar de estado sin consumir un símbolo de entrada.</p>
+<p>Una cadena se acepta si <strong>existe al menos un recorrido</strong> que consume la entrada completa y termina en un estado de aceptación. No es necesario que todos los recorridos acepten.</p>
+<p>Aunque cambie la forma de describir los recorridos, AFD y AFN reconocen exactamente la misma clase de lenguajes: los regulares.</p>
+<h3>5.3. Qué significa tener memoria finita</h3>
+<p>Los estados permiten recordar una cantidad limitada de información relevante, como si apareció un símbolo, cuál fue el último carácter o si un prefijo coincide con un patrón. No permiten almacenar un contador arbitrariamente grande con valores distintos para todas las entradas.</p>
+<p>Por ejemplo, el lenguaje <code>{aⁿbⁿ | n ≥ 0}</code> exige igual cantidad de letras <code>a</code> seguidas de letras <code>b</code>, para cualquier <code>n</code>. No es regular y no puede ser reconocido por un autómata finito clásico.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="equivalencia"></a></p>
+<h2>6. Equivalencia de modelos y criterios de reconocimiento</h2>
+<p>Un lenguaje es regular <strong>si y solo si</strong> existe un autómata finito que lo reconoce. Esta equivalencia permite describir un requisito con una expresión regular y comprobar su comportamiento mediante transiciones entre estados.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Representación</th>
+<th>Qué expresa</th>
+<th>Ventaja para el análisis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Descripción verbal</td>
+<td>Requisito que debe cumplir una cadena</td>
+<td>Acerca el problema al dominio</td>
+</tr>
+<tr>
+<td>Expresión regular formal</td>
+<td>Conjunto de cadenas mediante operaciones</td>
+<td>Notación compacta</td>
+</tr>
+<tr>
+<td>AFD</td>
+<td>Un único siguiente estado por símbolo</td>
+<td>Recorrido determinista y verificable</td>
+</tr>
+<tr>
+<td>AFN</td>
+<td>Alternativas posibles de transición</td>
+<td>Construcción flexible del reconocedor</td>
+</tr>
+</tbody></table></div>
+<p><strong>Procedimiento recomendado:</strong> identificar primero el alfabeto, especificar qué cadenas se aceptan y cuáles se rechazan, construir una representación formal y comprobar casos normales y límites.</p>
+<p>No basta con observar que un patrón funciona con unas pocas entradas. Una especificación correcta debe cubrir todas las cadenas del lenguaje pretendido.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="casos"></a></p>
+<h2>7. Casos prácticos y trazas de reconocimiento</h2>
+<h3>7.1. Identificadores con prefijo obligatorio</h3>
+<p>Un sistema admite identificadores que empiezan con <code>A</code> y continúan con uno o más dígitos binarios. El alfabeto es <code>Σ = {A, 0, 1}</code> y la expresión formal es:</p>
+<pre><code class="language-text">A(0|1)(0|1)*
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Resultado</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>A0</code></td>
+<td>Aceptada</td>
+<td>Prefijo y un dígito</td>
+</tr>
+<tr>
+<td><code>A101</code></td>
+<td>Aceptada</td>
+<td>Prefijo y tres dígitos</td>
+</tr>
+<tr>
+<td><code>A</code></td>
+<td>Rechazada</td>
+<td>Falta al menos un dígito</td>
+</tr>
+<tr>
+<td><code>01A</code></td>
+<td>Rechazada</td>
+<td>El prefijo no está al inicio</td>
+</tr>
+<tr>
+<td><code>A102</code></td>
+<td>Rechazada</td>
+<td><code>2</code> no pertenece al alfabeto</td>
+</tr>
+<tr>
+<td><code>ε</code></td>
+<td>Rechazada</td>
+<td>El prefijo es obligatorio</td>
+</tr>
+</tbody></table></div>
+<p>La expresión podría escribirse también como <code>A(0|1)+</code> usando una abreviatura habitual. La definición básica de expresiones regulares, sin embargo, ya es suficiente para describir el lenguaje.</p>
+<h3>7.2. Secuencias binarias terminadas en <code>1</code></h3>
+<p>El requisito admite <code>1</code>, <code>01</code>, <code>111</code> y <code>101</code>, pero rechaza <code>ε</code>, <code>0</code> y <code>100</code>. Una expresión formal equivalente es:</p>
+<pre><code class="language-text">(0|1)*1
+</code></pre>
+<p>La tabla de transiciones del apartado 5.1 implementa exactamente este mismo lenguaje. Permite comprobar que cualquier <code>0</code> final lleva al estado de rechazo y cualquier <code>1</code> final lleva al de aceptación.</p>
+<h3>7.3. Requisito que no es regular</h3>
+<p>Un protocolo hipotético exige <code>n</code> caracteres <code>a</code> seguidos de exactamente <code>n</code> caracteres <code>b</code>, con <code>n</code> sin límite superior. Las cadenas <code>ε</code>, <code>ab</code>, <code>aabb</code> y <code>aaabbb</code> son válidas, pero <code>aab</code> y <code>abab</code> no lo son.</p>
+<p>Una expresión regular clásica no puede reconocer este conjunto para todos los valores de <code>n</code>. El ejemplo permite distinguir un problema de sintaxis de un <strong>límite del modelo de reconocimiento</strong>.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="java"></a></p>
+<h2>8. Introducción al reconocimiento en Java</h2>
+<p>Java ofrece <code>java.util.regex.Pattern</code> y <code>Matcher</code> para trabajar con expresiones regulares. En este apartado solo se ilustra la diferencia entre comprobar una cadena completa y buscar una coincidencia parcial. La sintaxis completa y el desarrollo de patrones corresponden al tema 2.2.</p>
+<pre><code class="language-java">import java.util.regex.Pattern;
+
+public class ReconocimientoBasico {
+    public static void main(String[] args) {
+        Pattern identificador = Pattern.compile(&quot;A[01]+&quot;);
+
+        System.out.println(identificador.matcher(&quot;A101&quot;).matches());
+        System.out.println(identificador.matcher(&quot;A&quot;).matches());
+        System.out.println(identificador.matcher(&quot;X-A101-Y&quot;).find());
+    }
+}
+</code></pre>
+<p><strong>Resultado:</strong></p>
+<pre><code class="language-text">true
+false
+true
+</code></pre>
+<p><code>matches()</code> exige que el patrón coincida con la entrada completa. <code>find()</code> busca una subsecuencia coincidente, por eso encuentra <code>A101</code> dentro de <code>X-A101-Y</code>. El símbolo <code>+</code> representa una o más repeticiones y <code>[01]</code> es una clase de caracteres de la sintaxis de Java.</p>
+<p>En un problema de validación, utilizar <code>find()</code> en lugar de <code>matches()</code> puede aceptar texto adicional no previsto por el requisito. La elección depende de si se necesita <strong>validar una entrada completa</strong> o <strong>localizar información dentro de un texto</strong>.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="analisis"></a></p>
+<h2>9. Análisis y criterios de aplicación</h2>
+<h3>9.1. Preguntas de análisis</h3>
+<ol>
+<li>Un sistema acepta <code>ε</code>, <code>a</code> y <code>aa</code>, pero nunca <code>b</code>. ¿Cuál sería una descripción del lenguaje que incluya también todas las cadenas más largas permitidas?</li>
+<li>¿Qué diferencia funcional existe entre exigir que una entrada completa pertenezca a un lenguaje y localizar una subcadena que sí pertenece a él?</li>
+<li>Si un AFD reconoce cadenas binarias terminadas en <code>1</code>, ¿qué estado debe alcanzar después de leer <code>1010</code> y por qué?</li>
+<li>¿Por qué el lenguaje <code>{aⁿbⁿ | n ≥ 0}</code> no puede resolverse con un número finito de estados para todos los valores de <code>n</code>?</li>
+<li>Si una especificación permite identificadores como <code>A0</code> y <code>A01</code>, pero rechaza <code>A</code>, ¿por qué <code>A(0|1)*</code> no representa correctamente el requisito?</li>
+</ol>
+<h3>9.2. Errores conceptuales frecuentes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Confusión</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ε</code> y <code>∅</code> significan lo mismo</td>
+<td><code>ε</code> es una cadena; <code>∅</code> es un conjunto sin elementos</td>
+</tr>
+<tr>
+<td>Una expresión regular siempre busca texto parcial</td>
+<td>Depende de la operación de reconocimiento utilizada</td>
+</tr>
+<tr>
+<td>Un AFN puede reconocer más lenguajes que un AFD</td>
+<td>Ambos reconocen exactamente los lenguajes regulares</td>
+</tr>
+<tr>
+<td>Todos los motores de regex implementan solo lenguajes regulares</td>
+<td>Algunas extensiones, como las retroreferencias, superan el modelo regular clásico</td>
+</tr>
+<tr>
+<td>Una cadena pertenece al lenguaje solo porque usa símbolos del alfabeto</td>
+<td>Además de pertenecer a <code>Σ*</code>, debe satisfacer las reglas específicas de <code>L</code></td>
+</tr>
+</tbody></table></div>
+<h3>9.3. Criterio de diseño</h3>
+<p>Antes de escribir una expresión regular, es necesario definir el lenguaje mediante casos aceptados y rechazados, precisar si se validará la entrada completa y verificar si el requisito pertenece al alcance de los lenguajes regulares.</p>
+<p>Las expresiones regulares son adecuadas para muchos formatos textuales y secuencias reconocibles con memoria finita. No reemplazan analizadores sintácticos generales ni validaciones semánticas o de negocio.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="referencias"></a></p>
+<h2>10. Referencias</h2>
+<ol>
+<li>Hopcroft, J. E., Motwani, R. y Ullman, J. D. <em>Introduction to Automata Theory, Languages, and Computation</em>. 3.ª ed. Pearson, 2006.</li>
+<li>Sipser, M. <em>Introduction to the Theory of Computation</em>. 3.ª ed. Cengage Learning, 2012.</li>
+<li>Oracle. <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Pattern.html">Clase Pattern, Java SE</a>.</li>
+<li>Oracle. <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Matcher.html">Clase Matcher, Java SE</a>.</li>
+</ol>
+<p><a href="#indice">Volver al índice</a></p>
 
       
   <nav class="article-nav" aria-label="Recursos del contenido">

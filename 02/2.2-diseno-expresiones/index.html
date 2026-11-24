@@ -39,141 +39,835 @@
     <a href="../2.3-aserciones/index.html">Siguiente</a>
   </nav>
       <h1>Programación Aplicada</h1>
-<h2>2.2. Diseño de expresiones regulares</h2>
 <p><img src="../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 2. Expresiones regulares<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p><a href="../../README.md">Inicio del curso</a> · <a href="presentacion.pptx">Presentación editable</a></p>
-<hr>
-<h2>1. Conceptos y ejemplos</h2>
-<h3>Contexto</h3>
-<p>Las entradas ya tienen identificadores definidos. La siguiente versión de CampusMonitor debe extraer campos de una línea, convertir un valor decimal y registrar errores útiles sin mezclar reconocimiento con persistencia.</p>
-<h3>Antes de empezar</h3>
-<p>Recupera el avance de <a href="../2.1-lenguajes-regulares/index.html">2.1</a>. Conserva sus comandos y evidencias. Revisa el ejemplo completo antes de implementar la PC. Las demostraciones del material se ejecutan separadas del proyecto personal.</p>
-<p><a id="concepto-1"></a></p>
-<h3>1.1. Clases, cuantificadores y agrupación</h3>
-<p>Las clases de caracteres delimitan símbolos admitidos. [0-9] acepta un dígito y [A-Z] una letra mayúscula ASCII. Los cuantificadores ?, *, + y {m,n} controlan repetición. Los paréntesis capturan grupos y (?:...) agrupa sin capturar. Usa grupos con nombre para campos semánticos: sensor, valor y unidad son más mantenibles que posiciones numéricas dispersas.</p>
-<p>Diseña desde ejemplos positivos y negativos. Un decimal del protocolo puede admitir un signo menos opcional, una parte entera y una fracción opcional con punto. Esa gramática no acepta coma decimal, exponente o NaN. La decisión debe estar en el contrato del protocolo, no depender de la configuración regional del equipo.</p>
-<p><a id="concepto-2"></a></p>
-<h3>1.2. Dos niveles de escape</h3>
-<p>El texto de un literal Java se interpreta antes de que Pattern procese la expresión regular. Para expresar el metacarácter de dígito \d en un literal se escribe &quot;\d&quot;. Para un punto literal puede usarse &quot;\.&quot; o la clase &quot;[.]&quot;. La demostración utiliza [.] para hacer explícito que el separador decimal es un punto.</p>
-<p>Pattern.quote convierte texto externo en un literal del patrón. Matcher.quoteReplacement protege texto externo utilizado como reemplazo, porque $ y la barra inversa tienen significado especial allí. Son funciones diferentes y no intercambiables. Evita concatenar directamente un nombre ingresado por el usuario en una expresión.</p>
-<pre><code class="language-java">Pattern literal = Pattern.compile(Pattern.quote(&quot;sensor.a&quot;));
-String seguro = Matcher.quoteReplacement(&quot;$5&quot;);
-</code></pre>
-<p><a id="concepto-3"></a></p>
-<h3>1.3. Pattern, Matcher y flags</h3>
-<p>Pattern representa la expresión compilada y puede reutilizarse. Matcher contiene estado de una búsqueda sobre una entrada. Crea un Matcher por operación y no lo compartas entre hilos. Compilar el mismo patrón dentro de un bucle añade trabajo evitable.</p>
-<p>CASE_INSENSITIVE modifica la comparación de letras, MULTILINE cambia el comportamiento de ^ y $ respecto de las líneas y DOTALL permite que el punto coincida con saltos de línea. Ninguno de esos flags debe activarse por costumbre. Para protocolos de una línea, el diseño más claro suele rechazar saltos y utilizar matches sobre una línea ya delimitada.</p>
-<p><a id="concepto-4"></a></p>
-<h3>1.4. Conversión y errores del dominio</h3>
-<p>Una captura sigue siendo texto. Double.parseDouble transforma el valor y puede lanzar NumberFormatException. Incluso una cadena numérica muy larga puede producir infinito, por lo que se comprueba Double.isFinite. Después se validan rangos físicos y unidades.</p>
-<p>La demostración devuelve un record y usa IllegalArgumentException para comunicar una trama inválida. En un importador de lotes, estos errores deben registrarse por línea en lugar de abortar todos los datos. No escondas el error convirtiéndolo a cero: cero puede ser una medida real y produciría un registro incorrecto.</p>
-<h3>Mapa de conceptos</h3>
-<p><img src="assets/guia-visual.svg" alt="Resumen visual" class="zoomable-diagram medium"></p>
-<hr>
-<p><a id="demostracion"></a></p>
-<h2>2. Demostración guiada</h2>
-<h3>2.1. Problema y contrato</h3>
-<p>Las entradas ya tienen identificadores definidos. La siguiente versión de CampusMonitor debe extraer campos de una línea, convertir un valor decimal y registrar errores útiles sin mezclar reconocimiento con persistencia.</p>
-<p>La implementación siguiente es una demostración resuelta. La PC de la sección 3 requiere desarrollar una ampliación propia sobre CampusMonitor.</p>
-<p><strong>Archivo completo:</strong> <a href="ejemplos/RegexDemo.java">RegexDemo.java</a>.</p>
-<pre><code class="language-java">package edu.ups.pap.u02;
-import java.util.regex.*;
-public class RegexDemo {
-    record Trama(String sensor, double valor, String unidad) {}
-    static final Pattern P = Pattern.compile(
-        &quot;(?&lt;sensor&gt;S[0-9]{2});(?&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?&lt;unidad&gt;C|PCT)&quot;);
-    static Trama parsear(String linea) {
-        if (linea.length() &gt; 80) throw new IllegalArgumentException(&quot;Trama demasiado larga&quot;);
-        Matcher m = P.matcher(linea);
-        if (!m.matches()) throw new IllegalArgumentException(&quot;Formato inválido&quot;);
-        double valor = Double.parseDouble(m.group(&quot;valor&quot;));
-        if (!Double.isFinite(valor)) throw new IllegalArgumentException(&quot;Valor no finito&quot;);
-        return new Trama(m.group(&quot;sensor&quot;),valor,m.group(&quot;unidad&quot;));
-    }
-    public static void main(String[] args) {
-        for (String s : new String[]{&quot;S01;23.5;C&quot;,&quot;S02;-2;C&quot;,&quot;S1;22;C&quot;,&quot;S01;NaN;C&quot;}) {
-            try { System.out.println(parsear(s)); }
-            catch (IllegalArgumentException e) { System.out.println(s + &quot;: &quot; + e.getMessage()); }
-        }
-    }
-}
-</code></pre>
-<h3>2.2. Ejecución</h3>
-<p>Desde la raíz de este repositorio, con JDK 25:</p>
-<pre><code class="language-bash">java 02/2.2-diseno-expresiones/ejemplos/RegexDemo.java
-</code></pre>
-<p>Con el proyecto Gradle de demostraciones:</p>
-<pre><code class="language-bash">cd demostraciones
-./gradlew runDemo -Pdemo=2.2
-</code></pre>
-<p>En Windows usa <code>gradlew.bat</code>. Ejecuta cada demostración desde una terminal nueva o vuelve a la raíz antes de cambiar de contenido.</p>
-<h3>2.3. Resultado y lectura de la ejecución</h3>
-<pre><code class="language-text">Trama[sensor=S01, valor=23.5, unidad=C]
-Trama[sensor=S02, valor=-2.0, unidad=C]
-S1;22;C: Formato inválido
-S01;NaN;C: Formato inválido
-</code></pre>
+<h2>2.2. Diseño de expresiones regulares</h2>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 2. Expresiones regulares<br><strong>Tema:</strong> 2.2. Diseño de expresiones regulares<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
+<p>Las expresiones regulares permiten especificar y reconocer estructuras de texto mediante patrones. Diseñar una expresión implica partir de un contrato de entrada, identificar sus símbolos permitidos, construir una regla de reconocimiento y verificar tanto los casos aceptados como los rechazados.</p>
+<p>Este tema desarrolla las clases de caracteres, cuantificadores, alternancia, agrupación, capturas y APIs de reconocimiento. Como caso de aplicación, se interpreta una trama de CampusMonitor con identificador, valor y unidad. Se distinguen las reglas de formato de las reglas del dominio y se incluyen implementaciones equivalentes en Java, Python y JavaScript.</p>
+<p><a href="../../README.md">Inicio del curso</a> · <a href="../2.1-lenguajes-regulares/index.html">Tema anterior: 2.1. Fundamentos de los lenguajes regulares</a></p>
+<p><a id="indice"></a></p>
+<h2>Índice</h2>
 <ol>
-<li>Identifica los datos iniciales y las precondiciones que la demostración valida.</li>
-<li>Sigue las llamadas desde <code>main</code> o <code>loop</code> y relaciona las operaciones con los conceptos de la sección 1.</li>
-<li>Contrasta el resultado con la salida esperada del ejemplo. Si el orden es concurrente, compara la invariante y no el orden de impresión.</li>
-<li>Cambia un dato del ejemplo y predice el resultado antes de ejecutarlo. Registra cualquier diferencia y su causa.</li>
+<li><a href="#fundamentos">Del lenguaje regular al patrón de reconocimiento</a></li>
+<li><a href="#componentes">Componentes de una expresión regular</a></li>
+<li><a href="#construccion">Construcción progresiva de un patrón</a></li>
+<li><a href="#capturas">Capturas, escapes y texto literal</a></li>
+<li><a href="#reconocimiento">Reconocimiento completo, búsqueda y flags</a></li>
+<li><a href="#caso">Caso práctico: tramas de CampusMonitor</a></li>
+<li><a href="#java">Implementación en Java</a></li>
+<li><a href="#otros-lenguajes">Implementaciones equivalentes en Python y JavaScript</a></li>
+<li><a href="#pc">PC2.2 · Práctica de clase</a></li>
+<li><a href="#analisis">Análisis y criterios de diseño</a></li>
+<li><a href="#referencias">Referencias</a></li>
 </ol>
 <hr>
-<p><a id="pc"></a></p>
-<h2>3. PC2.2 · Práctica de clase</h2>
-<h3>3.1. Ampliación del proyecto</h3>
-<p>Esta actividad se resuelve en tu repositorio <code>icc-pap-campusmonitor-apellido</code>. Mantén la funcionalidad anterior. No reemplaces tu solución con los archivos de demostración del material.</p>
-<ol>
-<li>Adapta el parser a IDs T001 u O001 del catálogo y a una trama id;valor;unidad. Usa grupos con nombre.</li>
-<li>Limita la entrada a 80 caracteres y admite únicamente unidades C y PERSONAS. Comprueba que ocupación sea un entero no negativo.</li>
-<li>Integra un comando validar-trama que muestre cada campo o un error preciso. Conserva la cadena original en la evidencia de errores.</li>
-</ol>
-<h3>3.2. Comprobación y evidencia</h3>
-<p>Prueba los casos de esta sección y registra entradas, salida real y explicación. Incluye una ejecución normal y un caso de error. La evidencia debe permitir repetir el resultado desde el commit entregado.</p>
+<p><a id="fundamentos"></a></p>
+<h2>1. Del lenguaje regular al patrón de reconocimiento</h2>
+<p>En el tema 2.1 se estudió que un lenguaje formal es un conjunto de cadenas definidas sobre un alfabeto. Una <strong>expresión regular</strong> representa un conjunto de cadenas mediante operaciones de combinación, elección y repetición. En programación, los motores regex añaden una sintaxis práctica para describir y reconocer formatos de texto.</p>
+<p>Una expresión regular no sustituye la definición de un requisito. Antes de escribir el patrón deben establecerse las reglas aceptadas: longitud de un identificador, separadores, signos, unidades y política de espacios.</p>
+<p>Por ejemplo, para aceptar únicamente códigos compuestos por <code>S</code> seguida de dos dígitos ASCII:</p>
+<pre><code class="language-regex">S[0-9]{2}
+</code></pre>
+<p>La expresión describe una secuencia. La <strong>validación completa</strong> determina si toda la entrada pertenece al lenguaje, mientras que la <strong>búsqueda</strong> localiza una secuencia compatible dentro de un texto mayor.</p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Caso que debes revisar</th>
-<th>Comportamiento requerido</th>
+<th>Entrada</th>
+<th>Coincidencia parcial del patrón</th>
+<th>Validación completa</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>T001;23.5;C</td>
-<td>Temperatura válida</td>
+<td><code>S01</code></td>
+<td>Sí</td>
+<td>Sí</td>
 </tr>
 <tr>
-<td>O001;12;PERSONAS</td>
-<td>Ocupación válida</td>
+<td><code>ID=S01</code></td>
+<td>Sí</td>
+<td>No</td>
 </tr>
 <tr>
-<td>O001;12.5;PERSONAS</td>
-<td>Formato numérico válido, regla de dominio rechazada</td>
+<td><code>S1</code></td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>S012</code></td>
+<td>Sí: <code>S01</code></td>
+<td>No</td>
 </tr>
 </tbody></table></div>
-<p>En <code>evidencias/PC2.2.md</code> agrega: cambio realizado, archivos principales, comandos de ejecución, tabla de pruebas y enlace al commit final. No añadas una rúbrica a esta PC.</p>
-<h3>3.3. Commits de la actividad</h3>
+<p><strong>Distinción:</strong> reconocer el formato de una cadena no implica que sus datos sean válidos para una regla de negocio. <code>O001;12.5;PERSONAS</code> puede tener sintaxis decimal correcta, pero no representar una cantidad entera de personas.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="componentes"></a></p>
+<h2>2. Componentes de una expresión regular</h2>
+<h3>2.1. Literales, clases y rangos</h3>
+<p>Una clase de caracteres define el conjunto de símbolos permitidos <strong>en una posición</strong>. Un literal representa un símbolo concreto. Los rangos ayudan a expresar conjuntos contiguos de caracteres.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Sintaxis</th>
+<th>Significado</th>
+<th>Ejemplo que acepta</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>A</code></td>
+<td>Letra <code>A</code> literal</td>
+<td><code>A</code></td>
+</tr>
+<tr>
+<td><code>[0-9]</code></td>
+<td>Un dígito ASCII</td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td><code>[A-Z]</code></td>
+<td>Una letra mayúscula ASCII</td>
+<td><code>T</code></td>
+</tr>
+<tr>
+<td><code>[TO]</code></td>
+<td><code>T</code> u <code>O</code></td>
+<td><code>O</code></td>
+</tr>
+<tr>
+<td><code>[^;]</code></td>
+<td>Un carácter distinto de punto y coma</td>
+<td><code>x</code></td>
+</tr>
+<tr>
+<td><code>[.]</code></td>
+<td>Un punto literal</td>
+<td><code>.</code></td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>Clase de dígitos del motor; su alcance varía</td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>Clase de espacios del motor; su alcance varía</td>
+<td>espacio</td>
+</tr>
+</tbody></table></div>
+<p>En un protocolo con identificadores y números ASCII, <code>[0-9]</code> expresa mejor el contrato que una clase abreviada cuyo comportamiento Unicode puede variar entre motores y opciones.</p>
+<h3>2.2. Cuantificadores</h3>
+<p>Los cuantificadores controlan cuántas veces puede aparecer un elemento o grupo.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Sintaxis</th>
+<th>Cantidad</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>X?</code></td>
+<td>Cero o una</td>
+<td><code>X</code>, cadena vacía</td>
+</tr>
+<tr>
+<td><code>X*</code></td>
+<td>Cero o más</td>
+<td><code>XX</code>, cadena vacía</td>
+</tr>
+<tr>
+<td><code>X+</code></td>
+<td>Una o más</td>
+<td><code>XXX</code></td>
+</tr>
+<tr>
+<td><code>X{3}</code></td>
+<td>Exactamente tres</td>
+<td><code>XXX</code></td>
+</tr>
+<tr>
+<td><code>X{2,4}</code></td>
+<td>Entre dos y cuatro</td>
+<td><code>XX</code>, <code>XXX</code>, <code>XXXX</code></td>
+</tr>
+<tr>
+<td><code>X{2,}</code></td>
+<td>Dos o más</td>
+<td><code>XXXX</code></td>
+</tr>
+</tbody></table></div>
+<p>Para <code>T001</code>, <code>[0-9]{3}</code> exige exactamente tres dígitos. La alternativa <code>[0-9]+</code> aceptaría longitudes no previstas como <code>T1</code> o <code>T000001</code>.</p>
+<h3>2.3. Concatenación, alternancia y agrupación</h3>
+<p>La <strong>concatenación</strong> exige elementos sucesivos. La <strong>alternancia</strong> <code>|</code> admite una opción u otra. Los paréntesis agrupan expresiones para controlar el alcance de las operaciones.</p>
+<pre><code class="language-regex">C|PERSONAS
+</code></pre>
+<p>Acepta <code>C</code> o <code>PERSONAS</code> cuando se usa con una operación de coincidencia completa.</p>
+<pre><code class="language-regex">(?:T|O)[0-9]{3}
+</code></pre>
+<p>Acepta identificadores que empiezan con <code>T</code> u <code>O</code>, seguidos de tres dígitos. <code>(?:...)</code> agrupa sin registrar una captura.</p>
+<p><strong>Importancia del agrupamiento:</strong> <code>T|O[0-9]{3}</code> representa <code>T</code> <strong>o</strong> <code>O</code> seguido de tres dígitos. No equivale a <code>(?:T|O)[0-9]{3}</code>.</p>
+<h3>2.4. Capturas y repetición codiciosa</h3>
+<p>Los grupos capturadores <code>( ... )</code> conservan fragmentos reconocidos para consultarlos posteriormente. Los grupos no capturadores <code>(?: ... )</code> únicamente organizan el patrón. Los grupos con nombre permiten consultar un dato mediante su significado, sin depender del número de paréntesis anteriores.</p>
+<p>Los cuantificadores <code>*</code> y <code>+</code> son <strong>codiciosos</strong> por defecto: intentan consumir la mayor cantidad posible de caracteres, aunque el motor puede retroceder para completar una coincidencia. Las variantes <code>*?</code> y <code>+?</code> son reacias. En un protocolo delimitado, es preferible especificar caracteres y cantidades permitidas en lugar de usar <code>.*</code> de manera indiscriminada.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="construccion"></a></p>
+<h2>3. Construcción progresiva de un patrón</h2>
+<p>Supongamos un protocolo de una línea con este formato:</p>
+<pre><code class="language-text">identificador;valor;unidad
+</code></pre>
+<p>El contrato define:</p>
+<ul>
+<li>Identificador: <code>T</code> u <code>O</code>, seguido de tres dígitos ASCII.</li>
+<li>Separador: punto y coma literal.</li>
+<li>Valor: signo menos opcional, uno o más dígitos y parte decimal opcional con punto.</li>
+<li>Unidad: <code>C</code> o <code>PERSONAS</code>, respetando mayúsculas.</li>
+<li>No se admiten espacios, signos <code>+</code>, separador decimal con coma, exponentes ni saltos de línea.</li>
+<li>Toda la entrada debe coincidir; no se aceptan prefijos o sufijos adicionales.</li>
+</ul>
+<h3>3.1. Descomposición</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Regla</th>
+<th>Patrón</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Identificador</td>
+<td>Prefijo <code>T</code> u <code>O</code> y tres dígitos</td>
+<td><code>[TO][0-9]{3}</code></td>
+</tr>
+<tr>
+<td>Valor entero</td>
+<td>Signo negativo opcional y uno o más dígitos</td>
+<td><code>-?[0-9]+</code></td>
+</tr>
+<tr>
+<td>Fracción</td>
+<td>Punto y uno o más dígitos, opcionales como conjunto</td>
+<td><code>(?:[.][0-9]+)?</code></td>
+</tr>
+<tr>
+<td>Valor decimal</td>
+<td>Entero y fracción opcional</td>
+<td><code>-?[0-9]+(?:[.][0-9]+)?</code></td>
+</tr>
+<tr>
+<td>Unidad</td>
+<td>Dos alternativas literales</td>
+<td>`(?:C</td>
+</tr>
+</tbody></table></div>
+<p>Al concatenar los componentes:</p>
+<pre><code class="language-regex">[TO][0-9]{3};-?[0-9]+(?:[.][0-9]+)?;(?:C|PERSONAS)
+</code></pre>
+<h3>3.2. Pruebas de aceptación y rechazo</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Resultado sintáctico</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>T001;23.5;C</code></td>
+<td>Aceptar</td>
+<td>Cumple todos los campos</td>
+</tr>
+<tr>
+<td><code>O001;12;PERSONAS</code></td>
+<td>Aceptar</td>
+<td>Entero permitido por la gramática</td>
+</tr>
+<tr>
+<td><code>O001;12.5;PERSONAS</code></td>
+<td>Aceptar</td>
+<td>La gramática admite fracciones; la regla del dominio decide después</td>
+</tr>
+<tr>
+<td><code>T01;23;C</code></td>
+<td>Rechazar</td>
+<td>Faltan dígitos del identificador</td>
+</tr>
+<tr>
+<td><code>T001;+23;C</code></td>
+<td>Rechazar</td>
+<td>No se admite signo positivo explícito</td>
+</tr>
+<tr>
+<td><code>T001;23,5;C</code></td>
+<td>Rechazar</td>
+<td>Separador decimal incorrecto</td>
+</tr>
+<tr>
+<td><code>T001;23.;C</code></td>
+<td>Rechazar</td>
+<td>El punto requiere al menos un dígito posterior</td>
+</tr>
+<tr>
+<td><code>T001;NaN;C</code></td>
+<td>Rechazar</td>
+<td><code>NaN</code> no pertenece a la gramática</td>
+</tr>
+<tr>
+<td><code>X001;23;C</code></td>
+<td>Rechazar</td>
+<td>Prefijo no permitido</td>
+</tr>
+<tr>
+<td><code> T001;23;C</code></td>
+<td>Rechazar</td>
+<td>Espacio inicial no permitido</td>
+</tr>
+</tbody></table></div>
+<p><strong>Regla de trabajo:</strong> primero probar el reconocimiento completo del formato; después convertir y validar los valores capturados. No se debe forzar toda la lógica de negocio dentro de una expresión regular.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="capturas"></a></p>
+<h2>4. Capturas, escapes y texto literal</h2>
+<h3>4.1. Grupos con nombre</h3>
+<p>Los motores de Java, Python y JavaScript admiten grupos con nombre, pero <strong>su sintaxis no es idéntica</strong>:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Lenguaje</th>
+<th>Grupo con nombre</th>
+<th>Acceso a la captura</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java</td>
+<td><code>(?&lt;sensor&gt;...)</code></td>
+<td><code>matcher.group(&quot;sensor&quot;)</code></td>
+</tr>
+<tr>
+<td>Python</td>
+<td><code>(?P&lt;sensor&gt;...)</code></td>
+<td><code>match.group(&quot;sensor&quot;)</code></td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td><code>(?&lt;sensor&gt;...)</code></td>
+<td><code>match.groups.sensor</code></td>
+</tr>
+</tbody></table></div>
+<p>Para Java:</p>
+<pre><code class="language-regex">(?&lt;sensor&gt;[TO][0-9]{3});(?&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?&lt;unidad&gt;C|PERSONAS)
+</code></pre>
+<p><code>valor</code> sigue siendo una cadena capturada. El nombre del grupo facilita la extracción; no realiza conversiones ni validaciones de dominio.</p>
+<h3>4.2. Escape del patrón y escape del lenguaje</h3>
+<p>La expresión regular y el código fuente poseen reglas distintas para representar algunos caracteres.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Objetivo</th>
+<th>Regex conceptual</th>
+<th>Java como <code>String</code></th>
+<th>Python raw string</th>
+<th>JavaScript literal regex</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Un dígito</td>
+<td><code>\d</code></td>
+<td><code>&quot;\\d&quot;</code></td>
+<td><code>r&quot;\d&quot;</code></td>
+<td><code>/\d/</code></td>
+</tr>
+<tr>
+<td>Un punto literal</td>
+<td><code>\.</code></td>
+<td><code>&quot;\\.&quot;</code></td>
+<td><code>r&quot;\.&quot;</code></td>
+<td><code>/\./</code></td>
+</tr>
+<tr>
+<td>Un punto con clase</td>
+<td><code>[.]</code></td>
+<td><code>&quot;[.]&quot;</code></td>
+<td><code>r&quot;[.]&quot;</code></td>
+<td><code>/[.]/</code></td>
+</tr>
+</tbody></table></div>
+<p>En Java, <code>&quot;\d&quot;</code> <strong>no es un literal de cadena válido</strong>: la barra inversa debe escaparse como <code>&quot;\\d&quot;</code>. Usar <code>[0-9]</code> y <code>[.]</code> evita parte de este problema cuando el contrato se limita a ASCII y punto decimal.</p>
+<h3>4.3. Texto externo y reemplazos</h3>
+<p>No concatenes directamente una entrada externa dentro de un patrón si debe buscarse como texto literal. En Java, <code>Pattern.quote()</code> protege su interpretación regex:</p>
+<pre><code class="language-java">Pattern literal = Pattern.compile(Pattern.quote(&quot;sensor.a&quot;));
+</code></pre>
+<p><code>Matcher.quoteReplacement()</code> cumple otra función: protege el contenido de <strong>reemplazo</strong> frente a la interpretación especial de <code>$</code> y <code>\</code>:</p>
+<pre><code class="language-java">String reemplazoSeguro = Matcher.quoteReplacement(&quot;$5&quot;);
+</code></pre>
+<p>Los dos métodos no son intercambiables. En Python se dispone de <code>re.escape()</code> para construir fragmentos literales del patrón; en JavaScript hay que elegir un mecanismo de escape adecuado para construir expresiones dinámicas, en lugar de interpolar entradas sin protección.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="reconocimiento"></a></p>
+<h2>5. Reconocimiento completo, búsqueda y flags</h2>
+<h3>5.1. Reconocimiento frente a búsqueda</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Objetivo</th>
+<th>Java</th>
+<th>Python</th>
+<th>JavaScript</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Validar toda una entrada</td>
+<td><code>matcher.matches()</code></td>
+<td><code>pattern.fullmatch(texto)</code></td>
+<td>Regex anclada y <code>test()</code> o <code>exec()</code></td>
+</tr>
+<tr>
+<td>Buscar un fragmento</td>
+<td><code>matcher.find()</code></td>
+<td><code>pattern.search(texto)</code></td>
+<td>Regex no anclada y <code>test()</code> o <code>exec()</code></td>
+</tr>
+<tr>
+<td>Extraer campos</td>
+<td><code>matcher.group(&quot;nombre&quot;)</code></td>
+<td><code>match.group(&quot;nombre&quot;)</code></td>
+<td><code>match.groups.nombre</code></td>
+</tr>
+</tbody></table></div>
+<p>En JavaScript no existe una función nativa equivalente a <code>fullmatch()</code> de Python. Para el protocolo se utilizan <code>^</code> y <code>$</code> con una expresión sin el flag <code>m</code>. Para entradas arbitrarias con saltos de línea al final, el ancla <code>$</code> puede tener comportamientos que requieren cuidado; una validación estricta también debe controlar o excluir saltos de línea. La implementación demostrativa utiliza una gramática que no permite saltos y valida la entrada delimitada a una sola línea.</p>
+<h3>5.2. Reutilización y estado</h3>
+<p>En Java, <code>Pattern</code> conserva la expresión compilada y se puede reutilizar. <code>Matcher</code> mantiene el estado de una operación sobre una entrada y no debe compartirse simultáneamente entre hilos. Compilar una vez un patrón estable evita trabajo repetido.</p>
+<p>En Python, <code>re.compile()</code> produce un patrón reutilizable. En JavaScript, un objeto <code>RegExp</code> puede reutilizarse, pero los flags <code>g</code> e <code>y</code> hacen que <code>lastIndex</code> afecte búsquedas posteriores: no deben activarse sin necesidad en un validador simple.</p>
+<h3>5.3. Flags y alcance</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Efecto general</th>
+<th>Criterio de uso</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Insensibilidad a mayúsculas</td>
+<td>Modifica la comparación de letras</td>
+<td>Activarlo solo si el protocolo admite variantes de caso</td>
+</tr>
+<tr>
+<td>Multilínea</td>
+<td>Modifica la interpretación de anclas de línea</td>
+<td>No usarlo para validar una única trama completa</td>
+</tr>
+<tr>
+<td>Dotall</td>
+<td>Hace que <code>.</code> también pueda reconocer saltos de línea</td>
+<td>No hace falta para un protocolo delimitado</td>
+</tr>
+<tr>
+<td>Unicode</td>
+<td>Modifica determinadas reglas según motor y flag</td>
+<td>Definir explícitamente si se admiten caracteres fuera de ASCII</td>
+</tr>
+</tbody></table></div>
+<p>La sintaxis y los detalles de los flags cambian entre lenguajes. En este ejemplo, el protocolo exige los prefijos y unidades exactos, por lo que no se activa la insensibilidad a mayúsculas.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="caso"></a></p>
+<h2>6. Caso práctico: tramas de CampusMonitor</h2>
+<h3>6.1. Problema y contrato</h3>
+<p>CampusMonitor recibe lecturas mediante cadenas con tres campos separados por punto y coma. El sistema necesita detectar entradas mal formadas, identificar los valores y comunicar errores sin insertar datos incorrectos en el registro de lecturas.</p>
+<p>La solución se organiza en tres etapas:</p>
+<ol>
+<li><strong>Reconocimiento:</strong> comprobar que toda la trama respeta el patrón y extraer los grupos.</li>
+<li><strong>Conversión:</strong> transformar <code>valor</code> a un número y rechazar resultados no finitos.</li>
+<li><strong>Validación de dominio:</strong> comprobar que <code>T...</code> use unidad <code>C</code> y que <code>O...</code> use <code>PERSONAS</code> con un entero no negativo.</li>
+</ol>
+<p>El ejemplo limita la entrada a 80 caracteres y considera el valor inicial no nulo. No incluye almacenamiento; el parser devuelve una estructura de datos que otro componente podría utilizar.</p>
+<h3>6.2. Estructura de responsabilidades</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Patrón compilado</td>
+<td>Definir el formato reconocido</td>
+</tr>
+<tr>
+<td>Coincidencia y grupos</td>
+<td>Extraer <code>sensor</code>, <code>valor</code> y <code>unidad</code></td>
+</tr>
+<tr>
+<td>Parser</td>
+<td>Coordinar reconocimiento y conversión</td>
+</tr>
+<tr>
+<td>Validación de dominio</td>
+<td>Verificar coherencia entre sensor, unidad y magnitud</td>
+</tr>
+<tr>
+<td>Aplicación cliente</td>
+<td>Presentar el resultado o reportar el error</td>
+</tr>
+</tbody></table></div>
+<p>Esta separación permite cambiar la política de almacenamiento sin modificar el patrón y modificar el formato sin mezclarlo con la presentación del resultado.</p>
+<h3>6.3. Casos que deben distinguirse</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Trama</th>
+<th>Sintaxis</th>
+<th>Dominio</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>T001;23.5;C</code></td>
+<td>Válida</td>
+<td>Válido</td>
+<td>Lectura de temperatura</td>
+</tr>
+<tr>
+<td><code>O001;12;PERSONAS</code></td>
+<td>Válida</td>
+<td>Válido</td>
+<td>Lectura de ocupación</td>
+</tr>
+<tr>
+<td><code>O001;12.5;PERSONAS</code></td>
+<td>Válida</td>
+<td>Inválido</td>
+<td>Personas no enteras</td>
+</tr>
+<tr>
+<td><code>T001;25;PERSONAS</code></td>
+<td>Válida</td>
+<td>Inválido</td>
+<td>Unidad incompatible</td>
+</tr>
+<tr>
+<td><code>O001;-1;PERSONAS</code></td>
+<td>Válida</td>
+<td>Inválido</td>
+<td>Ocupación negativa</td>
+</tr>
+<tr>
+<td><code>T01;23;C</code></td>
+<td>Inválida</td>
+<td>No se evalúa</td>
+<td>Identificador incorrecto</td>
+</tr>
+<tr>
+<td><code>T001;NaN;C</code></td>
+<td>Inválida</td>
+<td>No se evalúa</td>
+<td>Número fuera del formato</td>
+</tr>
+</tbody></table></div>
+<p>El resultado debe indicar si el fallo pertenece al formato o a la regla de dominio. Reemplazar valores inválidos por cero ocultaría errores, porque cero puede ser una medida legítima.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="java"></a></p>
+<h2>7. Implementación en Java</h2>
+<p><strong>Código completo y comentado:</strong> <a href="ejemplos/RegexDemo.java">RegexDemo.java</a>.</p>
+<h3>7.1. Tipos y métodos utilizados</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>record Trama</code></td>
+<td>Conservar los tres campos ya interpretados</td>
+</tr>
+<tr>
+<td><code>Pattern.compile()</code></td>
+<td>Compilar la expresión una vez</td>
+</tr>
+<tr>
+<td><code>Matcher.matches()</code></td>
+<td>Exigir coincidencia con toda la entrada</td>
+</tr>
+<tr>
+<td><code>Matcher.group(&quot;valor&quot;)</code></td>
+<td>Obtener la captura identificada por nombre</td>
+</tr>
+<tr>
+<td><code>Double.parseDouble()</code></td>
+<td>Convertir texto numérico a <code>double</code></td>
+</tr>
+<tr>
+<td><code>Double.isFinite()</code></td>
+<td>Rechazar infinitos y <code>NaN</code> tras la conversión</td>
+</tr>
+<tr>
+<td><code>Math.rint()</code></td>
+<td>Comprobar que el valor de ocupación sea integral</td>
+</tr>
+</tbody></table></div>
+<h3>7.2. Fragmento central</h3>
+<pre><code class="language-java">private static final Pattern TRAMA = Pattern.compile(
+        &quot;(?&lt;sensor&gt;[TO][0-9]{3});(?&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?&lt;unidad&gt;C|PERSONAS)&quot;);
+
+Matcher matcher = TRAMA.matcher(linea);
+if (!matcher.matches()) {
+    throw new IllegalArgumentException(&quot;Formato inválido&quot;);
+}
+
+String sensor = matcher.group(&quot;sensor&quot;);
+String unidad = matcher.group(&quot;unidad&quot;);
+double valor = Double.parseDouble(matcher.group(&quot;valor&quot;));
+</code></pre>
+<p>El código completo también controla entrada nula, longitud, resultados no finitos, compatibilidad entre prefijos y unidades, y la regla de ocupación. La validación posterior <strong>no se incorpora a la regex</strong>, porque pertenece a la semántica de la lectura.</p>
+<h3>7.3. Secuencia de ejecución</h3>
+<ol>
+<li><code>main()</code> recorre varias tramas de prueba.</li>
+<li><code>parsear()</code> valida la entrada inicial y crea un <code>Matcher</code> para esa línea.</li>
+<li><code>matches()</code> rechaza la cadena completa si no satisface el patrón.</li>
+<li><code>group()</code> extrae los campos definidos por sus nombres.</li>
+<li>Se convierte el valor, se aplican las reglas del dominio y se devuelve <code>Trama</code>.</li>
+<li>El cliente imprime el registro o el motivo del rechazo.</li>
+</ol>
+<h3>7.4. Ejecución</h3>
+<p>Desde el directorio que contiene el archivo Java, con una versión de Java que permita ejecutar archivos fuente:</p>
+<pre><code class="language-bash">java RegexDemo.java
+</code></pre>
+<p>Salida esperada:</p>
+<pre><code class="language-text">Trama[sensor=T001, valor=23.5, unidad=C]
+Trama[sensor=O001, valor=12.0, unidad=PERSONAS]
+O001;12.5;PERSONAS -&gt; Ocupación debe ser un entero no negativo
+T01;23;C -&gt; Formato inválido
+T001;NaN;C -&gt; Formato inválido
+T001;25;PERSONAS -&gt; Unidad incompatible con temperatura
+O001;-1;PERSONAS -&gt; Ocupación debe ser un entero no negativo
+</code></pre>
+<p><strong>Observación:</strong> el programa se puede ejecutar sin Gradle y sin dependencias externas. Los mensajes con tildes requieren una terminal con codificación compatible con UTF-8.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="otros-lenguajes"></a></p>
+<h2>8. Implementaciones equivalentes en Python y JavaScript</h2>
+<p>Los tres lenguajes resuelven el mismo problema con el mismo conjunto de casos. Las diferencias importantes están en la sintaxis de las capturas, la API de validación completa y la representación de los números.</p>
+<h3>8.1. Python</h3>
+<p><strong>Código completo:</strong> <a href="ejemplos/regex_demo.py">regex_demo.py</a>.</p>
+<pre><code class="language-python">import re
+
+PATRON = re.compile(
+    r&quot;(?P&lt;sensor&gt;[TO][0-9]{3});(?P&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?P&lt;unidad&gt;C|PERSONAS)&quot;
+)
+
+coincidencia = PATRON.fullmatch(&quot;T001;23.5;C&quot;)
+if coincidencia:
+    sensor = coincidencia[&quot;sensor&quot;]
+    valor = float(coincidencia[&quot;valor&quot;])
+    unidad = coincidencia[&quot;unidad&quot;]
+</code></pre>
+<p>Python utiliza <code>(?P&lt;nombre&gt;...)</code> para los grupos con nombre y <code>fullmatch()</code> para validar toda la cadena. El archivo completo emplea <code>math.isfinite()</code> y <code>float.is_integer()</code> cuando corresponde.</p>
+<p>Ejecución:</p>
+<pre><code class="language-bash">python regex_demo.py
+</code></pre>
+<h3>8.2. JavaScript</h3>
+<p><strong>Código completo:</strong> <a href="ejemplos/regex-demo.mjs">regex-demo.mjs</a>.</p>
+<pre><code class="language-javascript">const TRAMA = /^(?&lt;sensor&gt;[TO][0-9]{3});(?&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?&lt;unidad&gt;C|PERSONAS)$/u;
+
+const coincidencia = TRAMA.exec(&#39;T001;23.5;C&#39;);
+if (coincidencia) {
+  const { sensor, unidad } = coincidencia.groups;
+  const valor = Number(coincidencia.groups.valor);
+}
+</code></pre>
+<p>JavaScript admite grupos con nombre mediante <code>(?&lt;nombre&gt;...)</code>. El patrón se ancla para validar la entrada completa. El archivo completo comprueba <code>Number.isFinite()</code> y exige <code>Number.isSafeInteger()</code> en la ocupación para no aceptar enteros fuera del rango de precisión segura del tipo <code>number</code>.</p>
+<p>Ejecución con Node.js:</p>
+<pre><code class="language-bash">node regex-demo.mjs
+</code></pre>
+<h3>8.3. Comparación de decisiones</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Java</th>
+<th>Python</th>
+<th>JavaScript</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Grupo nombrado</td>
+<td><code>(?&lt;x&gt;...)</code></td>
+<td><code>(?P&lt;x&gt;...)</code></td>
+<td><code>(?&lt;x&gt;...)</code></td>
+</tr>
+<tr>
+<td>Coincidencia completa</td>
+<td><code>matches()</code></td>
+<td><code>fullmatch()</code></td>
+<td>Patrón anclado y <code>exec()</code></td>
+</tr>
+<tr>
+<td>Conversión</td>
+<td><code>Double.parseDouble()</code></td>
+<td><code>float()</code></td>
+<td><code>Number()</code></td>
+</tr>
+<tr>
+<td>Valor finito</td>
+<td><code>Double.isFinite()</code></td>
+<td><code>math.isfinite()</code></td>
+<td><code>Number.isFinite()</code></td>
+</tr>
+<tr>
+<td>Número integral</td>
+<td><code>Math.rint()</code></td>
+<td><code>float.is_integer()</code></td>
+<td><code>Number.isSafeInteger()</code></td>
+</tr>
+<tr>
+<td>Tratamiento de errores</td>
+<td>Excepciones</td>
+<td>Excepciones</td>
+<td>Excepciones</td>
+</tr>
+</tbody></table></div>
+<p><strong>Límite de equivalencia:</strong> el ejemplo Java y el de Python comprueban integralidad de <code>double</code>/<code>float</code>; JavaScript añade precisión segura. Si CampusMonitor exige que los contadores conserven exactamente valores muy grandes, conviene definir un límite común de magnitud o convertir directamente desde el texto a un entero exacto antes de aceptar los datos.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="pc"></a></p>
+<h2>9. PC2.2 · Práctica de clase</h2>
+<h3>9.1. Objetivo</h3>
+<p>Ampliar CampusMonitor para recibir tramas <code>id;valor;unidad</code>, reconocer los campos mediante expresiones regulares y diferenciar los errores de formato de las reglas del dominio.</p>
+<p>Esta actividad se desarrolla en el repositorio personal <code>icc-pap-campusmonitor-apellido</code>. Se conserva la funcionalidad implementada previamente; los ejemplos resueltos no se copian como sustituto de la solución personal.</p>
+<h3>9.2. Requisitos</h3>
+<ol>
+<li>Implementa un parser para identificadores <code>T001</code> y <code>O001</code>, con tres dígitos y grupos con nombre para los campos <code>sensor</code>, <code>valor</code> y <code>unidad</code>.</li>
+<li>Acepta valores decimales con signo menos opcional y punto decimal. No aceptes espacios, exponentes, <code>NaN</code>, separadores con coma ni caracteres sobrantes.</li>
+<li>Rechaza entradas nulas o que superen 80 caracteres y comunica un motivo identificable.</li>
+<li>Admite únicamente <code>C</code> para sensores <code>T</code> y <code>PERSONAS</code> para sensores <code>O</code>.</li>
+<li>Comprueba que las lecturas <code>PERSONAS</code> sean enteros no negativos y que los valores convertidos sean finitos.</li>
+<li>Integra un comando <code>validar-trama</code> que muestre los campos reconocidos o un mensaje de error. Conserva la cadena original al reportar entradas inválidas.</li>
+<li>Mantén separado el reconocimiento del almacenamiento de lecturas.</li>
+</ol>
+<h3>9.3. Pruebas mínimas</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Resultado requerido</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>T001;23.5;C</code></td>
+<td>Válida: temperatura <code>23.5</code></td>
+</tr>
+<tr>
+<td><code>O001;12;PERSONAS</code></td>
+<td>Válida: ocupación <code>12</code></td>
+</tr>
+<tr>
+<td><code>O001;12.5;PERSONAS</code></td>
+<td>Error de dominio: ocupación no integral</td>
+</tr>
+<tr>
+<td><code>T001;25;PERSONAS</code></td>
+<td>Error de dominio: unidad incompatible</td>
+</tr>
+<tr>
+<td><code>O001;-1;PERSONAS</code></td>
+<td>Error de dominio: ocupación negativa</td>
+</tr>
+<tr>
+<td><code>T01;23;C</code></td>
+<td>Error de formato: identificador</td>
+</tr>
+<tr>
+<td><code>T001;NaN;C</code></td>
+<td>Error de formato: valor</td>
+</tr>
+<tr>
+<td><code>T001;23,5;C</code></td>
+<td>Error de formato: separador decimal</td>
+</tr>
+</tbody></table></div>
+<h3>9.4. Evidencia y entrega</h3>
+<p>En <code>evidencias/PC2.2.md</code>, registra el cambio implementado, los archivos principales, los comandos de ejecución, la tabla con resultados reales, una explicación de un caso válido y de uno inválido y el enlace al commit final. No se requiere una rúbrica para esta PC.</p>
+<p>Comandos de referencia:</p>
 <pre><code class="language-bash">git status
 git add src evidencias
 git commit -m &quot;feat(pc2.2): diseno-de-expresiones-regulares&quot;
 git push
 git log -1 --format=%H
 </code></pre>
-<p>Ajusta las rutas de <code>git add</code> a los archivos que realmente creaste. Incluye también configuración o SQL si cambiaste esos archivos. El último comando muestra el hash real que debes enlazar en tu evidencia.</p>
-<h3>Lo esencial</h3>
-<ul>
-<li>Los grupos con nombre identifican campos.</li>
-<li>El literal Java y el patrón tienen escapes distintos.</li>
-<li>Pattern se reutiliza; Matcher conserva el estado de búsqueda.</li>
-<li>La conversión numérica requiere validación posterior.</li>
-</ul>
-<h2>Referencias técnicas</h2>
-<ul>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Pattern.html">Pattern, Java 25</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Matcher.html">Matcher, Java 25</a></li>
-<li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html">Files, Java 25</a></li>
-</ul>
+<p>Ajusta las rutas de <code>git add</code> a los archivos modificados. El último comando muestra el identificador real del commit para incluirlo en la evidencia.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="analisis"></a></p>
+<h2>10. Análisis y criterios de diseño</h2>
+<h3>10.1. Preguntas de análisis</h3>
+<ol>
+<li>Si <code>T001;23.5;C</code> se considera válido, ¿por qué <code>ID=T001;23.5;C</code> debe rechazarse al importar una trama completa, aunque contenga un fragmento reconocible?</li>
+<li>¿Cuál es el efecto de sustituir <code>[TO][0-9]{3}</code> por <code>T|O[0-9]{3}</code>? Construye un caso que evidencie el cambio de significado.</li>
+<li>Si la expresión acepta <code>O001;12.5;PERSONAS</code>, ¿en qué etapa debe rechazarse y por qué no se trata de un error de sintaxis?</li>
+<li>¿Qué diferencia hay entre escapar el punto decimal en la expresión regular y escapar la barra inversa de un literal Java?</li>
+<li>¿Por qué compilar una expresión una sola vez y crear un <code>Matcher</code> por operación es preferible a compartir el mismo <code>Matcher</code> entre solicitudes concurrentes?</li>
+<li>Si se incorpora una unidad <code>K</code> para temperaturas, ¿qué parte del contrato y qué pruebas deben actualizarse?</li>
+<li>Si un valor tiene miles de dígitos, ¿por qué pasar la regex no garantiza que <code>double</code> pueda representarlo correctamente?</li>
+</ol>
+<h3>10.2. Errores frecuentes</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Consecuencia</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Usar búsqueda parcial para validar tramas</td>
+<td>Acepta textos con prefijos y sufijos</td>
+<td>Exigir coincidencia completa</td>
+</tr>
+<tr>
+<td>Usar <code>.*</code> para cada campo</td>
+<td>Se pierden límites concretos del protocolo</td>
+<td>Definir clases y cuantificadores específicos</td>
+</tr>
+<tr>
+<td>Olvidar agrupar alternativas</td>
+<td>Cambia el alcance de las opciones</td>
+<td>Utilizar <code>(?:...)</code> cuando corresponda</td>
+</tr>
+<tr>
+<td>Convertir antes de verificar el formato</td>
+<td>Excepciones confusas y aceptación accidental</td>
+<td>Reconocer, extraer, convertir y validar</td>
+</tr>
+<tr>
+<td>Aceptar <code>NaN</code> o infinito</td>
+<td>Resultados sin significado para las lecturas</td>
+<td>Definir gramática numérica y verificar finitud</td>
+</tr>
+<tr>
+<td>Compartir estado de <code>Matcher</code> o <code>RegExp</code> global con flags <code>g</code>/<code>y</code></td>
+<td>Resultados dependientes de llamadas previas</td>
+<td>Usar instancias de coincidencia independientes y flags mínimos</td>
+</tr>
+</tbody></table></div>
+<h3>10.3. Limitaciones</h3>
+<p>La demostración procesa una línea en memoria y no implementa recepción desde red, archivos ni base de datos. La regex comprueba la <strong>forma</strong> de cada entrada, pero no asegura precisión física, límites propios del sensor, existencia real del identificador ni autorización para registrar lecturas. Esos requisitos pertenecen a otras capas del sistema.</p>
+<p>Para entradas no confiables, se debe considerar además el costo de evaluación de expresiones regulares complejas. Un patrón innecesariamente ambiguo, combinado con repeticiones anidadas, puede provocar tiempos de ejecución elevados. El diseño de este tema usa clases y límites simples para evitar depender de expresiones genéricas difíciles de analizar.</p>
+<p><strong>Criterio de diseño:</strong> una buena expresión regular representa exactamente el formato requerido; un buen parser transforma sus capturas y delega las reglas de dominio a validaciones explícitas.</p>
+<p><a href="#indice">Volver al índice</a></p>
+<hr>
+<p><a id="referencias"></a></p>
+<h2>11. Referencias</h2>
+<ol>
+<li>Oracle. <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Pattern.html">Pattern — Java SE 25</a>.</li>
+<li>Oracle. <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/regex/Matcher.html">Matcher — Java SE 25</a>.</li>
+<li>Python Software Foundation. <a href="https://docs.python.org/3.14/library/re.html">Módulo <code>re</code> — Python 3.14</a>.</li>
+<li>MDN Web Docs. <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions">Regular expressions — JavaScript</a>.</li>
+<li>MDN Web Docs. <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group">Grupos con nombre — JavaScript</a>.</li>
+</ol>
+<p><a href="#indice">Volver al índice</a></p>
 
       
   <nav class="article-nav" aria-label="Recursos del contenido">
