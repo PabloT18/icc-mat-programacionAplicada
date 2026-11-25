@@ -41,9 +41,11 @@
       <h1>Programación Aplicada</h1>
 <p><img src="../../assets/logos/ups-computacion.png" alt="UPS · Carrera de Computación"></p>
 <h2>2.2. Diseño de expresiones regulares</h2>
-<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.<br><strong>Unidad:</strong> 2. Expresiones regulares<br><strong>Tema:</strong> 2.2. Diseño de expresiones regulares<br><strong>Proyecto de trabajo:</strong> CampusMonitor</p>
-<p>Las expresiones regulares permiten especificar y reconocer estructuras de texto mediante patrones. Diseñar una expresión implica partir de un contrato de entrada, identificar sus símbolos permitidos, construir una regla de reconocimiento y verificar tanto los casos aceptados como los rechazados.</p>
-<p>Este tema desarrolla las clases de caracteres, cuantificadores, alternancia, agrupación, capturas y APIs de reconocimiento. Como caso de aplicación, se interpreta una trama de CampusMonitor con identificador, valor y unidad. Se distinguen las reglas de formato de las reglas del dominio y se incluyen implementaciones equivalentes en Java, Python y JavaScript.</p>
+<p><strong>Autor:</strong> Ing. Pablo Torres, Mgtr.
+<strong>Unidad:</strong> 2. Expresiones regulares
+<strong>Tema:</strong> 2.2. Diseño de expresiones regulares</p>
+<p>Las expresiones regulares permiten especificar y reconocer estructuras de texto mediante patrones. Diseñar una expresión implica partir de un contrato de entrada, identificar sus símbolos permitidos, construir una regla de reconocimiento y verificar tanto los casos aceptados como los rechazados.
+Este tema desarrolla las clases de caracteres, cuantificadores, alternancia, agrupación, capturas y APIs de reconocimiento. Se estudia cuándo utilizar expresiones regulares directamente y cuándo conviene compilar un patrón, reutilizarlo y trabajar con objetos de coincidencia. También se introducen operaciones de búsqueda, extracción, reemplazo y división de cadenas. Como caso de aplicación, se interpreta una trama de CampusMonitor con identificador, valor y unidad. Se distinguen las reglas de formato de las reglas del dominio y se incluyen implementaciones equivalentes en Java, Python y JavaScript.</p>
 <p><a href="../../README.md">Inicio del curso</a> · <a href="../2.1-lenguajes-regulares/index.html">Tema anterior: 2.1. Fundamentos de los lenguajes regulares</a></p>
 <p><a id="indice"></a></p>
 <h2>Índice</h2>
@@ -52,9 +54,9 @@
 <li><a href="#componentes">Componentes de una expresión regular</a></li>
 <li><a href="#construccion">Construcción progresiva de un patrón</a></li>
 <li><a href="#capturas">Capturas, escapes y texto literal</a></li>
-<li><a href="#reconocimiento">Reconocimiento completo, búsqueda y flags</a></li>
+<li><a href="#reconocimiento">Formas de utilizar expresiones regulares: validación, búsqueda y transformación</a></li>
 <li><a href="#caso">Caso práctico: tramas de CampusMonitor</a></li>
-<li><a href="#java">Implementación en Java</a></li>
+<li><a href="#java">Implementación de CampusMonitor en Java</a></li>
 <li><a href="#otros-lenguajes">Implementaciones equivalentes en Python y JavaScript</a></li>
 <li><a href="#pc">PC2.2 · Práctica de clase</a></li>
 <li><a href="#analisis">Análisis y criterios de diseño</a></li>
@@ -206,6 +208,38 @@
 </code></pre>
 <p>Acepta identificadores que empiezan con <code>T</code> u <code>O</code>, seguidos de tres dígitos. <code>(?:...)</code> agrupa sin registrar una captura.</p>
 <p><strong>Importancia del agrupamiento:</strong> <code>T|O[0-9]{3}</code> representa <code>T</code> <strong>o</strong> <code>O</code> seguido de tres dígitos. No equivale a <code>(?:T|O)[0-9]{3}</code>.</p>
+<p>Los siguientes patrones ilustran la importancia de distinguir alternancia, agrupación y opcionalidad:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Patrón</th>
+<th>Regla</th>
+<th>Ejemplos aceptados</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[TO][0-9]{3}</code></td>
+<td>Un prefijo obligatorio y tres dígitos</td>
+<td><code>T001</code>, <code>O123</code></td>
+</tr>
+<tr>
+<td><code>(T|O)[0-9]{3}</code></td>
+<td>La misma regla, con un grupo capturador</td>
+<td><code>T001</code>, <code>O123</code></td>
+</tr>
+<tr>
+<td><code>(?:T|O)[0-9]{3}</code></td>
+<td>La misma regla, sin captura del prefijo</td>
+<td><code>T001</code>, <code>O123</code></td>
+</tr>
+<tr>
+<td><code>(T|O)?[0-9]{3}</code></td>
+<td>Prefijo opcional</td>
+<td><code>T001</code>, <code>O123</code>, <code>123</code></td>
+</tr>
+</tbody></table></div>
+<p>En los tres primeros casos se reconocen las mismas cadenas mediante validación completa. En el cuarto, <code>?</code> permite omitir el grupo. Si las alternativas son palabras completas, por ejemplo <code>TEMP</code> u <code>OCUP</code>, se necesita una alternancia como <code>(?:TEMP|OCUP)[0-9]{3}</code>, no una clase de caracteres.</p>
+<p>De forma similar, <code>ab*</code> y <code>a(b)*</code> reconocen una <code>a</code> seguida de cero o más <code>b</code>. En cambio, <code>(ab)*</code> repite toda la secuencia <code>ab</code>, incluyendo cero repeticiones.</p>
 <h3>2.4. Capturas y repetición codiciosa</h3>
 <p>Los grupos capturadores <code>( ... )</code> conservan fragmentos reconocidos para consultarlos posteriormente. Los grupos no capturadores <code>(?: ... )</code> únicamente organizan el patrón. Los grupos con nombre permiten consultar un dato mediante su significado, sin depender del número de paréntesis anteriores.</p>
 <p>Los cuantificadores <code>*</code> y <code>+</code> son <strong>codiciosos</strong> por defecto: intentan consumir la mayor cantidad posible de caracteres, aunque el motor puede retroceder para completar una coincidencia. Las variantes <code>*?</code> y <code>+?</code> son reacias. En un protocolo delimitado, es preferible especificar caracteres y cantidades permitidas en lugar de usar <code>.*</code> de manera indiscriminada.</p>
@@ -257,7 +291,7 @@
 <tr>
 <td>Unidad</td>
 <td>Dos alternativas literales</td>
-<td>`(?:C</td>
+<td><code>(?:C|PERSONAS)</code></td>
 </tr>
 </tbody></table></div>
 <p>Al concatenar los componentes:</p>
@@ -324,6 +358,54 @@
 </tr>
 </tbody></table></div>
 <p><strong>Regla de trabajo:</strong> primero probar el reconocimiento completo del formato; después convertir y validar los valores capturados. No se debe forzar toda la lógica de negocio dentro de una expresión regular.</p>
+<h3>3.3. Aplicaciones en campos de formularios</h3>
+<p>Las expresiones regulares son útiles para traducir restricciones habituales de sistemas de información en reglas de formato.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Contrato de ejemplo</th>
+<th>Expresión regular</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cédula</td>
+<td>Exactamente diez dígitos ASCII</td>
+<td><code>[0-9]{10}</code></td>
+</tr>
+<tr>
+<td>Celular</td>
+<td><code>09</code> seguido de ocho dígitos</td>
+<td><code>09[0-9]{8}</code></td>
+</tr>
+<tr>
+<td>Usuario</td>
+<td>De 4 a 16 caracteres; inicia con letra ASCII</td>
+<td><code>[A-Za-z][A-Za-z0-9_]{3,15}</code></td>
+</tr>
+<tr>
+<td>Código académico</td>
+<td><code>EST-</code> seguido de cuatro dígitos</td>
+<td><code>EST-[0-9]{4}</code></td>
+</tr>
+<tr>
+<td>Correo institucional</td>
+<td>Parte local simplificada y dominio <code>ups.edu.ec</code> o <code>est.ups.edu.ec</code></td>
+<td><code>[A-Za-z0-9._%+-]+@(?:ups[.]edu[.]ec|est[.]ups[.]edu[.]ec)</code></td>
+</tr>
+</tbody></table></div>
+<p>Ejemplo de validación directa en Java:</p>
+<pre><code class="language-java">String correo = &quot;ana@est.ups.edu.ec&quot;;
+String patronCorreo = &quot;[A-Za-z0-9._%+-]+@&quot;
+        + &quot;(?:ups[.]edu[.]ec|est[.]ups[.]edu[.]ec)&quot;;
+
+System.out.println(correo.matches(patronCorreo)); // true
+System.out.println(&quot;ana@gmail.com&quot;.matches(patronCorreo)); // false
+System.out.println(&quot;0102030405&quot;.matches(&quot;[0-9]{10}&quot;)); // true
+System.out.println(&quot;0991234567&quot;.matches(&quot;09[0-9]{8}&quot;)); // true
+System.out.println(&quot;EST-0025&quot;.matches(&quot;EST-[0-9]{4}&quot;)); // true
+</code></pre>
+<p>Son reglas didácticas de formato, no verificaciones completas de identidad o existencia. Una cédula de diez dígitos puede tener un dígito verificador incorrecto; un correo con un dominio permitido puede no corresponder a una cuenta existente. El patrón de correo tampoco implementa todas las reglas de sintaxis de los estándares de correo electrónico. Estas comprobaciones adicionales deben resolverse según los requisitos del sistema.</p>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="capturas"></a></p>
@@ -404,71 +486,494 @@
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="reconocimiento"></a></p>
-<h2>5. Reconocimiento completo, búsqueda y flags</h2>
-<h3>5.1. Reconocimiento frente a búsqueda</h3>
+<h2>5. Formas de utilizar expresiones regulares: validación, búsqueda y transformación</h2>
+<p>Una misma expresión regular puede utilizarse para operaciones diferentes. El patrón describe qué secuencia se desea reconocer; el método determina si se comprueba toda la entrada, se busca una coincidencia, se extraen datos o se transforma el texto.</p>
+<p>En los ejemplos de esta sección se utiliza el patrón <code>[TO][0-9]{3}</code>.</p>
+<h3>5.1. Validación directa en Java: <code>String.matches()</code> y <code>Pattern.matches()</code></h3>
+<p>Cuando solo se necesita conocer si un campo cumple una regla, no es necesario crear explícitamente un <code>Matcher</code>.</p>
+<pre><code class="language-java">String codigo = &quot;T001&quot;;
+String regex = &quot;[TO][0-9]{3}&quot;;
+
+System.out.println(codigo.matches(regex)); // true
+System.out.println(&quot;T001 activo&quot;.matches(regex)); // false
+System.out.println(&quot;T00123&quot;.matches(regex)); // false
+</code></pre>
+<p><code>String.matches()</code> devuelve un <code>boolean</code> y exige que toda la cadena coincida. No necesita importar clases de <code>java.util.regex</code>.</p>
+<p>La forma estática ofrece el mismo comportamiento:</p>
+<pre><code class="language-java">import java.util.regex.Pattern;
+
+// Dentro de un método:
+boolean valido = Pattern.matches(&quot;[TO][0-9]{3}&quot;, &quot;T001&quot;);
+System.out.println(valido); // true
+</code></pre>
+<p>Ambas formas compilan el patrón en cada llamada. Son convenientes para validaciones puntuales de campos como un código académico, un correo o un número de teléfono.</p>
+<h3>5.2. Validación reutilizable: <code>Pattern.compile()</code> y <code>Matcher.matches()</code></h3>
+<p>Cuando se aplica una misma expresión muchas veces, conviene separar su compilación de su ejecución.</p>
+<pre><code class="language-java">import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+// Dentro de un método:
+Pattern patron = Pattern.compile(&quot;[TO][0-9]{3}&quot;);
+
+String[] codigos = {&quot;T001&quot;, &quot;O123&quot;, &quot;A001&quot;, &quot;T12&quot;};
+
+for (String codigo : codigos) {
+    Matcher matcher = patron.matcher(codigo);
+    System.out.println(codigo + &quot; =&gt; &quot; + matcher.matches());
+}
+</code></pre>
+<p>Salida:</p>
+<pre><code class="language-text">T001 =&gt; true
+O123 =&gt; true
+A001 =&gt; false
+T12 =&gt; false
+</code></pre>
+<p>Las clases tienen responsabilidades diferentes:</p>
+<ul>
+<li><code>Pattern</code>: representación compilada de una expresión regular. Es inmutable, reutilizable y puede compartirse entre hilos.</li>
+<li><code>Matcher</code>: aplica un patrón sobre una entrada concreta y mantiene el estado del reconocimiento. No es seguro compartirlo simultáneamente entre hilos.</li>
+</ul>
+<pre><code class="language-mermaid">flowchart TD
+    A[&quot;Expresión regular: [TO][0-9]{3}&quot;] --&gt;|Pattern.compile| B[Pattern: patrón compilado]
+    B --&gt;|matcher de T001| C[Matcher 1]
+    B --&gt;|matcher de O123| D[Matcher 2]
+    B --&gt;|matcher de A001| E[Matcher 3]
+    C --&gt;|matches| F[true]
+    D --&gt;|matches| G[true]
+    E --&gt;|matches| H[false]
+</code></pre>
+<p>En aplicaciones que validan numerosos registros o solicitudes, puede declararse un patrón como constante de clase:</p>
+<pre><code class="language-java">import java.util.regex.Pattern;
+
+public class ValidadorSensor {
+
+    private static final Pattern CODIGO =
+            Pattern.compile(&quot;[TO][0-9]{3}&quot;);
+
+    public static boolean validar(String texto) {
+        return texto != null &amp;&amp; CODIGO.matcher(texto).matches();
+    }
+}
+</code></pre>
+<p>Aquí se compila una sola vez y se crea un nuevo <code>Matcher</code> por entrada. No se necesita crear objetos <code>Pattern</code> repetidamente dentro de un ciclo.</p>
+<p><strong>Criterio de elección:</strong> utilizar <code>String.matches()</code> o <code>Pattern.matches()</code> para validaciones puntuales; utilizar un <code>Pattern</code> reutilizable para validaciones frecuentes, búsquedas, extracción de grupos o configuración explícita de flags.</p>
+<h3>5.3. Validación completa, búsqueda y reconocimiento del inicio</h3>
+<p>Con <code>Matcher</code> se dispone de tres operaciones de reconocimiento principales.</p>
 <div class="table-scroll"><table>
 <thead>
 <tr>
-<th>Objetivo</th>
+<th>Método</th>
+<th>Qué comprueba</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>matches()</code></td>
+<td>Toda la entrada, o la región configurada</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>find()</code></td>
+<td>La siguiente coincidencia dentro de la entrada</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>lookingAt()</code></td>
+<td>Una coincidencia que comienza al inicio de la entrada o región</td>
+<td><code>boolean</code></td>
+</tr>
+</tbody></table></div>
+<pre><code class="language-java">Pattern patron = Pattern.compile(&quot;[TO][0-9]{3}&quot;);
+
+String texto = &quot;T001 reporta temperatura&quot;;
+
+System.out.println(patron.matcher(texto).matches());   // false
+System.out.println(patron.matcher(texto).find());      // true
+System.out.println(patron.matcher(texto).lookingAt()); // true
+</code></pre>
+<p>Se crea un <code>Matcher</code> independiente para cada operación para que el resultado no dependa de su estado anterior.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th><code>matches()</code></th>
+<th><code>find()</code></th>
+<th><code>lookingAt()</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>T001</code></td>
+<td>true</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>T001 activo</code></td>
+<td>false</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>Sensor T001</code></td>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>T00123</code></td>
+<td>false</td>
+<td>true</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>A001</code></td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+</tbody></table></div>
+<p><strong>Importante:</strong> un resultado positivo de <code>find()</code> no demuestra que toda la cadena sea válida. Por ejemplo, en <code>T00123</code> encuentra <code>T001</code>, aunque el código completo no cumple el requisito de tres dígitos.</p>
+<h3>5.4. Buscar coincidencias y obtener su posición</h3>
+<p><code>find()</code> permite recorrer todas las coincidencias no superpuestas. Después de un reconocimiento exitoso, <code>group()</code> devuelve el fragmento encontrado y <code>start()</code> y <code>end()</code> indican sus posiciones.</p>
+<pre><code class="language-java">import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class BuscarSensores {
+    public static void main(String[] args) {
+        String texto = &quot;Sensores: T001, O002 y T003&quot;;
+        Pattern patron = Pattern.compile(&quot;[TO][0-9]{3}&quot;);
+        Matcher matcher = patron.matcher(texto);
+
+        while (matcher.find()) {
+            System.out.printf(
+                &quot;Encontrado: %s | Inicio: %d | Fin: %d%n&quot;,
+                matcher.group(), matcher.start(), matcher.end()
+            );
+        }
+    }
+}
+</code></pre>
+<p>Salida:</p>
+<pre><code class="language-text">Encontrado: T001 | Inicio: 10 | Fin: 14
+Encontrado: O002 | Inicio: 16 | Fin: 20
+Encontrado: T003 | Inicio: 23 | Fin: 27
+</code></pre>
+<p>Los índices comienzan en cero; el índice final es exclusivo. <code>texto.substring(matcher.start(), matcher.end())</code> devuelve la coincidencia actual.</p>
+<p>Cada llamada a <code>find()</code> continúa la búsqueda desde la posición correspondiente a la coincidencia anterior. Si se desea reiniciar el recorrido se puede crear un nuevo <code>Matcher</code> o llamar a <code>reset()</code>.</p>
+<p>Otra posibilidad, disponible desde Java 9, es obtener las coincidencias como un flujo:</p>
+<pre><code class="language-java">import java.util.regex.MatchResult;
+import java.util.List;
+
+// Dentro de un método:
+List&lt;String&gt; codigos = patron.matcher(texto)
+        .results()
+        .map(MatchResult::group)
+        .toList();
+
+System.out.println(codigos); // [T001, O002, T003]
+</code></pre>
+<p>El método <code>Stream.toList()</code> requiere Java 16 o superior. Para los primeros ejemplos, <code>while (matcher.find())</code> permite observar con mayor claridad el proceso de reconocimiento.</p>
+<h3>5.5. Extraer información con grupos de captura</h3>
+<p>Encontrar un código completo no siempre es suficiente. Si se necesita separar su tipo y número, pueden definirse grupos:</p>
+<pre><code class="language-regex">([TO])([0-9]{3})
+</code></pre>
+<pre><code class="language-java">Pattern patron = Pattern.compile(&quot;([TO])([0-9]{3})&quot;);
+Matcher matcher = patron.matcher(&quot;T001, O002&quot;);
+
+while (matcher.find()) {
+    System.out.println(&quot;Completo: &quot; + matcher.group(0));
+    System.out.println(&quot;Tipo: &quot; + matcher.group(1));
+    System.out.println(&quot;Número: &quot; + matcher.group(2));
+}
+</code></pre>
+<p>Salida:</p>
+<pre><code class="language-text">Completo: T001
+Tipo: T
+Número: 001
+Completo: O002
+Tipo: O
+Número: 002
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Información</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>group()</code> o <code>group(0)</code></td>
+<td>Coincidencia completa</td>
+</tr>
+<tr>
+<td><code>group(1)</code></td>
+<td>Primer grupo de captura</td>
+</tr>
+<tr>
+<td><code>group(2)</code></td>
+<td>Segundo grupo de captura</td>
+</tr>
+<tr>
+<td><code>group(&quot;nombre&quot;)</code></td>
+<td>Grupo con nombre</td>
+</tr>
+<tr>
+<td><code>groupCount()</code></td>
+<td>Número de grupos de captura, sin contar el grupo 0</td>
+</tr>
+</tbody></table></div>
+<p>Los grupos se numeran según el orden de apertura de sus paréntesis. Un grupo no capturador <code>(?:...)</code> no recibe número.</p>
+<p>Para acceder a los grupos debe existir una coincidencia exitosa obtenida mediante <code>matches()</code>, <code>find()</code> o <code>lookingAt()</code>. De lo contrario, Java lanza <code>IllegalStateException</code>. Los grupos opcionales que no participaron en una coincidencia devuelven <code>null</code>.</p>
+<h3>5.6. Reemplazar coincidencias</h3>
+<p>Las expresiones regulares también permiten transformar cadenas.</p>
+<pre><code class="language-java">String texto = &quot;Sensores: T001, O002 y T003&quot;;
+String regex = &quot;[TO][0-9]{3}&quot;;
+
+System.out.println(texto.replaceAll(regex, &quot;[SENSOR]&quot;));
+System.out.println(texto.replaceFirst(regex, &quot;[SENSOR]&quot;));
+</code></pre>
+<p>Salida:</p>
+<pre><code class="language-text">Sensores: [SENSOR], [SENSOR] y [SENSOR]
+Sensores: [SENSOR], O002 y T003
+</code></pre>
+<ul>
+<li><code>replaceAll()</code> reemplaza todas las coincidencias.</li>
+<li><code>replaceFirst()</code> reemplaza únicamente la primera.</li>
+</ul>
+<p>Si ya se dispone de un patrón compilado, también puede reutilizarse:</p>
+<pre><code class="language-java">Pattern patron = Pattern.compile(&quot;[TO][0-9]{3}&quot;);
+
+String resultado = patron.matcher(texto).replaceAll(&quot;[SENSOR]&quot;);
+</code></pre>
+<p>Los métodos devuelven una nueva cadena, no modifican el <code>String</code> original. No debe confundirse <code>String.replace()</code>, que reemplaza texto literal, con <code>String.replaceAll()</code>, que interpreta su primer argumento como regex.</p>
+<p>Los grupos capturados también pueden reutilizarse en el reemplazo mediante <code>$1</code>, <code>$2</code>, etc.</p>
+<pre><code class="language-java">String codigo = &quot;T001&quot;;
+
+String resultado = codigo.replaceAll(
+        &quot;([TO])([0-9]{3})&quot;, &quot;$1-$2&quot;
+);
+
+System.out.println(resultado); // T-001
+</code></pre>
+<p>Si el reemplazo proviene de una entrada externa y debe interpretarse literalmente, utilizar <code>Matcher.quoteReplacement()</code>.</p>
+<h3>5.7. Dividir y normalizar cadenas</h3>
+<p><code>split()</code> divide una cadena utilizando un patrón como separador.</p>
+<pre><code class="language-java">String datos = &quot;T001,O002;T003 T004&quot;;
+String[] codigos = datos.split(&quot;[,;\\s]+&quot;);
+
+for (String codigo : codigos) {
+    System.out.println(codigo);
+}
+</code></pre>
+<p>Salida:</p>
+<pre><code class="language-text">T001
+O002
+T003
+T004
+</code></pre>
+<p>El patrón admite comas, punto y coma o espacios como separadores. El cuantificador <code>+</code> agrupa separadores consecutivos.</p>
+<p>Con un patrón compilado se puede utilizar <code>Pattern.split(datos)</code>. Por defecto, Java descarta los campos vacíos finales; cuando sea necesario conservarlos, utilizar <code>datos.split(&quot;;&quot;, -1)</code>.</p>
+<p>También es posible normalizar espacios mediante una sustitución:</p>
+<pre><code class="language-java">String mensaje = &quot;  Sensor    T001   activo   &quot;;
+
+String limpio = mensaje.strip().replaceAll(&quot;\\s+&quot;, &quot; &quot;);
+
+System.out.println(limpio); // Sensor T001 activo
+</code></pre>
+<p><code>strip()</code> elimina espacios exteriores según las reglas de caracteres en blanco de Java; <code>replaceAll()</code> sustituye las secuencias reconocidas por <code>\s+</code>. Sus conjuntos de caracteres no son idénticos en todos los casos Unicode. Para el texto ASCII del ejemplo, el resultado es el esperado.</p>
+<p>Estas operaciones introducen aplicaciones de preprocesamiento de texto que se desarrollarán con mayor profundidad en el tema 2.4.</p>
+<h3>5.8. Resumen de métodos y criterios de selección en Java</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Necesidad</th>
+<th>API recomendada</th>
+<th>Ejemplo de uso</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Validación puntual</td>
+<td><code>texto.matches(regex)</code></td>
+<td>Comprobar un código</td>
+</tr>
+<tr>
+<td>Validación estática</td>
+<td><code>Pattern.matches(regex, texto)</code></td>
+<td>Comprobar un campo</td>
+</tr>
+<tr>
+<td>Validación repetitiva</td>
+<td><code>patron.matcher(texto).matches()</code></td>
+<td>Validar numerosos registros</td>
+</tr>
+<tr>
+<td>Buscar un fragmento</td>
+<td><code>matcher.find()</code></td>
+<td>Detectar un identificador en un mensaje</td>
+</tr>
+<tr>
+<td>Buscar todas las coincidencias</td>
+<td><code>while (matcher.find())</code></td>
+<td>Enumerar códigos en un texto</td>
+</tr>
+<tr>
+<td>Reconocer un prefijo</td>
+<td><code>matcher.lookingAt()</code></td>
+<td>Identificar un comando</td>
+</tr>
+<tr>
+<td>Extraer información</td>
+<td><code>matcher.group(n)</code></td>
+<td>Separar tipo y número</td>
+</tr>
+<tr>
+<td>Obtener posiciones</td>
+<td><code>matcher.start()</code> y <code>matcher.end()</code></td>
+<td>Localizar coincidencias</td>
+</tr>
+<tr>
+<td>Reemplazar todas</td>
+<td><code>replaceAll()</code></td>
+<td>Anonimizar identificadores</td>
+</tr>
+<tr>
+<td>Reemplazar la primera</td>
+<td><code>replaceFirst()</code></td>
+<td>Modificar la primera coincidencia</td>
+</tr>
+<tr>
+<td>Dividir texto</td>
+<td><code>split()</code></td>
+<td>Separar campos o palabras</td>
+</tr>
+</tbody></table></div>
+<p><code>Pattern.matches()</code> y <code>String.matches()</code> son formas abreviadas de la misma estrategia de coincidencia completa. No son métodos de búsqueda.</p>
+<h3>5.9. Flags y alcance</h3>
+<p>Los flags son opciones que modifican la interpretación del patrón o el comportamiento de las operaciones de búsqueda.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Efecto</th>
 <th>Java</th>
 <th>Python</th>
 <th>JavaScript</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Validar toda una entrada</td>
-<td><code>matcher.matches()</code></td>
-<td><code>pattern.fullmatch(texto)</code></td>
-<td>Regex anclada y <code>test()</code> o <code>exec()</code></td>
-</tr>
-<tr>
-<td>Buscar un fragmento</td>
-<td><code>matcher.find()</code></td>
-<td><code>pattern.search(texto)</code></td>
-<td>Regex no anclada y <code>test()</code> o <code>exec()</code></td>
-</tr>
-<tr>
-<td>Extraer campos</td>
-<td><code>matcher.group(&quot;nombre&quot;)</code></td>
-<td><code>match.group(&quot;nombre&quot;)</code></td>
-<td><code>match.groups.nombre</code></td>
-</tr>
-</tbody></table></div>
-<p>En JavaScript no existe una función nativa equivalente a <code>fullmatch()</code> de Python. Para el protocolo se utilizan <code>^</code> y <code>$</code> con una expresión sin el flag <code>m</code>. Para entradas arbitrarias con saltos de línea al final, el ancla <code>$</code> puede tener comportamientos que requieren cuidado; una validación estricta también debe controlar o excluir saltos de línea. La implementación demostrativa utiliza una gramática que no permite saltos y valida la entrada delimitada a una sola línea.</p>
-<h3>5.2. Reutilización y estado</h3>
-<p>En Java, <code>Pattern</code> conserva la expresión compilada y se puede reutilizar. <code>Matcher</code> mantiene el estado de una operación sobre una entrada y no debe compartirse simultáneamente entre hilos. Compilar una vez un patrón estable evita trabajo repetido.</p>
-<p>En Python, <code>re.compile()</code> produce un patrón reutilizable. En JavaScript, un objeto <code>RegExp</code> puede reutilizarse, pero los flags <code>g</code> e <code>y</code> hacen que <code>lastIndex</code> afecte búsquedas posteriores: no deben activarse sin necesidad en un validador simple.</p>
-<h3>5.3. Flags y alcance</h3>
-<div class="table-scroll"><table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Efecto general</th>
-<th>Criterio de uso</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Insensibilidad a mayúsculas</td>
-<td>Modifica la comparación de letras</td>
-<td>Activarlo solo si el protocolo admite variantes de caso</td>
+<td>Ignorar mayúsculas y minúsculas</td>
+<td><code>Pattern.CASE_INSENSITIVE</code></td>
+<td><code>re.IGNORECASE</code></td>
+<td><code>i</code></td>
 </tr>
 <tr>
 <td>Multilínea</td>
-<td>Modifica la interpretación de anclas de línea</td>
-<td>No usarlo para validar una única trama completa</td>
+<td><code>Pattern.MULTILINE</code></td>
+<td><code>re.MULTILINE</code></td>
+<td><code>m</code></td>
 </tr>
 <tr>
-<td>Dotall</td>
-<td>Hace que <code>.</code> también pueda reconocer saltos de línea</td>
-<td>No hace falta para un protocolo delimitado</td>
+<td>Permitir que <code>.</code> reconozca saltos de línea</td>
+<td><code>Pattern.DOTALL</code></td>
+<td><code>re.DOTALL</code></td>
+<td><code>s</code></td>
 </tr>
 <tr>
-<td>Unicode</td>
-<td>Modifica determinadas reglas según motor y flag</td>
-<td>Definir explícitamente si se admiten caracteres fuera de ASCII</td>
+<td>Búsqueda global</td>
+<td>Repetir <code>find()</code></td>
+<td><code>finditer()</code> o <code>findall()</code></td>
+<td><code>g</code></td>
 </tr>
 </tbody></table></div>
-<p>La sintaxis y los detalles de los flags cambian entre lenguajes. En este ejemplo, el protocolo exige los prefijos y unidades exactos, por lo que no se activa la insensibilidad a mayúsculas.</p>
+<p>Ejemplo en Java:</p>
+<pre><code class="language-java">Pattern patron = Pattern.compile(
+        &quot;[TO][0-9]{3}&quot;,
+        Pattern.CASE_INSENSITIVE
+);
+
+System.out.println(patron.matcher(&quot;t001&quot;).matches()); // true
+</code></pre>
+<p>La configuración de mayúsculas, espacios y Unicode debe responder al contrato de entrada. El protocolo CampusMonitor exige prefijos y unidades exactos, por lo que no activa la insensibilidad a mayúsculas.</p>
+<p>En JavaScript, los flags <code>g</code> e <code>y</code> pueden modificar el índice interno <code>lastIndex</code> en operaciones como <code>test()</code> y <code>exec()</code>. Por ello, no deben añadirse a un validador simple reutilizable sin una razón concreta.</p>
+<h3>5.10. Ejemplo integrador en Java</h3>
+<p>El siguiente programa reúne las operaciones de esta sección en un único archivo independiente. Guardar como <code>RegexOperaciones.java</code>.</p>
+<pre><code class="language-java">import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class RegexOperaciones {
+
+    public static void main(String[] args) {
+        String regex = &quot;[TO][0-9]{3}&quot;;
+        String codigo = &quot;T001&quot;;
+        String texto = &quot;T001 reporta 23 C, O002 reporta 15 personas, T003 reporta 18 C&quot;;
+
+        // 1. Validación directa
+        System.out.println(&quot;\n1. Validación directa&quot;);
+        System.out.println(codigo.matches(regex));
+        System.out.println(texto.matches(regex));
+        System.out.println(Pattern.matches(regex, codigo));
+
+        // 2. Compilación y reutilización
+        System.out.println(&quot;\n2. Validación reutilizable&quot;);
+        Pattern patron = Pattern.compile(regex);
+
+        for (String dato : new String[]{&quot;T001&quot;, &quot;O123&quot;, &quot;A001&quot;, &quot;T12&quot;}) {
+            System.out.println(dato + &quot; =&gt; &quot; + patron.matcher(dato).matches());
+        }
+
+        // 3. Primera coincidencia
+        System.out.println(&quot;\n3. Primera coincidencia&quot;);
+        Matcher primero = patron.matcher(texto);
+        if (primero.find()) {
+            System.out.println(primero.group());
+        }
+
+        // 4. Todas las coincidencias y posiciones
+        System.out.println(&quot;\n4. Todas las coincidencias&quot;);
+        Matcher matcher = patron.matcher(texto);
+        while (matcher.find()) {
+            System.out.printf(&quot;Encontrado: %s | Inicio: %d | Fin: %d%n&quot;,
+                    matcher.group(), matcher.start(), matcher.end());
+        }
+
+        // 5. Coincidencia al inicio
+        System.out.println(&quot;\n5. Reconocimiento del inicio&quot;);
+        System.out.println(patron.matcher(texto).lookingAt());
+        System.out.println(patron.matcher(texto).matches());
+
+        // 6. Grupos de captura
+        System.out.println(&quot;\n6. Grupos de captura&quot;);
+        Matcher grupos = Pattern.compile(&quot;([TO])([0-9]{3})&quot;).matcher(texto);
+
+        while (grupos.find()) {
+            System.out.printf(&quot;Completo: %s | Tipo: %s | Número: %s%n&quot;,
+                    grupos.group(0), grupos.group(1), grupos.group(2));
+        }
+
+        // 7. Reemplazar todas
+        System.out.println(&quot;\n7. Reemplazar todas&quot;);
+        System.out.println(texto.replaceAll(regex, &quot;[SENSOR]&quot;));
+
+        // 8. Reemplazar la primera
+        System.out.println(&quot;\n8. Reemplazar la primera&quot;);
+        System.out.println(texto.replaceFirst(regex, &quot;[SENSOR]&quot;));
+
+        // 9. Dividir una cadena
+        System.out.println(&quot;\n9. Dividir&quot;);
+        String datos = &quot;T001,O002;T003 T004&quot;;
+        for (String elemento : datos.split(&quot;[,;\\s]+&quot;)) {
+            System.out.println(elemento);
+        }
+
+        // 10. Normalizar espacios
+        System.out.println(&quot;\n10. Normalizar espacios&quot;);
+        String mensaje = &quot;  Sensor    T001   activo   &quot;;
+        System.out.println(mensaje.strip().replaceAll(&quot;\\s+&quot;, &quot; &quot;));
+    }
+}
+</code></pre>
+<p>Ejecución con JDK 17 o superior:</p>
+<pre><code class="language-bash">java RegexOperaciones.java
+</code></pre>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="caso"></a></p>
@@ -481,7 +986,7 @@
 <li><strong>Conversión:</strong> transformar <code>valor</code> a un número y rechazar resultados no finitos.</li>
 <li><strong>Validación de dominio:</strong> comprobar que <code>T...</code> use unidad <code>C</code> y que <code>O...</code> use <code>PERSONAS</code> con un entero no negativo.</li>
 </ol>
-<p>El ejemplo limita la entrada a 80 caracteres y considera el valor inicial no nulo. No incluye almacenamiento; el parser devuelve una estructura de datos que otro componente podría utilizar.</p>
+<p>El ejemplo limita la entrada a 80 caracteres y rechaza entradas nulas. No incluye almacenamiento; el parser devuelve una estructura de datos que otro componente podría utilizar.</p>
 <h3>6.2. Estructura de responsabilidades</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -569,7 +1074,7 @@
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="java"></a></p>
-<h2>7. Implementación en Java</h2>
+<h2>7. Implementación de CampusMonitor en Java</h2>
 <p><strong>Código completo y comentado:</strong> <a href="ejemplos/RegexDemo.java">RegexDemo.java</a>.</p>
 <h3>7.1. Tipos y métodos utilizados</h3>
 <div class="table-scroll"><table>
@@ -611,12 +1116,10 @@
 <h3>7.2. Fragmento central</h3>
 <pre><code class="language-java">private static final Pattern TRAMA = Pattern.compile(
         &quot;(?&lt;sensor&gt;[TO][0-9]{3});(?&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?&lt;unidad&gt;C|PERSONAS)&quot;);
-
 Matcher matcher = TRAMA.matcher(linea);
 if (!matcher.matches()) {
     throw new IllegalArgumentException(&quot;Formato inválido&quot;);
 }
-
 String sensor = matcher.group(&quot;sensor&quot;);
 String unidad = matcher.group(&quot;unidad&quot;);
 double valor = Double.parseDouble(matcher.group(&quot;valor&quot;));
@@ -653,11 +1156,9 @@ O001;-1;PERSONAS -&gt; Ocupación debe ser un entero no negativo
 <h3>8.1. Python</h3>
 <p><strong>Código completo:</strong> <a href="ejemplos/regex_demo.py">regex_demo.py</a>.</p>
 <pre><code class="language-python">import re
-
 PATRON = re.compile(
     r&quot;(?P&lt;sensor&gt;[TO][0-9]{3});(?P&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?P&lt;unidad&gt;C|PERSONAS)&quot;
 )
-
 coincidencia = PATRON.fullmatch(&quot;T001;23.5;C&quot;)
 if coincidencia:
     sensor = coincidencia[&quot;sensor&quot;]
@@ -669,16 +1170,14 @@ if coincidencia:
 <pre><code class="language-bash">python regex_demo.py
 </code></pre>
 <h3>8.2. JavaScript</h3>
-<p><strong>Código completo:</strong> <a href="ejemplos/regex-demo.mjs">regex-demo.mjs</a>.</p>
 <pre><code class="language-javascript">const TRAMA = /^(?&lt;sensor&gt;[TO][0-9]{3});(?&lt;valor&gt;-?[0-9]+(?:[.][0-9]+)?);(?&lt;unidad&gt;C|PERSONAS)$/u;
-
 const coincidencia = TRAMA.exec(&#39;T001;23.5;C&#39;);
 if (coincidencia) {
   const { sensor, unidad } = coincidencia.groups;
   const valor = Number(coincidencia.groups.valor);
 }
 </code></pre>
-<p>JavaScript admite grupos con nombre mediante <code>(?&lt;nombre&gt;...)</code>. El patrón se ancla para validar la entrada completa. El archivo completo comprueba <code>Number.isFinite()</code> y exige <code>Number.isSafeInteger()</code> en la ocupación para no aceptar enteros fuera del rango de precisión segura del tipo <code>number</code>.</p>
+<p>JavaScript admite grupos con nombre mediante <code>(?&lt;nombre&gt;...)</code>. El patrón se ancla para validar la entrada completa y no utiliza el flag <code>m</code>. El archivo completo comprueba <code>Number.isFinite()</code> y exige <code>Number.isSafeInteger()</code> en la ocupación para no aceptar enteros fuera del rango de precisión segura del tipo <code>number</code>.</p>
 <p>Ejecución con Node.js:</p>
 <pre><code class="language-bash">node regex-demo.mjs
 </code></pre>
@@ -730,6 +1229,314 @@ if (coincidencia) {
 </tr>
 </tbody></table></div>
 <p><strong>Límite de equivalencia:</strong> el ejemplo Java y el de Python comprueban integralidad de <code>double</code>/<code>float</code>; JavaScript añade precisión segura. Si CampusMonitor exige que los contadores conserven exactamente valores muy grandes, conviene definir un límite común de magnitud o convertir directamente desde el texto a un entero exacto antes de aceptar los datos.</p>
+<h3>8.4. Operaciones equivalentes en Python</h3>
+<p>El módulo estándar <code>re</code> permite trabajar directamente con el patrón o compilarlo mediante <code>re.compile()</code>. Las funciones del módulo mantienen una caché de patrones recientes; la compilación explícita permite reutilizar el objeto y centralizar su configuración.</p>
+<ul>
+<li><code>re.fullmatch(regex, texto)</code> valida la entrada completa.</li>
+<li><code>re.search(regex, texto)</code> busca la primera coincidencia en cualquier posición.</li>
+<li><code>re.match(regex, texto)</code> comprueba el inicio, no toda la cadena.</li>
+<li><code>finditer()</code> recorre objetos de coincidencia; <code>findall()</code> devuelve una lista de resultados.</li>
+<li><code>sub()</code> reemplaza coincidencias; <code>split()</code> divide el texto.</li>
+</ul>
+<p>Guardar como <code>regex_operaciones.py</code>. Resuelve las mismas diez operaciones del ejemplo Java, con los mismos datos.</p>
+<pre><code class="language-python">import re
+
+regex = r&quot;[TO][0-9]{3}&quot;
+codigo = &quot;T001&quot;
+texto = &quot;T001 reporta 23 C, O002 reporta 15 personas, T003 reporta 18 C&quot;
+
+# 1. Validación directa
+print(&quot;\n1. Validación directa&quot;)
+print(bool(re.fullmatch(regex, codigo)))
+print(bool(re.fullmatch(regex, texto)))
+
+# 2. Compilación y reutilización
+print(&quot;\n2. Validación reutilizable&quot;)
+patron = re.compile(regex)
+
+for dato in [&quot;T001&quot;, &quot;O123&quot;, &quot;A001&quot;, &quot;T12&quot;]:
+    print(f&quot;{dato} =&gt; {bool(patron.fullmatch(dato))}&quot;)
+
+# 3. Primera coincidencia
+print(&quot;\n3. Primera coincidencia&quot;)
+primero = patron.search(texto)
+if primero:
+    print(primero.group())
+
+# 4. Todas las coincidencias y posiciones
+print(&quot;\n4. Todas las coincidencias&quot;)
+for coincidencia in patron.finditer(texto):
+    print(f&quot;Encontrado: {coincidencia.group()} | &quot;
+          f&quot;Inicio: {coincidencia.start()} | Fin: {coincidencia.end()}&quot;)
+
+# 5. Coincidencia al inicio
+print(&quot;\n5. Reconocimiento del inicio&quot;)
+print(bool(patron.match(texto)))
+print(bool(patron.fullmatch(texto)))
+
+# 6. Grupos de captura
+print(&quot;\n6. Grupos de captura&quot;)
+patron_grupos = re.compile(r&quot;([TO])([0-9]{3})&quot;)
+for coincidencia in patron_grupos.finditer(texto):
+    print(f&quot;Completo: {coincidencia.group(0)} | &quot;
+          f&quot;Tipo: {coincidencia.group(1)} | Número: {coincidencia.group(2)}&quot;)
+
+# 7. Reemplazar todas
+print(&quot;\n7. Reemplazar todas&quot;)
+print(patron.sub(&quot;[SENSOR]&quot;, texto))
+
+# 8. Reemplazar la primera
+print(&quot;\n8. Reemplazar la primera&quot;)
+print(patron.sub(&quot;[SENSOR]&quot;, texto, count=1))
+
+# 9. Dividir una cadena
+print(&quot;\n9. Dividir&quot;)
+datos = &quot;T001,O002;T003 T004&quot;
+for elemento in re.split(r&quot;[,;\s]+&quot;, datos):
+    print(elemento)
+
+# 10. Normalizar espacios
+print(&quot;\n10. Normalizar espacios&quot;)
+mensaje = &quot;  Sensor    T001   activo   &quot;
+print(re.sub(r&quot;\s+&quot;, &quot; &quot;, mensaje.strip()))
+</code></pre>
+<p>Ejecución:</p>
+<pre><code class="language-bash">python3 regex_operaciones.py
+</code></pre>
+<p>Si solo interesan los valores encontrados y no sus posiciones, puede utilizarse:</p>
+<pre><code class="language-python">print(re.findall(r&quot;[TO][0-9]{3}&quot;, texto))
+# [&#39;T001&#39;, &#39;O002&#39;, &#39;T003&#39;]
+</code></pre>
+<p>Si el patrón contiene grupos de captura, <code>findall()</code> devuelve las capturas en lugar de la coincidencia completa, según el número de grupos. Para obtener siempre la coincidencia completa y sus grupos, utilizar <code>finditer()</code> con <code>group(0)</code> y <code>group(n)</code>.</p>
+<h3>8.5. Operaciones equivalentes en JavaScript</h3>
+<p>JavaScript dispone del literal <code>/patron/</code> y del constructor <code>new RegExp(patron, flags)</code>. El literal es apropiado cuando se conoce el patrón al escribir el código; el constructor permite construirlo dinámicamente.</p>
+<ul>
+<li><code>test()</code> devuelve un booleano y busca una coincidencia; para exigir coincidencia completa se necesitan anclas.</li>
+<li><code>exec()</code> devuelve información sobre una coincidencia o <code>null</code>.</li>
+<li><code>matchAll()</code> recorre coincidencias y capturas; al recibir un objeto <code>RegExp</code>, este debe incluir <code>g</code>.</li>
+<li><code>match()</code> con <code>g</code> devuelve las coincidencias completas como un arreglo, o <code>null</code> cuando no existen.</li>
+<li><code>replace()</code> y <code>replaceAll()</code> permiten transformar el texto.</li>
+</ul>
+<p>Para los patrones de este tema, <code>^</code> y <code>$</code> sin el flag <code>m</code> exigen el inicio y el final de toda la cadena. Con <code>m</code>, las anclas pueden reconocer límites de líneas; por ello no se utiliza ese flag en validaciones de campos. Se explicarán las anclas con mayor profundidad en el tema 2.3.</p>
+<p>Guardar como <code>regex-operaciones.js</code>.</p>
+<pre><code class="language-javascript">const regex = &quot;[TO][0-9]{3}&quot;;
+const codigo = &quot;T001&quot;;
+const texto = &quot;T001 reporta 23 C, O002 reporta 15 personas, T003 reporta 18 C&quot;;
+
+// 1. Validación directa
+console.log(&quot;\n1. Validación directa&quot;);
+console.log(/^[TO][0-9]{3}$/.test(codigo));
+console.log(/^[TO][0-9]{3}$/.test(texto));
+
+// Construcción dinámica de una expresión con anclas.
+const patronCompleto = new RegExp(`^(?:${regex})$`);
+console.log(patronCompleto.test(codigo));
+
+// 2. Compilación y reutilización
+console.log(&quot;\n2. Validación reutilizable&quot;);
+
+for (const dato of [&quot;T001&quot;, &quot;O123&quot;, &quot;A001&quot;, &quot;T12&quot;]) {
+    console.log(`${dato} =&gt; ${patronCompleto.test(dato)}`);
+}
+
+// 3. Primera coincidencia
+console.log(&quot;\n3. Primera coincidencia&quot;);
+const patron = new RegExp(regex);
+const primero = patron.exec(texto);
+if (primero) {
+    console.log(primero[0]);
+}
+
+// 4. Todas las coincidencias y posiciones
+console.log(&quot;\n4. Todas las coincidencias&quot;);
+const patronGlobal = new RegExp(regex, &quot;g&quot;);
+
+for (const coincidencia of texto.matchAll(patronGlobal)) {
+    console.log(
+        `Encontrado: ${coincidencia[0]} | Inicio: ${coincidencia.index} | ` +
+        `Fin: ${coincidencia.index + coincidencia[0].length}`
+    );
+}
+
+// 5. Coincidencia al inicio
+console.log(&quot;\n5. Reconocimiento del inicio&quot;);
+console.log(/^[TO][0-9]{3}/.test(texto));
+console.log(patronCompleto.test(texto));
+
+// 6. Grupos de captura
+console.log(&quot;\n6. Grupos de captura&quot;);
+
+for (const coincidencia of texto.matchAll(/([TO])([0-9]{3})/g)) {
+    console.log(
+        `Completo: ${coincidencia[0]} | Tipo: ${coincidencia[1]} | ` +
+        `Número: ${coincidencia[2]}`
+    );
+}
+
+// 7. Reemplazar todas
+console.log(&quot;\n7. Reemplazar todas&quot;);
+console.log(texto.replaceAll(/[TO][0-9]{3}/g, &quot;[SENSOR]&quot;));
+
+// 8. Reemplazar la primera
+console.log(&quot;\n8. Reemplazar la primera&quot;);
+console.log(texto.replace(/[TO][0-9]{3}/, &quot;[SENSOR]&quot;));
+
+// 9. Dividir una cadena
+console.log(&quot;\n9. Dividir&quot;);
+const datos = &quot;T001,O002;T003 T004&quot;;
+
+for (const elemento of datos.split(/[,;\s]+/)) {
+    console.log(elemento);
+}
+
+// 10. Normalizar espacios
+console.log(&quot;\n10. Normalizar espacios&quot;);
+const mensaje = &quot;  Sensor    T001   activo   &quot;;
+console.log(mensaje.trim().replace(/\s+/g, &quot; &quot;));
+</code></pre>
+<p>Ejecución con Node.js 18 o superior:</p>
+<pre><code class="language-bash">node regex-operaciones.js
+</code></pre>
+<p>También se pueden obtener todas las coincidencias completas mediante:</p>
+<pre><code class="language-javascript">console.log(texto.match(/[TO][0-9]{3}/g));
+// [&quot;T001&quot;, &quot;O002&quot;, &quot;T003&quot;]
+</code></pre>
+<p>El flag <code>g</code> es apropiado en búsquedas globales, pero no en un validador simple reutilizado con <code>test()</code>:</p>
+<pre><code class="language-javascript">const global = /[TO][0-9]{3}/g;
+
+console.log(global.test(&quot;T001&quot;)); // true
+console.log(global.test(&quot;T001&quot;)); // false
+</code></pre>
+<p>El segundo resultado cambia porque la primera operación avanzó <code>lastIndex</code>. Se debe eliminar <code>g</code> del validador o gestionar explícitamente ese estado.</p>
+<h3>8.6. Comparación de las APIs</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Java</th>
+<th>Python</th>
+<th>JavaScript</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Validación directa</td>
+<td><code>texto.matches(regex)</code></td>
+<td><code>re.fullmatch(regex, texto)</code></td>
+<td><code>/^(?:patron)$/.test(texto)</code></td>
+</tr>
+<tr>
+<td>Patrón reutilizable</td>
+<td><code>Pattern.compile(regex)</code></td>
+<td><code>re.compile(regex)</code></td>
+<td><code>new RegExp(regex)</code> o literal</td>
+</tr>
+<tr>
+<td>Validación reutilizable</td>
+<td><code>patron.matcher(texto).matches()</code></td>
+<td><code>patron.fullmatch(texto)</code></td>
+<td><code>test()</code> con anclas y sin <code>g</code> ni <code>m</code></td>
+</tr>
+<tr>
+<td>Primera coincidencia</td>
+<td><code>matcher.find()</code></td>
+<td><code>patron.search(texto)</code></td>
+<td><code>patron.exec(texto)</code> sin <code>g</code></td>
+</tr>
+<tr>
+<td>Coincidencia al inicio</td>
+<td><code>matcher.lookingAt()</code></td>
+<td><code>patron.match(texto)</code></td>
+<td><code>test()</code> con <code>^</code> y sin <code>m</code></td>
+</tr>
+<tr>
+<td>Todas las coincidencias</td>
+<td><code>while (matcher.find())</code></td>
+<td><code>patron.finditer(texto)</code></td>
+<td><code>texto.matchAll(patronGlobal)</code></td>
+</tr>
+<tr>
+<td>Colección de coincidencias</td>
+<td><code>matcher.results()</code> y conversión a lista</td>
+<td><code>patron.findall(texto)</code></td>
+<td><code>texto.match(patronGlobal)</code></td>
+</tr>
+<tr>
+<td>Coincidencia completa</td>
+<td><code>matcher.group(0)</code></td>
+<td><code>match.group(0)</code></td>
+<td><code>match[0]</code></td>
+</tr>
+<tr>
+<td>Captura numerada</td>
+<td><code>matcher.group(n)</code></td>
+<td><code>match.group(n)</code></td>
+<td><code>match[n]</code></td>
+</tr>
+<tr>
+<td>Posición inicial</td>
+<td><code>matcher.start()</code></td>
+<td><code>match.start()</code></td>
+<td><code>match.index</code></td>
+</tr>
+<tr>
+<td>Posición final exclusiva</td>
+<td><code>matcher.end()</code></td>
+<td><code>match.end()</code></td>
+<td><code>match.index + match[0].length</code></td>
+</tr>
+<tr>
+<td>Reemplazar todas</td>
+<td><code>texto.replaceAll(regex, reemplazo)</code></td>
+<td><code>re.sub(regex, reemplazo, texto)</code></td>
+<td><code>texto.replaceAll(patronGlobal, reemplazo)</code></td>
+</tr>
+<tr>
+<td>Reemplazar primera</td>
+<td><code>texto.replaceFirst(regex, reemplazo)</code></td>
+<td><code>re.sub(regex, reemplazo, texto, count=1)</code></td>
+<td><code>texto.replace(patronSinG, reemplazo)</code></td>
+</tr>
+<tr>
+<td>Dividir</td>
+<td><code>texto.split(regex)</code></td>
+<td><code>re.split(regex, texto)</code></td>
+<td><code>texto.split(patron)</code></td>
+</tr>
+</tbody></table></div>
+<p>En esta tabla, <code>patronGlobal</code> representa una expresión JavaScript con el flag <code>g</code>, y <code>patronSinG</code> una sin dicho flag. <code>Matcher.results()</code> devuelve un <code>Stream&lt;MatchResult&gt;</code>, no una lista directa. Las posiciones de Java y JavaScript se expresan en unidades UTF-16; Python cuenta puntos de código Unicode. Para los datos ASCII de estos ejemplos, los índices coinciden.</p>
+<h3>8.7. Resultados de los ejemplos integradores</h3>
+<p>Los programas de las secciones 5.10, 8.4 y 8.5 realizan operaciones equivalentes. Java y JavaScript imprimen <code>true</code> y <code>false</code>; Python imprime <code>True</code> y <code>False</code>.</p>
+<p>Validaciones:</p>
+<pre><code class="language-text">T001 =&gt; true
+O123 =&gt; true
+A001 =&gt; false
+T12 =&gt; false
+</code></pre>
+<p>Búsqueda:</p>
+<pre><code class="language-text">Encontrado: T001 | Inicio: 0 | Fin: 4
+Encontrado: O002 | Inicio: 19 | Fin: 23
+Encontrado: T003 | Inicio: 45 | Fin: 49
+</code></pre>
+<p>Capturas:</p>
+<pre><code class="language-text">Completo: T001 | Tipo: T | Número: 001
+Completo: O002 | Tipo: O | Número: 002
+Completo: T003 | Tipo: T | Número: 003
+</code></pre>
+<p>Reemplazo de todas las coincidencias:</p>
+<pre><code class="language-text">[SENSOR] reporta 23 C, [SENSOR] reporta 15 personas, [SENSOR] reporta 18 C
+</code></pre>
+<p>Reemplazo de la primera:</p>
+<pre><code class="language-text">[SENSOR] reporta 23 C, O002 reporta 15 personas, T003 reporta 18 C
+</code></pre>
+<p>División:</p>
+<pre><code class="language-text">T001
+O002
+T003
+T004
+</code></pre>
+<p>Normalización:</p>
+<pre><code class="language-text">Sensor T001 activo
+</code></pre>
 <p><a href="#indice">Volver al índice</a></p>
 <hr>
 <p><a id="pc"></a></p>
@@ -811,6 +1618,12 @@ git log -1 --format=%H
 <li>¿Por qué compilar una expresión una sola vez y crear un <code>Matcher</code> por operación es preferible a compartir el mismo <code>Matcher</code> entre solicitudes concurrentes?</li>
 <li>Si se incorpora una unidad <code>K</code> para temperaturas, ¿qué parte del contrato y qué pruebas deben actualizarse?</li>
 <li>Si un valor tiene miles de dígitos, ¿por qué pasar la regex no garantiza que <code>double</code> pueda representarlo correctamente?</li>
+<li>Si un formulario valida un código una sola vez, ¿qué ventaja ofrece <code>String.matches()</code>? ¿Qué cambiaría si se validaran diez mil códigos?</li>
+<li>¿Qué diferencia existe entre <code>Pattern</code> y <code>Matcher</code>? ¿Qué objeto se puede reutilizar entre distintas entradas?</li>
+<li>Con el patrón <code>[TO][0-9]{3}</code>, explica los resultados de <code>matches()</code>, <code>find()</code> y <code>lookingAt()</code> para <code>T00123</code> y <code>Sensor O123</code>.</li>
+<li>¿Qué diferencia hay entre <code>group(0)</code> y <code>group(1)</code> al aplicar <code>([TO])([0-9]{3})</code>?</li>
+<li>Si se quiere ocultar cada identificador de un documento, ¿qué método debe utilizarse? ¿Qué ocurriría al usar <code>replaceFirst()</code>?</li>
+<li>¿Por qué el flag <code>g</code> de JavaScript puede producir resultados inesperados si se reutiliza el mismo objeto <code>RegExp</code> para validar campos con <code>test()</code>?</li>
 </ol>
 <h3>10.2. Errores frecuentes</h3>
 <div class="table-scroll"><table>
@@ -850,6 +1663,21 @@ git log -1 --format=%H
 <td>Compartir estado de <code>Matcher</code> o <code>RegExp</code> global con flags <code>g</code>/<code>y</code></td>
 <td>Resultados dependientes de llamadas previas</td>
 <td>Usar instancias de coincidencia independientes y flags mínimos</td>
+</tr>
+<tr>
+<td>Compilar un patrón estable dentro de cada iteración</td>
+<td>Trabajo repetido innecesario</td>
+<td>Compilar antes del ciclo y reutilizar <code>Pattern</code></td>
+</tr>
+<tr>
+<td>Consultar <code>group()</code> sin reconocimiento exitoso</td>
+<td>Excepción en Java</td>
+<td>Consultar capturas después de comprobar el resultado</td>
+</tr>
+<tr>
+<td>Usar <code>String.replace()</code> esperando interpretar una regex</td>
+<td>El patrón se interpreta literalmente</td>
+<td>Utilizar <code>replaceAll()</code> o <code>replaceFirst()</code></td>
 </tr>
 </tbody></table></div>
 <h3>10.3. Limitaciones</h3>
